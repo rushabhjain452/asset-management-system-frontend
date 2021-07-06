@@ -226,6 +226,8 @@ figure {
     -ms-border-radius: 5px;
     margin-top: 25px;
     cursor: pointer;
+    outline: none;
+    border: none;
 }
 
 .form-submit:hover {
@@ -240,7 +242,6 @@ figure {
     font-size: 14px;
     color: #222;
     display: block;
-    text-align: center;
 }
 
 .term-service {
