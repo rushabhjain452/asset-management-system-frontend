@@ -6,7 +6,7 @@ import Swal from 'sweetalert2';
 import axios from 'axios';
 import { errorMessage } from '../config/index';
 
-function Login() {
+function VerifyOtpAndUpdatePassword() {
 
   const [email, setEmail] = useState("rushabh@bbd.co.za");
   const [password, setPassword] = useState("");
@@ -88,37 +88,28 @@ function Login() {
         <div className="container">
           <div className="signin-content">
             <div className="signin-image">
-              <figure><img src={require('../images/signin-image.jpg').default} alt="sign In" /></figure>
+              <figure><img src={require('../images/update-password.jpg').default} alt="Update Password" /></figure>
             </div>
             <div className="signin-form">
-              <h2 className="form-title">Login</h2>
-              <form method="POST" className="register-form" id="login-form">
+              <h2 className="form-title">Verify OTP And Update Password</h2>
+              <form method="POST" className="register-form" id="updatepassword-form">
                 <div className="form-group">
-                  <label htmlFor="your_name"><i className="zmdi zmdi-account material-icons-name"></i></label>
-                  <input type="text" name="your_name" id="your_name" placeholder="Email" value={email} onInput={e => setEmail(e.target.value)} />
+                  <label htmlFor="your_otp"><i className="zmdi zmdi-account material-icons-name"></i></label>
+                  <input type="text" name="your_otp" id="your_otp" placeholder="Enter OTP" value={email} onInput={e => setEmail(e.target.value)} />
                 </div>
                 <div className="form-group">
                   <label htmlFor="your_pass"><i className="zmdi zmdi-lock"></i></label>
                   <input type="password" name="your_pass" id="your_pass" placeholder="Password" value={password} onInput={e => setPassword(e.target.value)} />
                 </div>
-                <Link to="/forget-password" className="signup-image-link">Forget Password?</Link>
-                {/* <div className="form-group">
-                  <input type="checkbox" name="remember-me" id="remember-me" className="agree-term" />
-                  <label htmlFor="remember-me" className="label-agree-term"><span><span></span></span>Remember me</label>
-                </div> */}
+                <div className="form-group">
+                  <label htmlFor="your_pass"><i className="zmdi zmdi-lock"></i></label>
+                  <input type="password" name="your_confirm_pass" id="your_confirm_pass" placeholder="Confirm Password" value={password} onInput={e => setPassword(e.target.value)} />
+                </div>
                 <div className="form-group form-button">
                   {/* <input type="submit" name="signin" id="signin" className="form-submit" value="Login" /> */}
                   <button type="button" name="signin" id="signin" className="form-submit" onClick={handleLogin}>Login</button>
                 </div>
               </form>
-              {/* <div className="social-login">
-                <span className="social-label">Or login with</span>
-                <ul className="socials">
-                  <li><a href="#"><i className="display-flex-center zmdi zmdi-facebook"></i></a></li>
-                  <li><a href="#"><i className="display-flex-center zmdi zmdi-twitter"></i></a></li>
-                  <li><a href="#"><i className="display-flex-center zmdi zmdi-google"></i></a></li>
-                </ul>
-              </div> */}
             </div>
           </div>
         </div>
@@ -127,4 +118,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default VerifyOtpAndUpdatePassword;
