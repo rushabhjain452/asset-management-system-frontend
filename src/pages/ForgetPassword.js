@@ -5,7 +5,7 @@ import "material-design-iconic-font/dist/css/material-design-iconic-font.min.css
 import Swal from 'sweetalert2';
 import axios from 'axios';
 import Loader from '../components/Loader';
-import { errorMessage } from '../config/index';
+import { errorMessage } from '../config';
 
 function ForgetPassword() {
 
@@ -133,7 +133,7 @@ function ForgetPassword() {
                   {/* <input type="submit" name="signin" id="signin" className="form-submit" value="Login" /> */}
                   <button type="button" name="sendotp" id="sendotp" className="form-submit" onClick={handleSendOtp}>Send OTP</button>
                 </div>
-                <Link to="/login" className="signup-image-link">Back to Login</Link>
+                <Link exact to="/login" className="signup-image-link">Back to Login</Link>
               </form>
             </div>
           </div>

@@ -6,7 +6,7 @@ import Menu from './Menu';
 
 function AdminDashboard() {
   return (
-    <div class="wrapper">
+    <div className="wrapper">
       <Header />
       <Menu />
       <AdminDashboardContent />

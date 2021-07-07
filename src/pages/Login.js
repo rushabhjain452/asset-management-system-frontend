@@ -5,12 +5,12 @@ import 'material-design-iconic-font/dist/css/material-design-iconic-font.min.css
 import Swal from 'sweetalert2';
 import axios from 'axios';
 import Loader from '../components/Loader';
-import { errorMessage } from '../config/index';
+import { errorMessage } from '../config';
 
 function Login() {
 
   const [email, setEmail] = useState("rushabh@bbd.co.za");
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState("Rushabh@12345");
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState();
 
@@ -65,6 +65,7 @@ function Login() {
             const data = response.data;
             // localStorage.setItem('user', JSON.stringify({ employeeId: data.employeeId, email: data.emailId, role: data.role, token: data.token }));
             localStorage.setItem('employeeId', data.employeeId);
+            localStorage.setItem('name', data.firstName + ' ' + data.lastName);
             localStorage.setItem('emailId', data.emailId);
             localStorage.setItem('role', data.role);
             localStorage.setItem('token', data.token);
@@ -128,7 +129,7 @@ function Login() {
                   <label htmlFor="your_pass"><i className="zmdi zmdi-lock"></i></label>
                   <input type="password" maxLength="50" ref={passwordRef} name="your_pass" id="your_pass" placeholder="Password" value={password} onInput={e => setPassword(e.target.value)} />
                 </div>
-                <Link to="/forget-password" className="signup-image-link">Forget Password?</Link>
+                <Link exact to="/forget-password" className="signup-image-link">Forget Password?</Link>
                 {/* <div className="form-group">
                   <input type="checkbox" name="remember-me" id="remember-me" className="agree-term" />
                   <label htmlFor="remember-me" className="label-agree-term"><span><span></span></span>Remember me</label>

@@ -1,28 +1,47 @@
-import React from 'react'
+import React, { useState } from 'react';
+import { Redirect } from 'react-router-dom';
 
 function Header() {
+
+  const [logout, setLogout] = useState(false);
+
+  const handleLogout = () => {
+    localStorage.removeItem('employeeId');
+    localStorage.removeItem('name');
+    localStorage.removeItem('emailId');
+    localStorage.removeItem('role');
+    localStorage.removeItem('token');
+    setLogout(true);
+  };
+
+  if(logout) {
+    return <Redirect exact to="/login" />;
+  }
+
   return (
     <div>
-      <nav class="main-header navbar navbar-expand navbar-white navbar-light">
-    <ul class="navbar-nav">
-      <li class="nav-item">
-        <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
-      </li>
-      <li class="nav-item d-none d-sm-inline-block">
-        <a href="index.html" class="nav-link">Home</a>
-      </li>
-    </ul>
-
-    <ul class="navbar-nav ml-auto">
-      <li class="nav-item">
-        <a class="nav-link" data-widget="fullscreen" href="#" role="button">
-          <i class="fas fa-expand-arrows-alt"></i>
-        </a>
-      </li>
-    </ul>
-  </nav>
+      <nav className="main-header navbar navbar-expand navbar-white navbar-light">
+        <ul className="navbar-nav">
+          <li className="nav-item">
+            <a className="nav-link" data-widget="pushmenu" href="#" role="button"><i className="fas fa-bars"></i></a>
+          </li>
+          <li className="nav-item d-none d-sm-inline-block">
+            <a href="index.html" className="nav-link">Home</a>
+          </li>
+        </ul>
+        <ul className="navbar-nav ml-auto">
+          <li className="nav-item">
+            <span className="nav-link logout-link" onClick={ handleLogout }>Logout</span>
+          </li>
+          <li className="nav-item">
+            <a className="nav-link" data-widget="fullscreen" href="#" role="button">
+              <i className="fas fa-expand-arrows-alt"></i>
+            </a>
+          </li>
+        </ul>
+      </nav>
     </div>
   )
 }
 
-export default Header
+export default Header;

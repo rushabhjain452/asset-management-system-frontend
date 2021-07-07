@@ -4,7 +4,7 @@ import './css/style.css';
 import "material-design-iconic-font/dist/css/material-design-iconic-font.min.css";
 import Swal from 'sweetalert2';
 import axios from 'axios';
-import { errorMessage } from '../config/index';
+import { errorMessage } from '../config';
 
 function VerifyOtpAndUpdatePassword() {
   const [otp, setOtp] = useState('');
@@ -139,7 +139,7 @@ function VerifyOtpAndUpdatePassword() {
                 <div className="form-group form-button">
                   <button type="button" name="signin" id="signin" className="form-submit" onClick={handleUpdatePassword}>Update Password</button>
                 </div>
-                <Link to="/login" className="signup-image-link">Back to Login</Link>
+                <Link exact to="/login" className="signup-image-link">Back to Login</Link>
               </form>
             </div>
           </div>
