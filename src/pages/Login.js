@@ -16,11 +16,11 @@ function Login() {
   const handleLogin = () => {
     if (email && password) {
       const apiurl = process.env.REACT_APP_URL;
-      const reqData = {
+      const requestData = {
         emailId: email,
         password: password
       };
-      axios.post(apiurl + '/employees/authenticate', reqData)
+      axios.post(apiurl + '/employees/authenticate', requestData)
         .then((response) => {
           console.log('then...');
           console.log(response.data);
