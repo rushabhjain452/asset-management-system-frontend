@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Link, Redirect } from 'react-router-dom';
-import './css/login.css';
-import "material-design-iconic-font/dist/css/material-design-iconic-font.min.css";
+import './css/style.css';
+import 'material-design-iconic-font/dist/css/material-design-iconic-font.min.css';
 import Swal from 'sweetalert2';
 import axios from 'axios';
+import Loader from '../components/Loader';
 import { errorMessage } from '../config/index';
 
 function Login() {
@@ -13,13 +14,48 @@ function Login() {
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState();
 
+  const emailRef = useRef(null);
+  const passwordRef = useRef(null);
+
+  const validateInput = () => {
+    const email_regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    let result = true;
+    let error = '';
+    if(email.length === 0){
+      result = false;
+      error = 'Please enter email.';
+      emailRef.current.focus();
+    } 
+    else if(!email.match(email_regex) || !email.includes('@bbd.co.za')){
+      result = false;
+      error = 'Please enter valid email of BBD domain.';
+      emailRef.current.focus();
+    } 
+    else if(password.length === 0){
+      result = false;
+      error = 'Please enter password.';
+      passwordRef.current.focus();
+    }
+    // Display Error
+    if(result === false){
+      Swal.fire({
+        title: 'Invalid Input',
+        text: error,
+        icon: 'warning',
+        confirmButtonColor: '#3085d6'
+      });
+    }
+    return result;
+  };
+
   const handleLogin = () => {
-    if (email && password) {
+    if (validateInput()) {
       const apiurl = process.env.REACT_APP_URL;
       const requestData = {
         emailId: email,
         password: password
       };
+      setLoading(true);
       axios.post(apiurl + '/employees/authenticate', requestData)
         .then((response) => {
           console.log('then...');
@@ -49,8 +85,6 @@ function Login() {
           let msg = errorMessage;
           if (error.response && error.response.data) {
             msg = error.response.data.message;
-          } else {
-            console.log('No response');
           }
           Swal.fire({
             title: 'Error',
@@ -59,16 +93,8 @@ function Login() {
             confirmButtonColor: '#3085d6'
           });
         });
-    } else {
-      // alert('Please enter email and password...');
-      Swal.fire({
-        title: 'Invalid Input',
-        text: 'Please enter email and password...',
-        icon: 'warning',
-        confirmButtonColor: '#3085d6'
-      });
     }
-  }
+  };
 
   if(response) {
     console.log('Role checking : ' + response.role);
@@ -84,22 +110,23 @@ function Login() {
 
   return (
     <div className="main">
+      <Loader loading={loading} />
       <section className="sign-in">
-        <div className="container">
+        <div className="my-container">
           <div className="signin-content">
             <div className="signin-image">
-              <figure><img src={require('../images/signin-image.jpg').default} alt="sign In" /></figure>
+              <figure><img src={require('../images/signin-image.jpg').default} alt="sign In" className="img img-fluid" /></figure>
             </div>
             <div className="signin-form">
               <h2 className="form-title">Login</h2>
               <form method="POST" className="register-form" id="login-form">
                 <div className="form-group">
                   <label htmlFor="your_name"><i className="zmdi zmdi-account material-icons-name"></i></label>
-                  <input type="text" name="your_name" id="your_name" placeholder="Email" value={email} onInput={e => setEmail(e.target.value)} />
+                  <input type="text" maxLength="50" ref={emailRef} name="your_name" id="your_name" placeholder="Email" value={email} onInput={e => setEmail(e.target.value)} autoFocus />
                 </div>
                 <div className="form-group">
                   <label htmlFor="your_pass"><i className="zmdi zmdi-lock"></i></label>
-                  <input type="password" name="your_pass" id="your_pass" placeholder="Password" value={password} onInput={e => setPassword(e.target.value)} />
+                  <input type="password" maxLength="50" ref={passwordRef} name="your_pass" id="your_pass" placeholder="Password" value={password} onInput={e => setPassword(e.target.value)} />
                 </div>
                 <Link to="/forget-password" className="signup-image-link">Forget Password?</Link>
                 {/* <div className="form-group">

@@ -4,6 +4,7 @@ import Login from './pages/Login';
 import Error from './pages/Error';
 import ErrorBoundary from './components/ErrorBoundary';
 import ForgetPassword from "./pages/ForgetPassword";
+import VerifyOtpAndUpdatePassword from "./pages/VerifyOtpAndUpdatePassword";
 // Admin Pages
 import AdminDashboard from './pages/admin/AdminDashboard';
 // User Pages
@@ -21,6 +22,7 @@ function App() {
             <Route exact path="/" component={Login} />
             <Route exact path="/login" component={Login} />
             <Route exact path='/forget-password' component={ForgetPassword} />
+            <Route exact path='/verify-otp-update-password' component={VerifyOtpAndUpdatePassword} />
             {/* Admin Pages */}
             <PrivateRoute exact path='/admin/dashboard' component={AdminDashboard} />
             {/* User Pages */}

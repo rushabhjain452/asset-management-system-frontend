@@ -104,13 +104,19 @@ h2 {
     padding: 0;
     font-weight: bold;
     color: #222;
-    font-family: Poppins;
+    /* font-family: Poppins; */
     font-size: 36px;
 }
 
 .main {
+    height: 100%;
     background: #f8f8f8;
-    padding: 150px 0;
+    /* padding: 150px 0; */
+    /* padding: 120px 0; */
+    /* padding: 10% 0; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .clear {
@@ -126,8 +132,9 @@ body {
     font-family: Poppins;
 }
 
-.container {
-    width: 900px;
+.my-container {
+    /* width: 900px; */
+    width: 1100px;
     background: #fff;
     margin: 0 auto;
     box-shadow: 0px 15px 16.83px 0.17px rgba(0, 0, 0, 0.05);
@@ -239,7 +246,8 @@ figure {
 }
 
 .signup-image-link {
-    font-size: 14px;
+    /* font-size: 14px; */
+    font-size: 16px;
     color: #222;
     display: block;
 }
@@ -518,14 +526,14 @@ label.valid:after {
 }
 
 @media screen and (max-width: 1200px) {
-    .container {
+    .my-container {
         width: calc( 100% - 30px);
         max-width: 100%;
     }
 }
 
 @media screen and (min-width: 1024px) {
-    .container {
+    .my-container {
         max-width: 1200px;
     }
 }

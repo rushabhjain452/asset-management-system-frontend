@@ -1,46 +1,91 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Link, Redirect } from 'react-router-dom';
-import './css/login.css';
+import './css/style.css';
 import "material-design-iconic-font/dist/css/material-design-iconic-font.min.css";
 import Swal from 'sweetalert2';
 import axios from 'axios';
+import Loader from '../components/Loader';
 import { errorMessage } from '../config/index';
 
 function ForgetPassword() {
 
-  const [email, setEmail] = useState("rushabh@bbd.co.za");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [mobileNumber, setMobileNumber] = useState("");
   const [loading, setLoading] = useState(false);
-  const [response, setResponse] = useState();
+  const [redirect, setRedirect] = useState(false);
 
-  const handleLogin = () => {
-    if (email && password) {
+  const emailRef = useRef(null);
+  const mobileRef = useRef(null);
+
+  const validateInput = () => {
+    const email_regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    const mobile_regex = /^[0-9]{10}$/;
+    let result = true;
+    let error = '';
+
+    if(email.length === 0){
+      result = false;
+      error = 'Please enter email.';
+      emailRef.current.focus();
+    } 
+    else if(!email.match(email_regex) || !email.includes('@bbd.co.za')){
+      result = false;
+      error = 'Please enter valid email of BBD domain.';
+      emailRef.current.focus();
+    } 
+    else if(mobileNumber.length === 0){
+      result = false;
+      error = 'Please enter mobile number.';
+      mobileRef.current.focus();
+    }
+    else if(!mobileNumber.match(mobile_regex)){
+      result = false;
+      error = 'Please enter valid mobile number of 10 digits.';
+      mobileRef.current.focus();
+    }
+    // Display Error
+    if(result === false){
+      Swal.fire({
+        title: 'Invalid Input',
+        text: error,
+        icon: 'warning',
+        confirmButtonColor: '#3085d6'
+      });
+    }
+    return result;
+  };
+
+  const handleSendOtp = () => {
+    if(validateInput()){
+      setLoading(true);
       const apiurl = process.env.REACT_APP_URL;
-      const reqData = {
+      const requestData = {
         emailId: email,
-        password: password
+        mobileNumber: mobileNumber
       };
-      axios.post(apiurl + '/employees/authenticate', reqData)
+      axios.post(apiurl + '/employees/forget-password', requestData)
         .then((response) => {
-          console.log('then...');
-          console.log(response.data);
           setLoading(false);
           if (response.status == 200) {
             const data = response.data;
-            // localStorage.setItem('user', JSON.stringify({ employeeId: data.employeeId, email: data.emailId, role: data.role, token: data.token }));
             localStorage.setItem('employeeId', data.employeeId);
-            localStorage.setItem('emailId', data.emailId);
-            localStorage.setItem('role', data.role);
-            localStorage.setItem('token', data.token);
-            console.log('Set values in localStorage');
-            // Swal.fire({
-            //   title: 'Success',
-            //   text: 'Login success...',
-            //   icon: 'success',
-            //   confirmButtonColor: '#3085d6'
-            // });
+            const Toast = Swal.mixin({
+              toast: true,
+              position: 'top-end',
+              showConfirmButton: false,
+              timer: 3000,
+              timerProgressBar: true,
+              didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+              }
+            });
+            Toast.fire({
+              icon: 'success',
+              title: 'OTP sent successfully'
+            });
           }
-          setResponse(response.data);
+          setRedirect(true);
         })
         .catch((error) => {
           setLoading(false);
@@ -49,8 +94,6 @@ function ForgetPassword() {
           let msg = errorMessage;
           if (error.response && error.response.data) {
             msg = error.response.data.message;
-          } else {
-            console.log('No response');
           }
           Swal.fire({
             title: 'Error',
@@ -59,52 +102,38 @@ function ForgetPassword() {
             confirmButtonColor: '#3085d6'
           });
         });
-    } else {
-      // alert('Please enter email and password...');
-      Swal.fire({
-        title: 'Invalid Input',
-        text: 'Please enter email and password...',
-        icon: 'warning',
-        confirmButtonColor: '#3085d6'
-      });
     }
-  }
+  };
 
-  if(response) {
-    console.log('Role checking : ' + response.role);
-    if (response.role === "User") {
-      // console.log('User');
-      return <Redirect exact to="/dashboard" />;
-    }
-    else if (response.role === "Admin") {
-      // console.log('Admin');
-      return <Redirect exact to="/admin/dashboard" />;
-    }
+  if(redirect) {
+    return <Redirect exact to="/verify-otp-update-password" />;
   }
 
   return (
     <div className="main">
+      <Loader loading={loading} />
       <section className="sign-in">
-        <div className="container">
+        <div className="my-container">
           <div className="signin-content">
             <div className="signin-image">
-              <figure><img src={require('../images/forgot-password.jpg').default} alt="Forget Password" /></figure>
+              <figure><img src={require('../images/forget-password.jpg').default} alt="Forget Password" className="img img-fluid" /></figure>
             </div>
             <div className="signin-form">
               <h2 className="form-title">Send OTP for Verification</h2>
               <form method="POST" className="register-form" id="forgetpassword-form">
                 <div className="form-group">
                   <label htmlFor="your_email"><i className="zmdi zmdi-account material-icons-name"></i></label>
-                  <input type="text" name="your_email" id="your_email" placeholder="Email" value={email} onInput={e => setEmail(e.target.value)} />
+                  <input type="text" maxLength="50" ref={emailRef} name="your_email" id="your_email" placeholder="Email" value={email} onInput={e => setEmail(e.target.value)} autoFocus />
                 </div>
                 <div className="form-group">
                   <label htmlFor="your_mobileno"><i className="zmdi zmdi-lock"></i></label>
-                  <input type="text" name="your_mobileno" id="your_mobileno" placeholder="Mobile Number" value={password} onInput={e => setPassword(e.target.value)} />
+                  <input type="text" maxLength="10" ref={mobileRef} name="your_mobileno" id="your_mobileno" placeholder="Mobile Number" value={mobileNumber} onInput={e => setMobileNumber(e.target.value)} />
                 </div>
                 <div className="form-group form-button">
                   {/* <input type="submit" name="signin" id="signin" className="form-submit" value="Login" /> */}
-                  <button type="button" name="sendotp" id="sendotp" className="form-submit" onClick={handleLogin}>Send OTP</button>
+                  <button type="button" name="sendotp" id="sendotp" className="form-submit" onClick={handleSendOtp}>Send OTP</button>
                 </div>
+                <Link to="/login" className="signup-image-link">Back to Login</Link>
               </form>
             </div>
           </div>
