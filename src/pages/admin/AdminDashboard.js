@@ -1,9 +1,16 @@
 import React from 'react';
+import AdminDashboardContent from './AdminDashboardContent';
+import Footer from '../Footer';
+import Header from '../Header';
+import Menu from './Menu';
 
 function AdminDashboard() {
   return (
-    <div>
-      <h1>This is Admin Dashboard</h1>
+    <div class="wrapper">
+      <Header />
+      <Menu />
+      <AdminDashboardContent />
+      <Footer />
     </div>
   )
 }
