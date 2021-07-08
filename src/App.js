@@ -58,6 +58,8 @@ import 'admin-lte/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js';
 import 'admin-lte/dist/js/adminlte.js';
 import Role from "./pages/admin/Role";
 import AssetType from "./pages/admin/AssetType";
+import Properties from "./pages/admin/Properties";
+import Asset from "./pages/admin/Asset";
 // AdminLTE for demo purposes
 // import 'admin-lte/dist/js/demo.js';
 // AdminLTE dashboard demo (This is only for demo purposes)
@@ -79,6 +81,8 @@ function App() {
             <PrivateRoute exact path='/admin/gender' component={Gender} />
             <PrivateRoute exact path='/admin/role' component={Role} />
             <PrivateRoute exact path='/admin/asset-type' component={AssetType} />
+            <PrivateRoute exact path='/admin/properties' component={Properties} />
+            <PrivateRoute exact path='/admin/asset' component={Asset} />
             {/* User Pages */}
             <PrivateRoute exact path='/dashboard' component={UserDashboard} />
             {/* <Route component={Error} /> */}
