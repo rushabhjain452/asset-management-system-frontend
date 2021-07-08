@@ -2,10 +2,10 @@ import React, { useState, useRef } from 'react';
 import { Link, Redirect } from 'react-router-dom';
 import './css/style.css';
 import 'material-design-iconic-font/dist/css/material-design-iconic-font.min.css';
-import Swal from 'sweetalert2';
 import axios from 'axios';
 import Loader from '../components/Loader';
 import { errorMessage } from '../config';
+import { showSweetAlert } from '../helpers/sweetAlert';
 
 function Login() {
 
@@ -38,12 +38,7 @@ function Login() {
     }
     // Display Error
     if(result === false){
-      Swal.fire({
-        title: 'Invalid Input',
-        text: error,
-        icon: 'warning',
-        confirmButtonColor: '#3085d6'
-      });
+      showSweetAlert('warning', 'Invalid Input', error);
     }
     return result;
   };
@@ -87,12 +82,13 @@ function Login() {
           if (error.response && error.response.data) {
             msg = error.response.data.message;
           }
-          Swal.fire({
-            title: 'Error',
-            text: msg,
-            icon: 'error',
-            confirmButtonColor: '#3085d6'
-          });
+          // Swal.fire({
+          //   title: 'Error',
+          //   text: msg,
+          //   icon: 'error',
+          //   confirmButtonColor: '#3085d6'
+          // });
+          showSweetAlert('error', 'Error', msg);
         });
     }
   };
@@ -101,11 +97,11 @@ function Login() {
     console.log('Role checking : ' + response.role);
     if (response.role === "User") {
       // console.log('User');
-      return <Redirect exact to="/dashboard" />;
+      return <Redirect to="/dashboard" />;
     }
     else if (response.role === "Admin") {
       // console.log('Admin');
-      return <Redirect exact to="/admin/dashboard" />;
+      return <Redirect to="/admin/dashboard" />;
     }
   }
 
@@ -123,11 +119,11 @@ function Login() {
               <form method="POST" className="register-form" id="login-form">
                 <div className="form-group">
                   <label htmlFor="your_name"><i className="zmdi zmdi-account material-icons-name"></i></label>
-                  <input type="text" maxLength="50" ref={emailRef} name="your_name" id="your_name" placeholder="Email" value={email} onInput={e => setEmail(e.target.value)} autoFocus />
+                  <input type="text" maxLength="50" ref={emailRef} name="your_name" id="your_name" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} autoFocus />
                 </div>
                 <div className="form-group">
                   <label htmlFor="your_pass"><i className="zmdi zmdi-lock"></i></label>
-                  <input type="password" maxLength="50" ref={passwordRef} name="your_pass" id="your_pass" placeholder="Password" value={password} onInput={e => setPassword(e.target.value)} />
+                  <input type="password" maxLength="50" ref={passwordRef} name="your_pass" id="your_pass" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} />
                 </div>
                 <Link exact to="/forget-password" className="signup-image-link">Forget Password?</Link>
                 {/* <div className="form-group">

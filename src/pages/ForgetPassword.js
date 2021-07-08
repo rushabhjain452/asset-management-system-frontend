@@ -2,10 +2,10 @@ import React, { useState, useRef } from 'react';
 import { Link, Redirect } from 'react-router-dom';
 import './css/style.css';
 import "material-design-iconic-font/dist/css/material-design-iconic-font.min.css";
-import Swal from 'sweetalert2';
 import axios from 'axios';
 import Loader from '../components/Loader';
 import { errorMessage } from '../config';
+import { showToastWithProgress, showSweetAlert } from '../helpers/sweetAlert';
 
 function ForgetPassword() {
 
@@ -45,12 +45,13 @@ function ForgetPassword() {
     }
     // Display Error
     if(result === false){
-      Swal.fire({
-        title: 'Invalid Input',
-        text: error,
-        icon: 'warning',
-        confirmButtonColor: '#3085d6'
-      });
+      // Swal.fire({
+      //   title: 'Invalid Input',
+      //   text: error,
+      //   icon: 'warning',
+      //   confirmButtonColor: '#3085d6'
+      // });
+      showSweetAlert('warning', 'Invalid Input', error);
     }
     return result;
   };
@@ -69,21 +70,7 @@ function ForgetPassword() {
           if (response.status == 200) {
             const data = response.data;
             localStorage.setItem('employeeId', data.employeeId);
-            const Toast = Swal.mixin({
-              toast: true,
-              position: 'top-end',
-              showConfirmButton: false,
-              timer: 3000,
-              timerProgressBar: true,
-              didOpen: (toast) => {
-                toast.addEventListener('mouseenter', Swal.stopTimer)
-                toast.addEventListener('mouseleave', Swal.resumeTimer)
-              }
-            });
-            Toast.fire({
-              icon: 'success',
-              title: 'OTP sent successfully'
-            });
+            showToastWithProgress('success', 'OTP sent successfully');
           }
           setRedirect(true);
         })
@@ -95,18 +82,19 @@ function ForgetPassword() {
           if (error.response && error.response.data) {
             msg = error.response.data.message;
           }
-          Swal.fire({
-            title: 'Error',
-            text: msg,
-            icon: 'error',
-            confirmButtonColor: '#3085d6'
-          });
+          // Swal.fire({
+          //   title: 'Error',
+          //   text: msg,
+          //   icon: 'error',
+          //   confirmButtonColor: '#3085d6'
+          // });
+          showSweetAlert('error', 'Error', msg);
         });
     }
   };
 
   if(redirect) {
-    return <Redirect exact to="/verify-otp-update-password" />;
+    return <Redirect to="/verify-otp-update-password" />;
   }
 
   return (
@@ -123,11 +111,11 @@ function ForgetPassword() {
               <form method="POST" className="register-form" id="forgetpassword-form">
                 <div className="form-group">
                   <label htmlFor="your_email"><i className="zmdi zmdi-account material-icons-name"></i></label>
-                  <input type="text" maxLength="50" ref={emailRef} name="your_email" id="your_email" placeholder="Email" value={email} onInput={e => setEmail(e.target.value)} autoFocus />
+                  <input type="text" maxLength="50" ref={emailRef} name="your_email" id="your_email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} autoFocus />
                 </div>
                 <div className="form-group">
                   <label htmlFor="your_mobileno"><i className="zmdi zmdi-lock"></i></label>
-                  <input type="text" maxLength="10" ref={mobileRef} name="your_mobileno" id="your_mobileno" placeholder="Mobile Number" value={mobileNumber} onInput={e => setMobileNumber(e.target.value)} />
+                  <input type="text" maxLength="10" ref={mobileRef} name="your_mobileno" id="your_mobileno" placeholder="Mobile Number" value={mobileNumber} onChange={e => setMobileNumber(e.target.value)} />
                 </div>
                 <div className="form-group form-button">
                   {/* <input type="submit" name="signin" id="signin" className="form-submit" value="Login" /> */}
