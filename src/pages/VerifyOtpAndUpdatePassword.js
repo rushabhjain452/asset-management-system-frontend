@@ -2,9 +2,9 @@ import React, { useState, useRef } from 'react';
 import { Link, Redirect } from 'react-router-dom';
 import './css/style.css';
 import "material-design-iconic-font/dist/css/material-design-iconic-font.min.css";
-import Swal from 'sweetalert2';
 import axios from 'axios';
 import { errorMessage } from '../config';
+import { showToastWithProgress, showSweetAlert } from '../helpers/sweetAlert';
 
 function VerifyOtpAndUpdatePassword() {
   const [otp, setOtp] = useState('');
@@ -50,12 +50,13 @@ function VerifyOtpAndUpdatePassword() {
     }
     // Display Error
     if(result === false){
-      Swal.fire({
-        title: 'Invalid Input',
-        text: error,
-        icon: 'warning',
-        confirmButtonColor: '#3085d6'
-      });
+      // Swal.fire({
+      //   title: 'Invalid Input',
+      //   text: error,
+      //   icon: 'warning',
+      //   confirmButtonColor: '#3085d6'
+      // });
+      showSweetAlert('warning', 'Invalid Input', error);
     }
     return result;
   };
@@ -74,21 +75,7 @@ function VerifyOtpAndUpdatePassword() {
           console.log(response.data);
           setLoading(false);
           if (response.status == 200) {
-            const Toast = Swal.mixin({
-              toast: true,
-              position: 'top-end',
-              showConfirmButton: false,
-              timer: 3000,
-              timerProgressBar: true,
-              didOpen: (toast) => {
-                toast.addEventListener('mouseenter', Swal.stopTimer)
-                toast.addEventListener('mouseleave', Swal.resumeTimer)
-              }
-            });
-            Toast.fire({
-              icon: 'success',
-              title: 'Password updated successfully'
-            });
+            showToastWithProgress('success', 'Password updated successfully');
             setRedirect(true);
           }
         })
@@ -99,18 +86,13 @@ function VerifyOtpAndUpdatePassword() {
           if (error.response && error.response.data) {
             msg = error.response.data.message;
           }
-          Swal.fire({
-            title: 'Error',
-            text: msg,
-            icon: 'error',
-            confirmButtonColor: '#3085d6'
-          });
+          showSweetAlert('error', 'Error', msg);
         });
     }
   };
 
   if(redirect) {
-    return <Redirect exact to="/login" />;
+    return <Redirect to="/login" />;
   }
 
   return (
@@ -126,15 +108,15 @@ function VerifyOtpAndUpdatePassword() {
               <form method="POST" className="register-form" id="updatepassword-form">
                 <div className="form-group">
                   <label htmlFor="your_otp"><i className="zmdi zmdi-account material-icons-name"></i></label>
-                  <input type="text" maxLength="6" ref={otpRef} name="your_otp" id="your_otp" placeholder="Enter OTP" value={otp} onInput={e => setOtp(e.target.value)} autoFocus />
+                  <input type="text" maxLength="6" ref={otpRef} name="your_otp" id="your_otp" placeholder="Enter OTP" value={otp} onChange={e => setOtp(e.target.value)} autoFocus />
                 </div>
                 <div className="form-group">
                   <label htmlFor="your_pass"><i className="zmdi zmdi-lock"></i></label>
-                  <input type="password" maxLength="50" ref={passwordRef} name="your_pass" id="your_pass" placeholder="New Password" value={password} onInput={e => setPassword(e.target.value)} />
+                  <input type="password" maxLength="50" ref={passwordRef} name="your_pass" id="your_pass" placeholder="New Password" value={password} onChange={e => setPassword(e.target.value)} />
                 </div>
                 <div className="form-group">
                   <label htmlFor="your_pass"><i className="zmdi zmdi-lock"></i></label>
-                  <input type="password" maxLength="50" ref={confirmPasswordRef} name="your_confirm_pass" id="your_confirm_pass" placeholder="Confirm New Password" value={confirmPassword} onInput={e => setConfirmPassword(e.target.value)} />
+                  <input type="password" maxLength="50" ref={confirmPasswordRef} name="your_confirm_pass" id="your_confirm_pass" placeholder="Confirm New Password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} />
                 </div>
                 <div className="form-group form-button">
                   <button type="button" name="signin" id="signin" className="form-submit" onClick={handleUpdatePassword}>Update Password</button>

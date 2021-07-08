@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
 import PrivateRoute from './PrivateRoute';
 import Login from './pages/Login';
 import Error from './pages/Error';
@@ -58,6 +58,7 @@ import 'admin-lte/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js';
 import 'admin-lte/dist/js/adminlte.js';
 import Role from "./pages/admin/Role";
 import AssetType from "./pages/admin/AssetType";
+import Profile from "./pages/Profile";
 // AdminLTE for demo purposes
 // import 'admin-lte/dist/js/demo.js';
 // AdminLTE dashboard demo (This is only for demo purposes)
@@ -74,6 +75,8 @@ function App() {
             <Route exact path="/login" component={Login} />
             <Route exact path='/forget-password' component={ForgetPassword} />
             <Route exact path='/verify-otp-update-password' component={VerifyOtpAndUpdatePassword} />
+            <PrivateRoute exact path='/profile' component={Profile} />
+            <Route exact path='/error' component={Error} />
             {/* Admin Pages */}
             <PrivateRoute exact path='/admin/dashboard' component={AdminDashboard} />
             <PrivateRoute exact path='/admin/gender' component={Gender} />
@@ -82,6 +85,7 @@ function App() {
             {/* User Pages */}
             <PrivateRoute exact path='/dashboard' component={UserDashboard} />
             {/* <Route component={Error} /> */}
+            {/* <Redirect to="/error" /> */}
           </>
         </Switch>
         {/* <IdleTimeTracker /> */}

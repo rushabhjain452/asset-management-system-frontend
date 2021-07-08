@@ -15,7 +15,7 @@ function Header() {
   };
 
   if(logout) {
-    return <Redirect exact to="/login" />;
+    return <Redirect to="/login" />;
   }
 
   return (
@@ -32,7 +32,9 @@ function Header() {
         </ul>
         <ul className="navbar-nav ml-auto">
           <li className="nav-item">
-            <span className="nav-link logout-link" onClick={ handleLogout }><i class="fas fa-sign-out-alt"></i></span>
+            <span className="nav-link logout-link" title="Logout" onClick={ handleLogout }>
+              <i className="fas fa-sign-out-alt"></i>
+            </span>
           </li>
           <li className="nav-item">
             <a className="nav-link" data-widget="fullscreen" href="#" role="button">
