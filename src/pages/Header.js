@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
 
 function Header() {
 
@@ -26,12 +26,13 @@ function Header() {
             <a className="nav-link" data-widget="pushmenu" href="#" role="button"><i className="fas fa-bars"></i></a>
           </li>
           <li className="nav-item d-none d-sm-inline-block">
-            <a href="index.html" className="nav-link">Home</a>
+            {/* <a href="index.html" className="nav-link">Home</a> */}
+            <Link exact to="/admin/dashboard" className="nav-link">Home</Link>
           </li>
         </ul>
         <ul className="navbar-nav ml-auto">
           <li className="nav-item">
-            <span className="nav-link logout-link" onClick={ handleLogout }>Logout</span>
+            <span className="nav-link logout-link" onClick={ handleLogout }><i class="fas fa-sign-out-alt"></i></span>
           </li>
           <li className="nav-item">
             <a className="nav-link" data-widget="fullscreen" href="#" role="button">

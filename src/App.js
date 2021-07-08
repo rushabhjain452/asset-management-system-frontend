@@ -7,6 +7,7 @@ import ForgetPassword from "./pages/ForgetPassword";
 import VerifyOtpAndUpdatePassword from "./pages/VerifyOtpAndUpdatePassword";
 // Admin Pages
 import AdminDashboard from './pages/admin/AdminDashboard';
+import Gender from "./pages/admin/Gender";
 // User Pages
 import UserDashboard from './pages/UserDashboard';
 // CSS
@@ -55,10 +56,13 @@ import 'admin-lte/plugins/summernote/summernote-bs4.min.js';
 import 'admin-lte/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js';
 // AdminLTE App
 import 'admin-lte/dist/js/adminlte.js';
+import Role from "./pages/admin/Role";
+import AssetType from "./pages/admin/AssetType";
 // AdminLTE for demo purposes
 // import 'admin-lte/dist/js/demo.js';
 // AdminLTE dashboard demo (This is only for demo purposes)
 // import 'admin-lte/dist/js/pages/dashboard.js';
+
 
 function App() {
   return (
@@ -72,6 +76,9 @@ function App() {
             <Route exact path='/verify-otp-update-password' component={VerifyOtpAndUpdatePassword} />
             {/* Admin Pages */}
             <PrivateRoute exact path='/admin/dashboard' component={AdminDashboard} />
+            <PrivateRoute exact path='/admin/gender' component={Gender} />
+            <PrivateRoute exact path='/admin/role' component={Role} />
+            <PrivateRoute exact path='/admin/asset-type' component={AssetType} />
             {/* User Pages */}
             <PrivateRoute exact path='/dashboard' component={UserDashboard} />
             {/* <Route component={Error} /> */}
