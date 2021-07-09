@@ -54,6 +54,20 @@ function Menu() {
                   <p className="menu-link-style">Asset type</p>
                 </NavLink>
               </li>
+              <li className="nav-item menu-open">
+                {/* <a href="./index.html" className="nav-link active"> */}
+                <Link exact to="/admin/properties" className="nav-link">
+                  <i class=" nav-icon fas fa-info-circle"></i>
+                  <p>Properties</p>
+                  </Link>
+              </li>
+              <li className="nav-item menu-open">
+                {/* <a href="./index.html" className="nav-link active"> */}
+                <Link exact to="/admin/asset" className="nav-link">
+                  <i class=" nav-icon fas fa-laptop"></i>
+                  <p>Asset</p>
+                  </Link>
+              </li>
             </ul>
           </nav>
         </div>
