@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Redirect, Link } from 'react-router-dom';
+import { logout } from '../services/authService';
 
 function Header() {
 
   const [logout, setLogout] = useState(false);
 
   const handleLogout = () => {
+    // logout();
     sessionStorage.removeItem('employeeId');
     sessionStorage.removeItem('name');
     sessionStorage.removeItem('emailId');

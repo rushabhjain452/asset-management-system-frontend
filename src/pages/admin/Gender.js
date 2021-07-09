@@ -7,6 +7,7 @@ import axios from 'axios';
 import Loader from '../../components/Loader';
 import { errorMessage } from '../../config';
 import { showToast, showSweetAlert, showConfirmAlert } from '../../helpers/sweetAlert';
+import { authHeader, logout } from '../../services/authService';
 // import 'admin-lte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css';
 // import 'admin-lte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css';
 // import 'admin-lte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css';
@@ -37,8 +38,6 @@ function Gender() {
 
   const textboxRef = useRef(null);
 
-  const token = sessionStorage.getItem('token');
-
   useEffect(() => {
     fetchData();
   }, []);
@@ -61,6 +60,9 @@ function Gender() {
         setLoading(false);
         // showSweetAlert('error', 'Network Error', errorMessage);
         showToast('error', errorMessage);
+        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+          // dispatch(logout());
+        }
       });
   };
 
@@ -70,8 +72,7 @@ function Gender() {
       const requestData = {
         name: gender
       };
-      const headers = { 'Authorization': 'Bearer ' + token };
-      axios.post(apiurl + '/genders', requestData, { headers })
+      axios.post(apiurl + '/genders', requestData, { headers: authHeader() })
         .then((response) => {
           setLoading(false);
           if (response.status === 201) {
@@ -88,7 +89,9 @@ function Gender() {
           showSweetAlert('error', 'Error', 'Failed to add Gender. Please try again...');
         });
     } else {
-      showSweetAlert('warning', 'Invalid Input', 'Please enter valid value for Gender.');
+      // showSweetAlert('warning', 'Invalid Input', 'Please enter valid value for Gender.');
+      showToast('warning', 'Please enter valid value for Gender.');
+      textboxRef.current.focus();
     }
   };
 
@@ -97,8 +100,7 @@ function Gender() {
       .then((result) => {
         if (result.isConfirmed) {
           setLoading(true);
-          const headers = { 'Authorization': 'Bearer ' + token };
-          axios.delete(apiurl + '/genders/' + id, { headers })
+          axios.delete(apiurl + '/genders/' + id, { headers: authHeader() })
             .then((response) => {
               setLoading(false);
               if (response.status === 200) {
@@ -119,10 +121,10 @@ function Gender() {
       });
   };
 
-  const editGender = (genderId, name) => {
-    setGender(name);
+  const editGender = (id, name) => {
     setBtnText('Update');
-    setGenderId(genderId);
+    setGenderId(id);
+    setGender(name);
     textboxRef.current.focus();
   };
 
@@ -132,8 +134,7 @@ function Gender() {
       const requestData = {
         name: gender
       };
-      const headers = { 'Authorization': 'Bearer ' + token };
-      axios.put(apiurl + '/genders/' + genderId, requestData, { headers })
+      axios.put(apiurl + '/genders/' + genderId, requestData, { headers: authHeader() })
         .then((response) => {
           setLoading(false);
           if (response.status === 200) {
@@ -151,8 +152,15 @@ function Gender() {
           showSweetAlert('error', 'Error', 'Failed to update Gender. Please try again...');
         });
     } else {
-      showSweetAlert('warning', 'Invalid Input', 'Please enter valid value for Gender.');
+      // showSweetAlert('warning', 'Invalid Input', 'Please enter valid value for Gender.');
+      showToast('warning', 'Please enter valid value for Gender.');
+      textboxRef.current.focus();
     }
+  };
+
+  const onCancel = () => {
+    setGender('');
+    setBtnText('Add');
   };
 
   const onSearchTextChange = (e) => {
@@ -197,17 +205,17 @@ function Gender() {
                   <i className="fas fa-venus-mars" />
                 </span>
               </div>
-              <input type="text" maxLength="20" ref={textboxRef} className="form-control" placeholder="Gender Name" value={gender} onChange={e => setGender(e.target.value)} />
+              <input type="text" maxLength="20" ref={textboxRef} className="form-control" placeholder="Gender Name" value={gender} onChange={(e) => setGender(e.target.value)} />
             </div>
           </div>
           <div className="card-footer">
+            <button type="button" className="btn btn-secondary float-right" onClick={onCancel}>Cancel</button>
             <button 
               type="button" 
               className="btn btn-primary float-right" 
               onClick={btnText === 'Add' ? addGender : updateGender}>
                 {btnText}
             </button>
-            {/* <button type="submit" className="btn btn-default float-right">Cancel</button> */}
           </div>
         </div>
         <div className="row">
@@ -225,7 +233,7 @@ function Gender() {
                       placeholder="Search"
                       onChange={onSearchTextChange} />
                     <div className="input-group-append">
-                      <span class="input-group-text" id="basic-addon2">
+                      <span className="input-group-text" id="basic-addon2">
                         <i className="fas fa-search"></i>
                       </span>
                     </div>

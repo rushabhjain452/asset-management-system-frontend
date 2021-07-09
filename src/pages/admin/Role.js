@@ -7,6 +7,7 @@ import axios from 'axios';
 import Loader from '../../components/Loader';
 import { errorMessage } from '../../config';
 import { showToast, showSweetAlert, showConfirmAlert } from '../../helpers/sweetAlert';
+import { authHeader, logout } from '../../services/authService';
 // import 'admin-lte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css';
 // import 'admin-lte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css';
 // import 'admin-lte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css';
@@ -37,16 +38,13 @@ function Role() {
 
   const textboxRef = useRef(null);
 
-  const token = sessionStorage.getItem('token');
-
   useEffect(() => {
     fetchData();
   }, []);
 
   const fetchData = () => {
     setLoading(true);
-    const headers = { 'Authorization': 'Bearer ' + token };
-    axios.get(apiurl + '/roles', { headers })
+    axios.get(apiurl + '/roles', { headers: authHeader() })
       .then((response) => {
         setLoading(false);
         if (response.status === 200) {
@@ -69,8 +67,7 @@ function Role() {
       const requestData = {
         name: role
       };
-      const headers = { 'Authorization': 'Bearer ' + token };
-      axios.post(apiurl + '/roles', requestData, { headers })
+      axios.post(apiurl + '/roles', requestData, { headers: authHeader() })
         .then((response) => {
           setLoading(false);
           if (response.status === 201) {
@@ -87,7 +84,8 @@ function Role() {
           showSweetAlert('error', 'Error', 'Failed to add Role. Please try again...');
         });
     } else {
-      showSweetAlert('warning', 'Invalid Input', 'Please enter valid value for Role.');
+      showToast('warning', 'Please enter valid value for Role.');
+      textboxRef.current.focus();
     }
   };
 
@@ -96,8 +94,7 @@ function Role() {
       .then((result) => {
         if (result.isConfirmed) {
           setLoading(true);
-          const headers = { 'Authorization': 'Bearer ' + token };
-          axios.delete(apiurl + '/roles/' + id, { headers })
+          axios.delete(apiurl + '/roles/' + id, { headers: authHeader() })
             .then((response) => {
               setLoading(false);
               if (response.status === 200) {
@@ -118,10 +115,10 @@ function Role() {
       });
   };
 
-  const editRole = (roleId, name) => {
-    setRole(name);
+  const editRole = (id, name) => {
     setBtnText('Update');
-    setRoleId(roleId);
+    setRoleId(id);
+    setRole(name);
     textboxRef.current.focus();
   };
 
@@ -131,8 +128,7 @@ function Role() {
       const requestData = {
         name: role
       };
-      const headers = { 'Authorization': 'Bearer ' + token };
-      axios.put(apiurl + '/roles/' + roleId, requestData, { headers })
+      axios.put(apiurl + '/roles/' + roleId, requestData, { headers: authHeader() })
         .then((response) => {
           setLoading(false);
           if (response.status === 200) {
@@ -150,8 +146,14 @@ function Role() {
           showSweetAlert('error', 'Error', 'Failed to update Role. Please try again...');
         });
     } else {
-      showSweetAlert('warning', 'Invalid Input', 'Please enter valid value for Role.');
+      showToast('warning', 'Please enter valid value for Role.');
+      textboxRef.current.focus();
     }
+  };
+
+  const onCancel = () => {
+    setRole('');
+    setBtnText('Add');
   };
 
   const onSearchTextChange = (e) => {
@@ -191,13 +193,14 @@ function Role() {
             <div className="input-group mb-3 ">
               <div className="input-group-prepend">
                 <span className="input-group-text">
-                  <i className="fas fa-venus-mars" />
+                  <i className="fas fa-user-tag" />
                 </span>
               </div>
-              <input type="text" maxLength="20" ref={textboxRef} className="form-control" placeholder="Role Name" value={role} onChange={e => setRole(e.target.value)} />
+              <input type="text" maxLength="20" ref={textboxRef} className="form-control" placeholder="Role Name" value={role} onChange={(e) => setRole(e.target.value)} />
             </div>
           </div>
           <div className="card-footer">
+            <button type="button" className="btn btn-secondary float-right" onClick={onCancel}>Cancel</button>
             <button 
               type="button" 
               className="btn btn-primary float-right" 
@@ -221,7 +224,7 @@ function Role() {
                       placeholder="Search"
                       onChange={onSearchTextChange} />
                     <div className="input-group-append">
-                      <span class="input-group-text" id="basic-addon2">
+                      <span className="input-group-text" id="basic-addon2">
                         <i className="fas fa-search"></i>
                       </span>
                     </div>

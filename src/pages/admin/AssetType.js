@@ -7,6 +7,7 @@ import axios from 'axios';
 import Loader from '../../components/Loader';
 import { errorMessage } from '../../config';
 import { showToast, showSweetAlert, showConfirmAlert } from '../../helpers/sweetAlert';
+import { authHeader, logout } from '../../services/authService';
 // import 'admin-lte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css';
 // import 'admin-lte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css';
 // import 'admin-lte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css';
@@ -37,16 +38,13 @@ function AssetType() {
 
   const textboxRef = useRef(null);
 
-  const token = sessionStorage.getItem('token');
-
   useEffect(() => {
     fetchData();
   }, []);
 
   const fetchData = () => {
     setLoading(true);
-    const headers = { 'Authorization': 'Bearer ' + token };
-    axios.get(apiurl + '/asset-types', { headers })
+    axios.get(apiurl + '/asset-types', { headers: authHeader() })
       .then((response) => {
         setLoading(false);
         if (response.status === 200) {
@@ -69,8 +67,7 @@ function AssetType() {
       const requestData = {
         assetType: assetType
       };
-      const headers = { 'Authorization': 'Bearer ' + token };
-      axios.post(apiurl + '/asset-types', requestData, { headers })
+      axios.post(apiurl + '/asset-types', requestData, { headers: authHeader() })
         .then((response) => {
           setLoading(false);
           if (response.status === 201) {
@@ -87,7 +84,8 @@ function AssetType() {
           showSweetAlert('error', 'Error', 'Failed to add Asset Type. Please try again...');
         });
     } else {
-      showSweetAlert('warning', 'Invalid Input', 'Please enter valid value for Asset Type.');
+      showToast('warning', 'Please enter valid value for Asset Type.');
+      textboxRef.current.focus();
     }
   };
 
@@ -96,8 +94,7 @@ function AssetType() {
       .then((result) => {
         if (result.isConfirmed) {
           setLoading(true);
-          const headers = { 'Authorization': 'Bearer ' + token };
-          axios.delete(apiurl + '/asset-types/' + id, { headers })
+          axios.delete(apiurl + '/asset-types/' + id, { headers: authHeader() })
             .then((response) => {
               setLoading(false);
               if (response.status === 200) {
@@ -118,10 +115,10 @@ function AssetType() {
       });
   };
 
-  const editAssetType = (assetTypeId, name) => {
-    setAssetType(name);
+  const editAssetType = (id, name) => {
     setBtnText('Update');
-    setAssetTypeId(assetTypeId);
+    setAssetTypeId(id);
+    setAssetType(name);
     textboxRef.current.focus();
   };
 
@@ -131,8 +128,7 @@ function AssetType() {
       const requestData = {
         assetType: assetType
       };
-      const headers = { 'Authorization': 'Bearer ' + token };
-      axios.put(apiurl + '/asset-types/' + assetTypeId, requestData, { headers })
+      axios.put(apiurl + '/asset-types/' + assetTypeId, requestData, { headers: authHeader() })
         .then((response) => {
           setLoading(false);
           if (response.status === 200) {
@@ -150,14 +146,19 @@ function AssetType() {
           showSweetAlert('error', 'Error', 'Failed to update Asset Type. Please try again...');
         });
     } else {
-      showSweetAlert('warning', 'Invalid Input', 'Please enter valid value for Asset Type.');
+      showToast('warning', 'Please enter valid value for Asset Type.');
+      textboxRef.current.focus();
     }
+  };
+
+  const onCancel = () => {
+    setAssetType('');
+    setBtnText('Add');
   };
 
   const statusChange = (e, assetTypeId) => {
     const status = e.target.checked;
-    const headers = { 'Authorization': 'Bearer ' + token };
-    axios.put(apiurl + '/asset-types/' + assetTypeId + '/update-status/' + status, {}, { headers })
+    axios.put(apiurl + '/asset-types/' + assetTypeId + '/update-status/' + status, {}, { headers: authHeader() })
       .then((response) => {
         setLoading(false);
         if (response.status === 200) {
@@ -179,10 +180,10 @@ function AssetType() {
 
   const onSearchTextChange = (e) => {
     const searchText = e.target.value.toLowerCase();
-    if(searchText.length > 0){
+    if (searchText.length > 0) {
       let searchData = dataCopy.filter((item) => item.assetType.toLowerCase().includes(searchText));
       setData(searchData);
-    }else{
+    } else {
       setData(dataCopy);
     }
   };
@@ -213,17 +214,18 @@ function AssetType() {
             <h4>{btnText} Asset Type </h4>
             <div className="input-group mb-3 ">
               <div className="input-group-prepend">
-                <span className="input-group-text"><i className="fas fa-venus-mars" /></span>
+                <span className="input-group-text"><i className="fas fa-headset" /></span>
               </div>
-              <input type="text" maxLength="20" ref={textboxRef} className="form-control" placeholder="Asset Type Name" value={assetType} onChange={e => setAssetType(e.target.value)} />
+              <input type="text" maxLength="20" ref={textboxRef} className="form-control" placeholder="Asset Type Name" value={assetType} onChange={(e) => setAssetType(e.target.value)} />
             </div>
           </div>
           <div className="card-footer">
-            <button 
-              type="button" 
-              className="btn btn-primary float-right" 
+            <button type="button" className="btn btn-secondary float-right" onClick={onCancel}>Cancel</button>
+            <button
+              type="button"
+              className="btn btn-primary float-right"
               onClick={btnText === 'Add' ? addAssetType : updateAssetType}>
-                {btnText}
+              {btnText}
             </button>
           </div>
         </div>
@@ -234,15 +236,15 @@ function AssetType() {
                 <h3 className="card-title">List of Asset Types</h3>
                 <div className="card-tools">
                   <div className="input-group input-group-sm">
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       name="table_search"
-                      maxLength="20" 
-                      className="form-control float-right" 
+                      maxLength="20"
+                      className="form-control float-right"
                       placeholder="Search"
                       onChange={onSearchTextChange} />
                     <div className="input-group-append">
-                      <span class="input-group-text" id="basic-addon2">
+                      <span className="input-group-text" id="basic-addon2">
                         <i className="fas fa-search"></i>
                       </span>
                     </div>
@@ -254,7 +256,7 @@ function AssetType() {
                   <thead>
                     <tr>
                       <th>Sr No</th>
-                      <th>Role Name</th>
+                      <th>Asset Type Name</th>
                       <th>Status</th>
                       <th>Edit</th>
                       <th>Delete</th>
@@ -268,13 +270,13 @@ function AssetType() {
                           <td>{item.assetType}</td>
                           <td>
                             <div className="custom-control custom-switch">
-                              <input 
-                                type="checkbox" 
-                                className="custom-control-input" 
-                                id={'status-'+item.assetTypeId} 
+                              <input
+                                type="checkbox"
+                                className="custom-control-input"
+                                id={'status-' + item.assetTypeId}
                                 onChange={(e) => statusChange(e, item.assetTypeId)}
                                 defaultChecked={item.status} />
-                              <label className="custom-control-label" for={'status-'+item.assetTypeId}></label>
+                              <label className="custom-control-label" htmlFor={'status-' + item.assetTypeId}></label>
                             </div>
                           </td>
                           <td>
