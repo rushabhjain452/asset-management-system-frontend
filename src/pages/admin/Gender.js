@@ -31,7 +31,7 @@ function Gender() {
   const [gender, setGender] = useState('');
   const [genderId, setGenderId] = useState(0);
   const [btnText, setBtnText] = useState('Add');
-  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [token, setToken] = useState(sessionStorage.getItem('token'));
 
   const [loading, setLoading] = useState(false);
 
@@ -46,7 +46,7 @@ function Gender() {
     axios.get(apiurl + '/genders')
       .then((response) => {
         setLoading(false);
-        if (response.status == 200) {
+        if (response.status === 200) {
           setData(response.data);
         }
         else {
@@ -71,7 +71,7 @@ function Gender() {
       axios.post(apiurl + '/genders', requestData, { headers })
         .then((response) => {
           setLoading(false);
-          if (response.status == 201) {
+          if (response.status === 201) {
             showSweetAlert('success', 'Success', 'Gender added successfully.');
             fetchData();
           }
@@ -98,7 +98,7 @@ function Gender() {
           axios.delete(apiurl + '/genders/' + id, { headers })
             .then((response) => {
               setLoading(false);
-              if (response.status == 200) {
+              if (response.status === 200) {
                 showSweetAlert('success', 'Success', 'Gender deleted successfully.');
                 fetchData();
               }
@@ -133,7 +133,7 @@ function Gender() {
       axios.put(apiurl + '/genders/' + genderId, requestData, { headers })
         .then((response) => {
           setLoading(false);
-          if (response.status == 200) {
+          if (response.status === 200) {
             showSweetAlert('success', 'Success', 'Gender updated successfully.');
             fetchData();
           }
@@ -228,22 +228,14 @@ function Gender() {
                           <td>{index + 1}</td>
                           <td>{item.name}</td>
                           <td>
-                            <ul class="list-inline m-0">
-                              <li class="list-inline-item">
-                                <button class="btn btn-success btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Edit" onClick={() => editGender(item.genderId, item.name)}>
-                                  <i class="fa fa-edit"></i>
-                                </button>
-                              </li>
-                            </ul>
+                            <button class="btn btn-success btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Edit" onClick={() => editGender(item.genderId, item.name)}>
+                              <i class="fa fa-edit"></i>
+                            </button>
                           </td>
                           <td>
-                            <ul class="list-inline m-0">
-                              <li class="list-inline-item">
-                                <button class="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Delete" onClick={() => deleteGender(item.genderId, item.name)}>
-                                  <i class="fa fa-trash"></i>
-                                </button>
-                              </li>
-                            </ul>
+                            <button class="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Delete" onClick={() => deleteGender(item.genderId, item.name)}>
+                              <i class="fa fa-trash"></i>
+                            </button>
                           </td>
                         </tr>
                       ))

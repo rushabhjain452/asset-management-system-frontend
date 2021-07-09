@@ -69,7 +69,7 @@ function ForgetPassword() {
           setLoading(false);
           if (response.status == 200) {
             const data = response.data;
-            localStorage.setItem('employeeId', data.employeeId);
+            sessionStorage.setItem('employeeId', data.employeeId);
             showToastWithProgress('success', 'OTP sent successfully');
           }
           setRedirect(true);
@@ -121,7 +121,7 @@ function ForgetPassword() {
                   {/* <input type="submit" name="signin" id="signin" className="form-submit" value="Login" /> */}
                   <button type="button" name="sendotp" id="sendotp" className="form-submit" onClick={handleSendOtp}>Send OTP</button>
                 </div>
-                <Link exact to="/login" className="signup-image-link">Back to Login</Link>
+                <Link to="/login" className="signup-image-link">Back to Login</Link>
               </form>
             </div>
           </div>

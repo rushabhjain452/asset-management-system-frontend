@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 import avatar from 'admin-lte/dist/img/avatar5.png';
 
 function Menu() {
-  const name = localStorage.getItem('name');
+  const name = sessionStorage.getItem('name');
 
   return (
     <div>

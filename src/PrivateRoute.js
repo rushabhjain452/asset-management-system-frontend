@@ -4,7 +4,7 @@ import { Redirect, Route } from 'react-router-dom';
 const PrivateRoute = ({ component: Component, ...rest }) => {
 
   // const { user } = useSelector((state) => state.auth);
-  const token = localStorage.getItem('token');
+  const token = sessionStorage.getItem('token');
   console.log('Token in PrivateRoute : ' + token);
 
   return (

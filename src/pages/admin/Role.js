@@ -31,7 +31,7 @@ function Role() {
   const [role, setRole] = useState('');
   const [roleId, setRoleId] = useState(0);
   const [btnText, setBtnText] = useState('Add');
-  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [token, setToken] = useState(sessionStorage.getItem('token'));
 
   const [loading, setLoading] = useState(false);
 
@@ -47,7 +47,7 @@ function Role() {
     axios.get(apiurl + '/roles', { headers })
       .then((response) => {
         setLoading(false);
-        if (response.status == 200) {
+        if (response.status === 200) {
           setData(response.data);
         }
         else {
@@ -70,7 +70,7 @@ function Role() {
       axios.post(apiurl + '/roles', requestData, { headers })
         .then((response) => {
           setLoading(false);
-          if (response.status == 201) {
+          if (response.status === 201) {
             showSweetAlert('success', 'Success', 'Role added successfully.');
             fetchData();
           }
@@ -97,7 +97,7 @@ function Role() {
           axios.delete(apiurl + '/roles/' + id, { headers })
             .then((response) => {
               setLoading(false);
-              if (response.status == 200) {
+              if (response.status === 200) {
                 showSweetAlert('success', 'Success', 'Role deleted successfully.');
                 fetchData();
               }
@@ -132,7 +132,7 @@ function Role() {
       axios.put(apiurl + '/roles/' + roleId, requestData, { headers })
         .then((response) => {
           setLoading(false);
-          if (response.status == 200) {
+          if (response.status === 200) {
             showSweetAlert('success', 'Success', 'Role updated successfully.');
             fetchData();
           }
@@ -198,16 +198,6 @@ function Role() {
             <div className="card">
               <div className="card-header">
                 <h3 className="card-title">List of Role</h3>
-                {/* <div className="card-tools">
-                  <div className="input-group input-group-sm">
-                    <input type="text" name="table_search" className="form-control float-right" placeholder="Search" />
-                    <div className="input-group-append">
-                      <button type="submit" className="btn btn-default">
-                        <i className="fas fa-search"></i>
-                      </button>
-                    </div>
-                  </div>
-                </div> */}
               </div>
               <div className="card-body">
                 <table id="role-table" className="table table-bordered table-striped">
@@ -226,22 +216,14 @@ function Role() {
                           <td>{index + 1}</td>
                           <td>{item.name}</td>
                           <td>
-                            <ul class="list-inline m-0">
-                              <li class="list-inline-item">
-                                <button class="btn btn-success btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Edit" onClick={() => editRole(item.roleId, item.name)}>
-                                  <i class="fa fa-edit"></i>
-                                </button>
-                              </li>
-                            </ul>
+                            <button class="btn btn-success btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Edit" onClick={() => editRole(item.roleId, item.name)}>
+                              <i class="fa fa-edit"></i>
+                            </button>
                           </td>
                           <td>
-                            <ul class="list-inline m-0">
-                              <li class="list-inline-item">
-                                <button class="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Delete" onClick={() => deleteRole(item.roleId, item.name)}>
-                                  <i class="fa fa-trash"></i>
-                                </button>
-                              </li>
-                            </ul>
+                            <button class="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Delete" onClick={() => deleteRole(item.roleId, item.name)}>
+                              <i class="fa fa-trash"></i>
+                            </button>
                           </td>
                         </tr>
                       ))

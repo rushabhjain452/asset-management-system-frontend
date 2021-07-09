@@ -6,11 +6,11 @@ function Header() {
   const [logout, setLogout] = useState(false);
 
   const handleLogout = () => {
-    localStorage.removeItem('employeeId');
-    localStorage.removeItem('name');
-    localStorage.removeItem('emailId');
-    localStorage.removeItem('role');
-    localStorage.removeItem('token');
+    sessionStorage.removeItem('employeeId');
+    sessionStorage.removeItem('name');
+    sessionStorage.removeItem('emailId');
+    sessionStorage.removeItem('role');
+    sessionStorage.removeItem('token');
     setLogout(true);
   };
 
@@ -27,7 +27,7 @@ function Header() {
           </li>
           <li className="nav-item d-none d-sm-inline-block">
             {/* <a href="index.html" className="nav-link">Home</a> */}
-            <Link exact to="/admin/dashboard" className="nav-link">Home</Link>
+            <Link to="/admin/dashboard" className="nav-link">Home</Link>
           </li>
         </ul>
         <ul className="navbar-nav ml-auto">

@@ -66,7 +66,7 @@ function VerifyOtpAndUpdatePassword() {
       setLoading(true);
       const apiurl = process.env.REACT_APP_URL;
       const requestData = {
-        employeeId: localStorage.getItem('employeeId'),
+        employeeId: sessionStorage.getItem('employeeId'),
         otp: otp,
         password: password
       };
@@ -121,7 +121,7 @@ function VerifyOtpAndUpdatePassword() {
                 <div className="form-group form-button">
                   <button type="button" name="signin" id="signin" className="form-submit" onClick={handleUpdatePassword}>Update Password</button>
                 </div>
-                <Link exact to="/login" className="signup-image-link">Back to Login</Link>
+                <Link to="/login" className="signup-image-link">Back to Login</Link>
               </form>
             </div>
           </div>

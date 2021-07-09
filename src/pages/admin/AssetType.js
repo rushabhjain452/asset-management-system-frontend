@@ -23,13 +23,15 @@ import { showToast, showSweetAlert, showConfirmAlert } from '../../helpers/sweet
 // import 'admin-lte/plugins/datatables-buttons/js/buttons.print.min.js';
 // import 'admin-lte/plugins/datatables-buttons/js/buttons.colVis.min.js';
 
+const apiurl = process.env.REACT_APP_URL;
+
 function AssetType() {
 
   const [data, setData] = useState([]);
   const [assetType, setAssetType] = useState('');
   const [assetTypeId, setAssetTypeId] = useState(0);
   const [btnText, setBtnText] = useState('Add');
-  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [token, setToken] = useState(sessionStorage.getItem('token'));
 
   const [loading, setLoading] = useState(false);
 
@@ -45,7 +47,7 @@ function AssetType() {
     axios.get(apiurl + '/asset-types', { headers })
       .then((response) => {
         setLoading(false);
-        if (response.status == 200) {
+        if (response.status === 200) {
           setData(response.data);
         }
         else {
@@ -68,7 +70,7 @@ function AssetType() {
       axios.post(apiurl + '/asset-types', requestData, { headers })
         .then((response) => {
           setLoading(false);
-          if (response.status == 201) {
+          if (response.status === 201) {
             showSweetAlert('success', 'Success', 'Asset Type added successfully.');
             fetchData();
           }
@@ -95,7 +97,7 @@ function AssetType() {
           axios.delete(apiurl + '/asset-types/' + id, { headers })
             .then((response) => {
               setLoading(false);
-              if (response.status == 200) {
+              if (response.status === 200) {
                 showSweetAlert('success', 'Success', 'Asset Type deleted successfully.');
                 fetchData();
               }
@@ -130,7 +132,7 @@ function AssetType() {
       axios.put(apiurl + '/asset-types/' + assetTypeId, requestData, { headers })
         .then((response) => {
           setLoading(false);
-          if (response.status == 200) {
+          if (response.status === 200) {
             showSweetAlert('success', 'Success', 'Asset Type updated successfully.');
             fetchData();
           }
@@ -153,6 +155,7 @@ function AssetType() {
     <div>
       <Header />
       <Menu />
+      <Loader loading={loading} />
       <div className="content-wrapper">
         <div className="content-header">
           <div className="container-fluid">
@@ -180,62 +183,57 @@ function AssetType() {
             </div>
           </div>
           <div className="card-footer">
-            <button type="submit" className="btn btn-primary float-right">{btnText}</button>
-            {/* <button type="submit" className="btn btn-default float-right">Cancel</button> */}
+            <button 
+              type="button" 
+              className="btn btn-primary float-right" 
+              onClick={btnText === 'Add' ? addAssetType : updateAssetType}>
+                {btnText}
+            </button>
           </div>
         </div>
         <div className="row">
           <div className="col-12">
             <div className="card">
               <div className="card-header">
-                <h3 className="card-title">List of Asset Type</h3>
-                <div className="card-tools">
-                  <div className="input-group input-group-sm">
-                    <input type="text" name="table_search" className="form-control float-right" placeholder="Search" />
-
-                    <div className="input-group-append">
-                      <button type="submit" className="btn btn-default">
-                        <i className="fas fa-search"></i>
-                      </button>
-                    </div>
-                  </div>
-                </div>
+                <h3 className="card-title">List of Asset Types</h3>
               </div>
               <div className="card-body">
-                <table id="example1" className="table table-bordered table-striped">
+                <table id="asset-type-table" className="table table-bordered table-striped">
                   <thead>
                     <tr>
-                      <th>Rendering engine</th>
-                      <th>Browser</th>
-                      <th>Platform(s)</th>
-                      <th>Engine version</th>
-                      <th>CSS grade</th>
+                      <th>Sr No</th>
+                      <th>Role Name</th>
+                      <th>Status</th>
                       <th>Edit</th>
                       <th>Delete</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td>Other browsers</td>
-                      <td>All others</td>
-                      <td>-</td>
-                      <td>-</td>
-                      <td>U</td>
-                      <td>
-                        <ul className="list-inline m-0">
-                          <li className="list-inline-item">
-                            <button className="btn btn-success btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Edit"><i className="fa fa-edit"></i></button>
-                          </li>
-                        </ul>
-                      </td>
-                      <td>
-                        <ul className="list-inline m-0">
-                          <li className="list-inline-item">
-                            <button className="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Delete"><i className="fa fa-trash"></i></button>
-                          </li>
-                        </ul>
-                      </td>
-                    </tr>
+                    {
+                      data.length > 0 && data.map((item, index) => (
+                        <tr key={item.assetTypeId}>
+                          <td>{index + 1}</td>
+                          <td>{item.assetType}</td>
+                          <td>
+                            <div class="form-group">
+                              <div class="custom-control custom-switch">
+                                <input type="checkbox" class="custom-control-input" id="customSwitch1" />
+                              </div>
+                            </div>
+                          </td>
+                          <td>
+                            <button class="btn btn-success btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Edit" onClick={() => editAssetType(item.assetTypeId, item.assetType)}>
+                              <i class="fa fa-edit"></i>
+                            </button>
+                          </td>
+                          <td>
+                            <button class="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Delete" onClick={() => deleteAssetType(item.assetTypeId, item.assetType)}>
+                              <i class="fa fa-trash"></i>
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    }
                   </tbody>
                 </table>
               </div>

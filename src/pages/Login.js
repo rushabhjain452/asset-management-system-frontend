@@ -58,13 +58,13 @@ function Login() {
           setLoading(false);
           if (response.status == 200) {
             const data = response.data;
-            // localStorage.setItem('user', JSON.stringify({ employeeId: data.employeeId, email: data.emailId, role: data.role, token: data.token }));
-            localStorage.setItem('employeeId', data.employeeId);
-            localStorage.setItem('name', data.firstName + ' ' + data.lastName);
-            localStorage.setItem('emailId', data.emailId);
-            localStorage.setItem('role', data.role);
-            localStorage.setItem('token', data.token);
-            console.log('Set values in localStorage');
+            // sessionStorage.setItem('user', JSON.stringify({ employeeId: data.employeeId, email: data.emailId, role: data.role, token: data.token }));
+            sessionStorage.setItem('employeeId', data.employeeId);
+            sessionStorage.setItem('name', data.firstName + ' ' + data.lastName);
+            sessionStorage.setItem('emailId', data.emailId);
+            sessionStorage.setItem('role', data.role);
+            sessionStorage.setItem('token', data.token);
+            console.log('Set values in sessionStorage');
             // Swal.fire({
             //   title: 'Success',
             //   text: 'Login success...',
@@ -100,7 +100,7 @@ function Login() {
       return <Redirect to="/dashboard" />;
     }
     else if (response.role === "Admin") {
-      // console.log('Admin');
+      console.log('Admin');
       return <Redirect to="/admin/dashboard" />;
     }
   }
@@ -125,7 +125,7 @@ function Login() {
                   <label htmlFor="your_pass"><i className="zmdi zmdi-lock"></i></label>
                   <input type="password" maxLength="50" ref={passwordRef} name="your_pass" id="your_pass" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} />
                 </div>
-                <Link exact to="/forget-password" className="signup-image-link">Forget Password?</Link>
+                <Link to="/forget-password" className="signup-image-link">Forget Password?</Link>
                 {/* <div className="form-group">
                   <input type="checkbox" name="remember-me" id="remember-me" className="agree-term" />
                   <label htmlFor="remember-me" className="label-agree-term"><span><span></span></span>Remember me</label>
