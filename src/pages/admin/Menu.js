@@ -56,17 +56,17 @@ function Menu() {
               </li>
               <li className="nav-item menu-open">
                 {/* <a href="./index.html" className="nav-link active"> */}
-                <Link exact to="/admin/properties" className="nav-link">
+                <NavLink exact to="/admin/properties" className="nav-link" activeClassName="active">
                   <i class=" nav-icon fas fa-info-circle"></i>
                   <p>Properties</p>
-                  </Link>
+                </NavLink>
               </li>
               <li className="nav-item menu-open">
                 {/* <a href="./index.html" className="nav-link active"> */}
-                <Link exact to="/admin/asset" className="nav-link">
+                <NavLink exact to="/admin/asset" className="nav-link" activeClassName="active">
                   <i class=" nav-icon fas fa-laptop"></i>
                   <p>Asset</p>
-                  </Link>
+                </NavLink>
               </li>
             </ul>
           </nav>
