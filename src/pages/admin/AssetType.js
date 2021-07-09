@@ -28,14 +28,16 @@ const apiurl = process.env.REACT_APP_URL;
 function AssetType() {
 
   const [data, setData] = useState([]);
+  const [dataCopy, setDataCopy] = useState([]);
   const [assetType, setAssetType] = useState('');
   const [assetTypeId, setAssetTypeId] = useState(0);
   const [btnText, setBtnText] = useState('Add');
-  const [token, setToken] = useState(sessionStorage.getItem('token'));
 
   const [loading, setLoading] = useState(false);
 
   const textboxRef = useRef(null);
+
+  const token = sessionStorage.getItem('token');
 
   useEffect(() => {
     fetchData();
@@ -49,6 +51,7 @@ function AssetType() {
         setLoading(false);
         if (response.status === 200) {
           setData(response.data);
+          setDataCopy(response.data);
         }
         else {
           showToast('error', errorMessage);
@@ -172,7 +175,17 @@ function AssetType() {
         showSweetAlert('error', 'Error', 'Failed to update status of Asset Type. Please try again...');
         fetchData();
       });
-  }
+  };
+
+  const onSearchTextChange = (e) => {
+    const searchText = e.target.value.toLowerCase();
+    if(searchText.length > 0){
+      let searchData = dataCopy.filter((item) => item.assetType.toLowerCase().includes(searchText));
+      setData(searchData);
+    }else{
+      setData(dataCopy);
+    }
+  };
 
   return (
     <div>
@@ -219,6 +232,22 @@ function AssetType() {
             <div className="card">
               <div className="card-header">
                 <h3 className="card-title">List of Asset Types</h3>
+                <div className="card-tools">
+                  <div className="input-group input-group-sm">
+                    <input 
+                      type="text" 
+                      name="table_search"
+                      maxLength="20" 
+                      className="form-control float-right" 
+                      placeholder="Search"
+                      onChange={onSearchTextChange} />
+                    <div className="input-group-append">
+                      <span class="input-group-text" id="basic-addon2">
+                        <i className="fas fa-search"></i>
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
               <div className="card-body">
                 <table id="asset-type-table" className="table table-bordered table-striped">
@@ -249,13 +278,13 @@ function AssetType() {
                             </div>
                           </td>
                           <td>
-                            <button class="btn btn-success btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Edit" onClick={() => editAssetType(item.assetTypeId, item.assetType)}>
-                              <i class="fa fa-edit"></i>
+                            <button className="btn btn-success btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Edit" onClick={() => editAssetType(item.assetTypeId, item.assetType)}>
+                              <i className="fa fa-edit"></i>
                             </button>
                           </td>
                           <td>
-                            <button class="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Delete" onClick={() => deleteAssetType(item.assetTypeId, item.assetType)}>
-                              <i class="fa fa-trash"></i>
+                            <button className="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Delete" onClick={() => deleteAssetType(item.assetTypeId, item.assetType)}>
+                              <i className="fa fa-trash"></i>
                             </button>
                           </td>
                         </tr>

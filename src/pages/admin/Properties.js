@@ -48,35 +48,35 @@ function Properties() {
               </div>
               <input type="text" className="form-control" placeholder="Property Name" />
             </div>
-            <div class="custom-control custom-switch">
-              <input type="checkbox" class="custom-control-input" id="customSwitch1" />
-              <label class="custom-control-label" for="customSwitch1">Mandatory</label>
+            <div className="custom-control custom-switch">
+              <input type="checkbox" className="custom-control-input" id="customSwitch1" />
+              <label className="custom-control-label" for="customSwitch1">Mandatory</label>
             </div>
           </div>
           <div className="card-footer">
             <button type="submit" className="btn btn-primary float-right">Add</button>
-            {/* <button type="submit" class="btn btn-default float-right">Cancel</button> */}
+            {/* <button type="submit" className="btn btn-default float-right">Cancel</button> */}
           </div>
         </div>
         <div className="row">
-          <div class="col-12">
-            <div class="card">
-              <div class="card-header">
-                <h3 class="card-title">List of Properties</h3>
-                <div class="card-tools">
-                  <div class="input-group input-group-sm">
-                    <input type="text" name="table_search" class="form-control float-right" placeholder="Search" />
+          <div className="col-12">
+            <div className="card">
+              <div className="card-header">
+                <h3 className="card-title">List of Properties</h3>
+                <div className="card-tools">
+                  <div className="input-group input-group-sm">
+                    <input type="text" name="table_search" className="form-control float-right" placeholder="Search" />
 
-                    <div class="input-group-append">
-                      <button type="submit" class="btn btn-default">
-                        <i class="fas fa-search"></i>
+                    <div className="input-group-append">
+                      <button type="submit" className="btn btn-default">
+                        <i className="fas fa-search"></i>
                       </button>
                     </div>
                   </div>
                 </div>
               </div>
-              <div class="card-body">
-                <table id="example1" class="table table-bordered table-striped">
+              <div className="card-body">
+                <table id="example1" className="table table-bordered table-striped">
                   <thead>
                     <tr>
                       <th>Rendering engine</th>
@@ -96,16 +96,16 @@ function Properties() {
                       <td>-</td>
                       <td>U</td>
                       <td>
-                        <ul class="list-inline m-0">
-                          <li class="list-inline-item">
-                            <button class="btn btn-success btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-edit"></i></button>
+                        <ul className="list-inline m-0">
+                          <li className="list-inline-item">
+                            <button className="btn btn-success btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Edit"><i className="fa fa-edit"></i></button>
                           </li>
                         </ul>
                       </td>
                       <td>
-                        <ul class="list-inline m-0">
-                          <li class="list-inline-item">
-                            <button class="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash"></i></button>
+                        <ul className="list-inline m-0">
+                          <li className="list-inline-item">
+                            <button className="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Delete"><i className="fa fa-trash"></i></button>
                           </li>
                         </ul>
                       </td>
