@@ -151,6 +151,29 @@ function AssetType() {
     }
   };
 
+  const statusChange = (e, assetTypeId) => {
+    const status = e.target.checked;
+    const headers = { 'Authorization': 'Bearer ' + token };
+    axios.put(apiurl + '/asset-types/' + assetTypeId + '/update-status/' + status, {}, { headers })
+      .then((response) => {
+        setLoading(false);
+        if (response.status === 200) {
+          // showSweetAlert('success', 'Success', 'Status of Asset Type updated successfully.');
+          showToast('success', 'Status of Asset Type updated successfully.');
+          fetchData();
+        }
+        else {
+          showSweetAlert('error', 'Error', 'Failed to update status of Asset Type. Please try again...');
+          fetchData();
+        }
+      })
+      .catch((error) => {
+        setLoading(false);
+        showSweetAlert('error', 'Error', 'Failed to update status of Asset Type. Please try again...');
+        fetchData();
+      });
+  }
+
   return (
     <div>
       <Header />
@@ -215,10 +238,14 @@ function AssetType() {
                           <td>{index + 1}</td>
                           <td>{item.assetType}</td>
                           <td>
-                            <div class="form-group">
-                              <div class="custom-control custom-switch">
-                                <input type="checkbox" class="custom-control-input" id="customSwitch1" />
-                              </div>
+                            <div className="custom-control custom-switch">
+                              <input 
+                                type="checkbox" 
+                                className="custom-control-input" 
+                                id={'status-'+item.assetTypeId} 
+                                onChange={(e) => statusChange(e, item.assetTypeId)}
+                                defaultChecked={item.status} />
+                              <label className="custom-control-label" for={'status-'+item.assetTypeId}></label>
                             </div>
                           </td>
                           <td>
