@@ -56,7 +56,7 @@ function Login() {
           console.log('then...');
           console.log(response.data);
           setLoading(false);
-          if (response.status == 200) {
+          if (response.status === 200) {
             const data = response.data;
             // sessionStorage.setItem('user', JSON.stringify({ employeeId: data.employeeId, email: data.emailId, role: data.role, token: data.token }));
             sessionStorage.setItem('employeeId', data.employeeId);

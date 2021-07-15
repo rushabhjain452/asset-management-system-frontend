@@ -67,7 +67,7 @@ function ForgetPassword() {
       axios.post(apiurl + '/employees/forget-password', requestData)
         .then((response) => {
           setLoading(false);
-          if (response.status == 200) {
+          if (response.status === 200) {
             const data = response.data;
             sessionStorage.setItem('employeeId', data.employeeId);
             showToastWithProgress('success', 'OTP sent successfully');

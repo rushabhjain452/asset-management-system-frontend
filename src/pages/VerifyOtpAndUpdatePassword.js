@@ -3,6 +3,7 @@ import { Link, Redirect } from 'react-router-dom';
 import './css/style.css';
 import "material-design-iconic-font/dist/css/material-design-iconic-font.min.css";
 import axios from 'axios';
+import Loader from '../components/Loader';
 import { errorMessage } from '../config';
 import { showToastWithProgress, showSweetAlert } from '../helpers/sweetAlert';
 
@@ -43,7 +44,7 @@ function VerifyOtpAndUpdatePassword() {
       error = 'Password must contain at least 1 number, 1 special character and 1 uppercase 1 lowercase letter, and at least 8 or more characters.';
       passwordRef.current.focus();
     }
-    else if (password != confirmPassword){
+    else if (password !== confirmPassword){
       result = false;
       error = 'Password and confirm password didn\'t match.';
       confirmPasswordRef.current.focus();
@@ -74,7 +75,7 @@ function VerifyOtpAndUpdatePassword() {
         .then((response) => {
           console.log(response.data);
           setLoading(false);
-          if (response.status == 200) {
+          if (response.status === 200) {
             showToastWithProgress('success', 'Password updated successfully');
             setRedirect(true);
           }
@@ -97,6 +98,7 @@ function VerifyOtpAndUpdatePassword() {
 
   return (
     <div className="main">
+      <Loader loading={loading} />
       <section className="sign-in">
         <div className="my-container">
           <div className="signin-content">

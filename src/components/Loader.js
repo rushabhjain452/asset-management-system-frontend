@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import HashLoader from "react-spinners/HashLoader";
 import './css/loader.css';
 
