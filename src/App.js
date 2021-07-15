@@ -61,6 +61,14 @@ import AssetType from "./pages/admin/AssetType";
 import Properties from "./pages/admin/Properties";
 import Asset from "./pages/admin/Asset";
 import Profile from "./pages/Profile";
+import AddEmployees from "./pages/admin/AddEmployees";
+import ViewEmployees from "./pages/admin/ViewEmployees";
+import AssetProperties from "./pages/admin/AssetProperties";
+import AssignAsset from "./pages/admin/AssignAsset";
+import Auction from "./pages/admin/Auction";
+import Bids from "./pages/admin/Bids";
+import ViewBids from "./pages/admin/ViewBids";
+import SaleAsset from "./pages/admin/SaleAsset";
 // AdminLTE for demo purposes
 // import 'admin-lte/dist/js/demo.js';
 // AdminLTE dashboard demo (This is only for demo purposes)
@@ -86,8 +94,17 @@ function App() {
             <PrivateRoute exact path='/admin/asset-type' component={AssetType} />
             <PrivateRoute exact path='/admin/properties' component={Properties} />
             <PrivateRoute exact path='/admin/asset' component={Asset} />
+            <PrivateRoute exact path='/admin/add-employee' component={AddEmployees} />
+            <PrivateRoute exact path='/admin/view-employees' component={ViewEmployees} />
+            <PrivateRoute exact path='/admin/asset-properties' component={AssetProperties} />
+            <PrivateRoute exact path='/admin/assign-asset' component={AssignAsset} />
+            <PrivateRoute exact path='/admin/auction' component={Auction} />
+            <PrivateRoute exact path='/admin/view-bids' component={ViewBids} />
+            <PrivateRoute exact path='/admin/sale-asset' component={SaleAsset} />
+
             {/* User Pages */}
             <PrivateRoute exact path='/dashboard' component={UserDashboard} />
+            <PrivateRoute exact path='/bids' component={Bids} />
             {/* <Route component={Error} /> */}
             {/* <Redirect to="/error" /> */}
           </>

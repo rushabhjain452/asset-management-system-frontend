@@ -26,7 +26,7 @@ import 'admin-lte/plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.mi
 // import 'admin-lte/plugins/datatables-buttons/js/buttons.print.min.js';
 // import 'admin-lte/plugins/datatables-buttons/js/buttons.colVis.min.js';
 
-function Asset() {
+function Auction() {
   useEffect(() => {
     $(function () {
       //Initialize Select2 Elements
@@ -47,12 +47,12 @@ function Asset() {
           <div className="container-fluid">
             <div className="row mb-2">
               <div className="col-sm-6">
-                <h1 className="m-0">Asset</h1>
+                <h1 className="m-0">Auction</h1>
               </div>{/* /.col */}
               <div className="col-sm-6">
                 <ol className="breadcrumb float-sm-right">
                   <li className="breadcrumb-item"><a href="#">Home</a></li>
-                  <li className="breadcrumb-item active">Asset</li>
+                  <li className="breadcrumb-item active">Auction</li>
                 </ol>
               </div>{/* /.col */}
             </div>{/* /.row */}
@@ -60,7 +60,7 @@ function Asset() {
         </div>
         <div className="card card-info">
           <div className="card-body">
-            <h4>Add Asset </h4>
+            <h4>Add Auction </h4>
             {/* <label>Minimal (.select2-danger)</label> */}
             <div className="row">
               <div className="col-md-10">
@@ -77,8 +77,16 @@ function Asset() {
                   </select>
                 </div>
                 <div class="form-group">
-                  <h6>Purchase Date:</h6>
-                    <input type="date" maxLength="20" className="form-control" placeholder="Purchase Date" />
+                  <h6>Minimum Bid Amount:</h6>
+                    <input type="number" maxLength="20" className="form-control" placeholder="Minimum Bid Amount" />
+                </div>
+                <div class="form-group">
+                  <h6>Bid Start Date:</h6>
+                    <input type="date" maxLength="20" className="form-control" placeholder="Bid Start Date" />
+                </div>
+                <div class="form-group">
+                  <h6>Bid End Date:</h6>
+                    <input type="date" maxLength="20" className="form-control" placeholder="Bid End Date" />
                 </div>
               </div>
             </div>
@@ -93,7 +101,7 @@ function Asset() {
           <div className="col-12">
             <div className="card">
               <div className="card-header">
-                <h3 className="card-title">List of Asset</h3>
+                <h3 className="card-title">List of Auction</h3>
                 <div className="card-tools">
                   <div className="input-group input-group-sm">
                     <input type="text" name="table_search" className="form-control float-right" placeholder="Search" />
@@ -153,4 +161,4 @@ function Asset() {
   )
 }
 
-export default Asset;
+export default Auction;

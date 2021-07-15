@@ -26,7 +26,7 @@ import 'admin-lte/plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.mi
 // import 'admin-lte/plugins/datatables-buttons/js/buttons.print.min.js';
 // import 'admin-lte/plugins/datatables-buttons/js/buttons.colVis.min.js';
 
-function Asset() {
+function AssignAsset() {
   useEffect(() => {
     $(function () {
       //Initialize Select2 Elements
@@ -47,12 +47,12 @@ function Asset() {
           <div className="container-fluid">
             <div className="row mb-2">
               <div className="col-sm-6">
-                <h1 className="m-0">Asset</h1>
+                <h1 className="m-0">Assign Asset</h1>
               </div>{/* /.col */}
               <div className="col-sm-6">
                 <ol className="breadcrumb float-sm-right">
                   <li className="breadcrumb-item"><a href="#">Home</a></li>
-                  <li className="breadcrumb-item active">Asset</li>
+                  <li className="breadcrumb-item active">Assign Asset</li>
                 </ol>
               </div>{/* /.col */}
             </div>{/* /.row */}
@@ -60,12 +60,12 @@ function Asset() {
         </div>
         <div className="card card-info">
           <div className="card-body">
-            <h4>Add Asset </h4>
+            <h4>Assign Asset </h4>
             {/* <label>Minimal (.select2-danger)</label> */}
             <div className="row">
               <div className="col-md-10">
                 <div className="form-group">
-                  <h6>Asset Type:</h6>
+                  <h6>Employee Name:</h6>
                   <select className="form-control select2">
                     <option selected="selected">Alabama</option>
                     <option>Alaska</option>
@@ -77,14 +77,14 @@ function Asset() {
                   </select>
                 </div>
                 <div class="form-group">
-                  <h6>Purchase Date:</h6>
-                    <input type="date" maxLength="20" className="form-control" placeholder="Purchase Date" />
+                  <h6>Assign Date:</h6>
+                    <input type="date" maxLength="20" className="form-control" placeholder="Assign Date" />
                 </div>
               </div>
             </div>
           </div>
           <div className="card-footer">
-            <button type="submit" className="btn btn-primary float-right">Add</button>
+            <button type="submit" className="btn btn-primary float-right">Assign</button>
             <button type="submit" class="btn btn-default float-right">Cancel</button>
           </div>
         </div>
@@ -153,4 +153,4 @@ function Asset() {
   )
 }
 
-export default Asset;
+export default AssignAsset;

@@ -33,6 +33,29 @@ function Menu() {
                   <p className="menu-link-style">Dashboard</p>
                 </NavLink>
               </li>
+              <li class="nav-item menu-open">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon fas fa-user-tie"></i>
+                  <p>
+                    Employee
+                <i class="right fas fa-angle-left"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <NavLink exact to="/admin/add-employee" class="nav-link">
+                      <i class="fas fa-user-plus nav-icon"></i>
+                      <p>Add Employees</p>
+                    </NavLink>
+                  </li>
+                  <li class="nav-item">
+                    <NavLink exact to="/admin/view-employees" class="nav-link">
+                      <i class="fas fa-users-cog nav-icon"></i>
+                      <p>View Employees</p>
+                    </NavLink>
+                  </li>
+                </ul>
+              </li>
               <li className="nav-item menu-open">
                 {/* <a href="./index.html" className="nav-link active"> */}
                 <NavLink exact to="/admin/gender" className="nav-link" activeClassName="active">
@@ -66,6 +89,57 @@ function Menu() {
                 <NavLink exact to="/admin/asset" className="nav-link" activeClassName="active">
                   <i class=" nav-icon fas fa-laptop"></i>
                   <p>Asset</p>
+                </NavLink>
+              </li>
+              <li className="nav-item menu-open">
+                {/* <a href="./index.html" className="nav-link active"> */}
+                <NavLink exact to="/admin/asset-properties" className="nav-link" activeClassName="active">
+                  <i class=" nav-icon fas fa-laptop"></i>
+                  <p>Asset Properties</p>
+                </NavLink>
+              </li>
+              <li className="nav-item menu-open">
+                {/* <a href="./index.html" className="nav-link active"> */}
+                <NavLink exact to="/admin/assign-asset" className="nav-link" activeClassName="active">
+                  <i class=" nav-icon fas fa-laptop-code"></i>
+                  <p>Assign Asset</p>
+                </NavLink>
+              </li>
+              <li className="nav-item menu-open">
+                {/* <a href="./index.html" className="nav-link active"> */}
+                <NavLink exact to="/admin/auction" className="nav-link" activeClassName="active">
+                  <i class=" nav-icon fas fa-gavel"></i>
+                  <p>Auction</p>
+                </NavLink>
+              </li>
+              <li class="nav-item menu-open">
+                <a href="#" class="nav-link">
+                  <i class="nav-icon fas fa-user-tie"></i>
+                  <p>
+                    Bid
+                <i class="right fas fa-angle-left"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  <li class="nav-item">
+                    <NavLink exact to="/bids" class="nav-link">
+                      <i class="fas fa-gavel nav-icon"></i>
+                      <p>Bid On Asset</p>
+                    </NavLink>
+                  </li>
+                  <li class="nav-item">
+                    <NavLink exact to="/admin/view-bids" class="nav-link">
+                      <i class="fas fa-gavel nav-icon"></i>
+                      <p>View Bid's</p>
+                    </NavLink>
+                  </li>
+                </ul>
+              </li>
+              <li className="nav-item menu-open">
+                {/* <a href="./index.html" className="nav-link active"> */}
+                <NavLink exact to="/admin/sale-asset" className="nav-link" activeClassName="active">
+                  <i class=" nav-icon fas money-bill-alt"></i>
+                  <p>Sale Asset</p>
                 </NavLink>
               </li>
             </ul>
