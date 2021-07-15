@@ -1,25 +1,25 @@
 import React from 'react'
-import Header from '../Header';
-import Footer from '../Footer';
-import Menu from './Menu';
+import Header from './Header';
+import Footer from './Footer';
+import UserMenu from './UserMenu';
 
-function ViewBids() {
+function ViewAssignAsset() {
   return (
     <div>
       <Header />
-      <Menu />
+      <UserMenu />
       <div className="content-wrapper">
         {/* Content Header (Page header) */}
         <section className="content-header">
           <div className="container-fluid">
             <div className="row mb-2">
               <div className="col-sm-6">
-                <h1>Auction Bid's</h1>
+                <h1>Employee Assign Asset</h1>
               </div>
               <div className="col-sm-6">
                 <ol className="breadcrumb float-sm-right">
                   <li className="breadcrumb-item"><a href="#">Home</a></li>
-                  <li className="breadcrumb-item active">Auction Bid's</li>
+                  <li className="breadcrumb-item active">Employee Assign Asset</li>
                 </ol>
               </div>
             </div>
@@ -30,7 +30,7 @@ function ViewBids() {
           {/* Default box */}
           <div className="card">
             <div className="card-header">
-              <h3 className="card-title">Bid's</h3>
+              <h3 className="card-title">Employee Assign Asset</h3>
               <div className="card-tools">
                 <button type="button" className="btn btn-tool" data-card-widget="collapse" title="Collapse">
                   <i className="fas fa-minus" />
@@ -190,4 +190,4 @@ function ViewBids() {
   )
 }
 
-export default ViewBids
+export default ViewAssignAsset

@@ -70,7 +70,7 @@ function ViewEmployees() {
               </td>
                     <td>
                       <a>
-                        AdminLTE v3
+                        XYZ
                 </a>
                       <br />
                       <small>
@@ -129,7 +129,7 @@ function ViewEmployees() {
               </td>
                     <td>
                       <a>
-                        AdminLTE v3
+                        ABC
                 </a>
                       <br />
                       <small>

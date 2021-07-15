@@ -66,9 +66,11 @@ import ViewEmployees from "./pages/admin/ViewEmployees";
 import AssetProperties from "./pages/admin/AssetProperties";
 import AssignAsset from "./pages/admin/AssignAsset";
 import Auction from "./pages/admin/Auction";
-import Bids from "./pages/admin/Bids";
+import Bids from "./pages/Bids";
 import ViewBids from "./pages/admin/ViewBids";
 import SaleAsset from "./pages/admin/SaleAsset";
+import ViewAssignAsset from "./pages/ViewAssignAsset";
+import ViewAssetSales from "./pages/ViewAssetSales";
 // AdminLTE for demo purposes
 // import 'admin-lte/dist/js/demo.js';
 // AdminLTE dashboard demo (This is only for demo purposes)
@@ -105,6 +107,8 @@ function App() {
             {/* User Pages */}
             <PrivateRoute exact path='/dashboard' component={UserDashboard} />
             <PrivateRoute exact path='/bids' component={Bids} />
+            <PrivateRoute exact path='/view-assign-asset' component={ViewAssignAsset} />
+            <PrivateRoute exact path='/view-asset-sales' component={ViewAssetSales} />
             {/* <Route component={Error} /> */}
             {/* <Redirect to="/error" /> */}
           </>
