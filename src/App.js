@@ -61,7 +61,7 @@ import AssetType from "./pages/admin/AssetType";
 import Properties from "./pages/admin/Properties";
 import Asset from "./pages/admin/Asset";
 import Profile from "./pages/Profile";
-import AddEmployee from "./pages/admin/AddEmployee";
+import AddEmployee from "./pages/admin/Employee";
 import ViewEmployees from "./pages/admin/ViewEmployees";
 import AssetProperties from "./pages/admin/AssetProperties";
 import AssignAsset from "./pages/admin/AssignAsset";
