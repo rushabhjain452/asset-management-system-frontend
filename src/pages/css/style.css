@@ -242,7 +242,7 @@ figure {
 }
 
 #signin {
-    margin-top: 16px;
+    margin-top: 16px !important;
 }
 
 .signup-image-link {

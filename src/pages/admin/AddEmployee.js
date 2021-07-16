@@ -1,8 +1,9 @@
-import React from 'react'
+import React from 'react';
 import Header from '../Header';
 import Footer from '../Footer';
 import Menu from './Menu';
-function AddEmployees() {
+
+function AddEmployee() {
   return (
     <div>
       <Header />
@@ -51,7 +52,7 @@ function AddEmployees() {
                     </div>
                   </div>
                   <div className="form-group">
-                  <h6>First Name:</h6>
+                    <h6>First Name:</h6>
                     <div className="input-group mb-3 ">
                       <div className="input-group-prepend">
                         <span className="input-group-text">
@@ -62,7 +63,7 @@ function AddEmployees() {
                     </div>
                   </div>
                   <div className="form-group">
-                  <h6>Last Name:</h6>
+                    <h6>Last Name:</h6>
                     <div className="input-group mb-3 ">
                       <div className="input-group-prepend">
                         <span className="input-group-text">
@@ -73,7 +74,7 @@ function AddEmployees() {
                     </div>
                   </div>
                   <div class="row">
-                  <h6>Gender:</h6>
+                    <h6>Gender:</h6>
                     <div class="col-sm-1">
                       <div className="form-group">
                         <div className="input-group mb-3 ">
@@ -100,7 +101,7 @@ function AddEmployees() {
                     </div>
                   </div>
                   <div className="form-group">
-                  <h6>Email Address:</h6>
+                    <h6>Email Address:</h6>
                     <div className="input-group mb-3 ">
                       <div className="input-group-prepend">
                         <span className="input-group-text">
@@ -124,8 +125,8 @@ function AddEmployees() {
                   </div>
                   {/* <div class="row"> */}
                   <div className="form-group">
-                  <h6>Profile Picture:</h6>
-                  <div className="input-group mb-3 ">
+                    <h6>Profile Picture:</h6>
+                    <div className="input-group mb-3 ">
                       <div className="input-group-prepend">
                         <span className="input-group-text">
                           <i className="fas fa-images" />
@@ -142,19 +143,19 @@ function AddEmployees() {
             </div>
           </div>
           <div className="row">
-              {/* <a href="#" className="btn btn-primary float-right">Register</a> */}
-              <div className="card-footer">
-            <button type="button" className="btn btn-secondary float-right">Cancel</button>
-            <button 
-              type="button" 
-              className="btn btn-primary float-right" 
+            {/* <a href="#" className="btn btn-primary float-right">Register</a> */}
+            <div className="card-footer">
+              <button type="button" className="btn btn-secondary float-right">Cancel</button>
+              <button
+                type="button"
+                className="btn btn-primary float-right"
               // onClick={btnText === 'Add' ? addGender : updateGender}
               >
-            {/* {btnText} */}
+                {/* {btnText} */}
             Register
             </button>
-          </div>
             </div>
+          </div>
         </section>
         {/* /.content */}
       </div>
@@ -337,7 +338,7 @@ function AddEmployees() {
       </div>
       <Footer />
     </div>
-  )
+  );
 }
 
-export default AddEmployees
+export default AddEmployee;
