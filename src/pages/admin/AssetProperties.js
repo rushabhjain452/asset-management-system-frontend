@@ -27,6 +27,7 @@ import 'admin-lte/plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.mi
 // import 'admin-lte/plugins/datatables-buttons/js/buttons.colVis.min.js';
 
 function AssetProperties() {
+  
   useEffect(() => {
     $(function () {
       //Initialize Select2 Elements
@@ -37,7 +38,8 @@ function AssetProperties() {
         theme: 'bootstrap4'
       })
     })
-  }, [])
+  }, []);
+
   return (
     <div>
       <Header />

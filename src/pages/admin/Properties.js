@@ -49,8 +49,21 @@ function Properties() {
       .then((response) => {
         setLoading(false);
         if (response.status === 200) {
-          setData(response.data);
-          setDataCopy(response.data);
+          // Sort Data
+          const data = response.data;
+          data.sort((a, b) => {
+            let val1 = a.propertyName.toLowerCase();
+            let val2 = b.propertyName.toLowerCase();
+            if (val1 < val2) {
+              return -1;
+            }
+            if (val1 > val2) {
+              return 1;
+            }
+            return 0;
+          });
+          setData(data);
+          setDataCopy(data);
         }
         else {
           showToast('error', errorMessage);
@@ -62,8 +75,39 @@ function Properties() {
       });
   };
 
+  const validateInput = () => {
+    const char_only_regex = /^[a-zA-Z_()// ]*$/;
+    let result = true;
+    let error = '';
+    if (property.length == 0) {
+      result = false;
+      error = 'Please enter value for Property.';
+      textboxRef.current.focus();
+    }
+    else if (!property.match(char_only_regex)) {
+      result = false;
+      error = 'Please enter valid Property. Property can only contain characters.';
+      textboxRef.current.focus();
+    }
+    else if (btnText == 'Add') {
+      // Check if already exists
+      const filterData = data.filter((item) => item.propertyName.toLowerCase() == property.toLowerCase());
+      if (filterData.length > 0) {
+        result = false;
+        error = 'Property already exists with given name.';
+        textboxRef.current.focus();
+      }
+    }
+    // Display Error
+    if (result === false) {
+      showToast('warning', error);
+    }
+    console.log(result);
+    return result;
+  };
+
   const addProperty = () => {
-    if (property.length > 0) {
+    if (validateInput()) {
       setLoading(true);
       const requestData = {
         propertyName: property,
@@ -86,9 +130,6 @@ function Properties() {
           setLoading(false);
           showSweetAlert('error', 'Error', 'Failed to add Property. Please try again...');
         });
-    } else {
-      showToast('warning', 'Please enter valid value for Property.');
-      textboxRef.current.focus();
     }
   };
 
@@ -129,7 +170,7 @@ function Properties() {
   };
 
   const updateProperty = () => {
-    if (property.length > 0) {
+    if (validateInput()) {
       setLoading(true);
       const requestData = {
         propertyName: property,
@@ -153,9 +194,6 @@ function Properties() {
           setLoading(false);
           showSweetAlert('error', 'Error', 'Failed to update Property. Please try again...');
         });
-    } else {
-      showToast('warning', 'Please enter valid value for Property.');
-      textboxRef.current.focus();
     }
   };
 
@@ -188,10 +226,10 @@ function Properties() {
 
   const onSearchTextChange = (e) => {
     const searchText = e.target.value.toLowerCase();
-    if(searchText.length > 0){
+    if (searchText.length > 0) {
       let searchData = dataCopy.filter((item) => item.propertyName.toLowerCase().includes(searchText));
       setData(searchData);
-    }else{
+    } else {
       setData(dataCopy);
     }
   };
@@ -237,11 +275,11 @@ function Properties() {
           </div>
           <div className="card-footer">
             <button type="button" className="btn btn-secondary float-right" onClick={onCancel}>Cancel</button>
-            <button 
-              type="button" 
-              className="btn btn-primary float-right" 
+            <button
+              type="button"
+              className="btn btn-primary float-right"
               onClick={btnText === 'Add' ? addProperty : updateProperty}>
-                {btnText}
+              {btnText}
             </button>
           </div>
         </div>
@@ -252,11 +290,11 @@ function Properties() {
                 <h3 className="card-title">List of Properties</h3>
                 <div className="card-tools">
                   <div className="input-group input-group-sm">
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       name="table_search"
-                      maxLength="20" 
-                      className="form-control float-right" 
+                      maxLength="20"
+                      className="form-control float-right"
                       placeholder="Search"
                       onChange={onSearchTextChange} />
                     <div className="input-group-append">
@@ -288,13 +326,13 @@ function Properties() {
                           <td>{item.mandatory ? 'Yes' : 'No'}</td>
                           <td>
                             <div className="custom-control custom-switch">
-                              <input 
-                                type="checkbox" 
-                                className="custom-control-input" 
-                                id={'status-'+item.propertyId} 
+                              <input
+                                type="checkbox"
+                                className="custom-control-input"
+                                id={'status-' + item.propertyId}
                                 onChange={(e) => statusChange(e, item.propertyId)}
                                 defaultChecked={item.status} />
-                              <label className="custom-control-label" htmlFor={'status-'+item.propertyId}></label>
+                              <label className="custom-control-label" htmlFor={'status-' + item.propertyId}></label>
                             </div>
                           </td>
                           <td>
