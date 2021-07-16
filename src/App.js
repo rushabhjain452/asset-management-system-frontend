@@ -61,7 +61,7 @@ import AssetType from "./pages/admin/AssetType";
 import Properties from "./pages/admin/Properties";
 import Asset from "./pages/admin/Asset";
 import Profile from "./pages/Profile";
-import AddEmployees from "./pages/admin/AddEmployees";
+import AddEmployee from "./pages/admin/AddEmployee";
 import ViewEmployees from "./pages/admin/ViewEmployees";
 import AssetProperties from "./pages/admin/AssetProperties";
 import AssignAsset from "./pages/admin/AssignAsset";
@@ -96,7 +96,7 @@ function App() {
             <PrivateRoute exact path='/admin/asset-type' component={AssetType} />
             <PrivateRoute exact path='/admin/properties' component={Properties} />
             <PrivateRoute exact path='/admin/asset' component={Asset} />
-            <PrivateRoute exact path='/admin/add-employee' component={AddEmployees} />
+            <PrivateRoute exact path='/admin/add-employee' component={AddEmployee} />
             <PrivateRoute exact path='/admin/view-employees' component={ViewEmployees} />
             <PrivateRoute exact path='/admin/asset-properties' component={AssetProperties} />
             <PrivateRoute exact path='/admin/assign-asset' component={AssignAsset} />

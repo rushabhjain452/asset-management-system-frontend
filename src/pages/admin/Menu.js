@@ -43,13 +43,13 @@ function Menu() {
                 </a>
                 <ul class="nav nav-treeview">
                   <li class="nav-item">
-                    <NavLink exact to="/admin/add-employee" class="nav-link">
+                    <NavLink exact to="/admin/add-employee" class="nav-link" activeClassName="active">
                       <i class="fas fa-user-plus nav-icon"></i>
-                      <p className="menu-link-style">Add Employees</p>
+                      <p className="menu-link-style">Add Employee</p>
                     </NavLink>
                   </li>
                   <li class="nav-item">
-                    <NavLink exact to="/admin/view-employees" class="nav-link">
+                    <NavLink exact to="/admin/view-employees" class="nav-link" activeClassName="active">
                       <i class="fas fa-users-cog nav-icon"></i>
                       <p className="menu-link-style">View Employees</p>
                     </NavLink>
