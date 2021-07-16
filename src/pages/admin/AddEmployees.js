@@ -29,17 +29,18 @@ function AddEmployees() {
           <div className="row">
             <div className="col-md-12">
               <div className="card card-primary">
-                <div className="card-header">
-                  <h3 className="card-title">Add Employee</h3>
+                {/* <div className="card-header">
+                  <h3 className="card-title">Employee Registration</h3>
                   <div className="card-tools">
                     <button type="button" className="btn btn-tool" data-card-widget="collapse" title="Collapse">
                       <i className="fas fa-minus" />
                     </button>
                   </div>
-                </div>
+                </div> */}
                 <div className="card-body">
                   <div className="form-group">
                     {/* <input type="text" id="inputName" className="form-control" /> */}
+                    <h6>Employee Id:</h6>
                     <div className="input-group mb-3 ">
                       <div className="input-group-prepend">
                         <span className="input-group-text">
@@ -50,6 +51,7 @@ function AddEmployees() {
                     </div>
                   </div>
                   <div className="form-group">
+                  <h6>First Name:</h6>
                     <div className="input-group mb-3 ">
                       <div className="input-group-prepend">
                         <span className="input-group-text">
@@ -60,6 +62,7 @@ function AddEmployees() {
                     </div>
                   </div>
                   <div className="form-group">
+                  <h6>Last Name:</h6>
                     <div className="input-group mb-3 ">
                       <div className="input-group-prepend">
                         <span className="input-group-text">
@@ -70,6 +73,7 @@ function AddEmployees() {
                     </div>
                   </div>
                   <div class="row">
+                  <h6>Gender:</h6>
                     <div class="col-sm-1">
                       <div className="form-group">
                         <div className="input-group mb-3 ">
@@ -96,6 +100,7 @@ function AddEmployees() {
                     </div>
                   </div>
                   <div className="form-group">
+                  <h6>Email Address:</h6>
                     <div className="input-group mb-3 ">
                       <div className="input-group-prepend">
                         <span className="input-group-text">
@@ -107,6 +112,7 @@ function AddEmployees() {
                   </div>
                   <div className="form-group">
                     {/* <input type="text" id="inputName" className="form-control" /> */}
+                    <h6>Mobile Number:</h6>
                     <div className="input-group mb-3 ">
                       <div className="input-group-prepend">
                         <span className="input-group-text">
@@ -118,6 +124,7 @@ function AddEmployees() {
                   </div>
                   {/* <div class="row"> */}
                   <div className="form-group">
+                  <h6>Profile Picture:</h6>
                   <div className="input-group mb-3 ">
                       <div className="input-group-prepend">
                         <span className="input-group-text">
@@ -136,10 +143,17 @@ function AddEmployees() {
           </div>
           <div className="row">
               {/* <a href="#" className="btn btn-primary float-right">Register</a> */}
-              <div class="card-footer">
-              <button type="cancel" class="btn btn-secondary float-left">Cancel</button>
-                  <button type="submit" class="btn btn-primary float-right">Submit</button>
-                </div>
+              <div className="card-footer">
+            <button type="button" className="btn btn-secondary float-right">Cancel</button>
+            <button 
+              type="button" 
+              className="btn btn-primary float-right" 
+              // onClick={btnText === 'Add' ? addGender : updateGender}
+              >
+            {/* {btnText} */}
+            Register
+            </button>
+          </div>
             </div>
         </section>
         {/* /.content */}

@@ -89,6 +89,7 @@ function Profile() {
                               <div className="card card-primary">
                                 <div className="card-body">
                                   <div className="form-group">
+                                    <h6>First Name:</h6>
                                     <div className="input-group mb-3 ">
                                       <div className="input-group-prepend">
                                         <span className="input-group-text">
@@ -99,6 +100,7 @@ function Profile() {
                                     </div>
                                   </div>
                                   <div className="form-group">
+                                    <h6>Last Name:</h6>
                                     <div className="input-group mb-3 ">
                                       <div className="input-group-prepend">
                                         <span className="input-group-text">
@@ -109,6 +111,7 @@ function Profile() {
                                     </div>
                                   </div>
                                   <div class="row">
+                                    <h6>Gender:</h6>
                                     <div class="col-sm-2">
                                       <div className="form-group">
                                         <div className="input-group mb-3 ">
@@ -135,6 +138,7 @@ function Profile() {
                                     </div>
                                   </div>
                                   <div className="form-group">
+                                    <h6>Email Address:</h6>
                                     <div className="input-group mb-3 ">
                                       <div className="input-group-prepend">
                                         <span className="input-group-text">
@@ -145,6 +149,7 @@ function Profile() {
                                     </div>
                                   </div>
                                   <div className="form-group">
+                                    <h6>Mobile Number:</h6>
                                     {/* <input type="text" id="inputName" className="form-control" /> */}
                                     <div className="input-group mb-3 ">
                                       <div className="input-group-prepend">
@@ -157,12 +162,14 @@ function Profile() {
                                   </div>
                                   {/* <div class="row"> */}
                                   <div className="form-group">
-                                    {/* <label htmlFor="exampleInputFile">File input</label> */}
-                                    <div className="input-group mb-3">
-                                      {/* <div className="custom-file"> */}
+                                    <h6>Profile Picture:</h6>
+                                    <div className="input-group mb-3 ">
+                                      <div className="input-group-prepend">
+                                        <span className="input-group-text">
+                                          <i className="fas fa-images" />
+                                        </span>
+                                      </div>
                                       <input type="file" className="form-control" id="exampleInputFile" />
-                                      {/* <label className="custom-file-label" htmlFor="exampleInputFile">Choose file</label> */}
-                                      {/* </div> */}
                                     </div>
                                   </div>
                                   {/* </div> */}
@@ -174,29 +181,44 @@ function Profile() {
                           </div>
                           <div className="row">
                             {/* <a href="#" className="btn btn-primary float-right">Register</a> */}
-                            <div class="card-footer">
-                              <button type="cancel" class="btn btn-secondary float-left">Cancel</button>
-                              <button type="submit" class="btn btn-primary float-right">Update</button>
+                            <div className="card-footer">
+                              <button type="button" className="btn btn-secondary float-right">Cancel</button>
+                              <button
+                                type="button"
+                                className="btn btn-primary float-right"
+                              // onClick={btnText === 'Add' ? addGender : updateGender}
+                              >
+                                {/* {btnText} */}
+            Update
+            </button>
                             </div>
                           </div>
                         </section>
                       </div>
                       <div class="active tab-pane" id="update-profile-picture">
-                        <div className="form-group">
-                          <div className="input-group mb-3 ">
-                            <div className="input-group-prepend">
-                              <span className="input-group-text">
-                                <i className="fas fa-images" />
-                              </span>
-                            </div>
-                            <input type="file" className="form-control" id="exampleInputFile" />
-                          </div>
-                        </div>
+                      <div className="form-group">
+                                    <h6>Profile Picture:</h6>
+                                    <div className="input-group mb-3 ">
+                                      <div className="input-group-prepend">
+                                        <span className="input-group-text">
+                                          <i className="fas fa-images" />
+                                        </span>
+                                      </div>
+                                      <input type="file" className="form-control" id="exampleInputFile" />
+                                    </div>
+                                  </div>
                         <div className="row">
                             {/* <a href="#" className="btn btn-primary float-right">Register</a> */}
-                            <div class="card-footer">
-                              <button type="cancel" class="btn btn-secondary float-left">Cancel</button>
-                              <button type="submit" class="btn btn-primary float-right">Update</button>
+                            <div className="card-footer">
+                              <button type="button" className="btn btn-secondary float-right">Cancel</button>
+                              <button
+                                type="button"
+                                className="btn btn-primary float-right"
+                              // onClick={btnText === 'Add' ? addGender : updateGender}
+                              >
+                                {/* {btnText} */}
+            Update
+            </button>
                             </div>
                           </div>
                       </div>
@@ -210,7 +232,7 @@ function Profile() {
                                     <div className="input-group mb-3 ">
                                       <div className="input-group-prepend">
                                         <span className="input-group-text">
-                                          <i className="fas fa-user-circle" />
+                                          <i className="fas fa-key" />
                                         </span>
                                       </div>
                                       <input type="password" maxLength="20" className="form-control" placeholder="Old Password" />
@@ -220,7 +242,7 @@ function Profile() {
                                     <div className="input-group mb-3 ">
                                       <div className="input-group-prepend">
                                         <span className="input-group-text">
-                                          <i className="fas fa-user-circle" />
+                                          <i className="fas fa-lock" />
                                         </span>
                                       </div>
                                       <input type="password" maxLength="20" className="form-control" placeholder="New Password" />
@@ -230,7 +252,7 @@ function Profile() {
                                     <div className="input-group mb-3 ">
                                       <div className="input-group-prepend">
                                         <span className="input-group-text">
-                                          <i className="fas fa-envelope-open-text" />
+                                          <i className="fas fa-lock" />
                                         </span>
                                       </div>
                                       <input type="password" maxLength="20" className="form-control" placeholder="Confirm Password" />
@@ -245,9 +267,16 @@ function Profile() {
                           </div>
                           <div className="row">
                             {/* <a href="#" className="btn btn-primary float-right">Register</a> */}
-                            <div class="card-footer">
-                              <button type="cancel" class="btn btn-secondary float-left">Cancel</button>
-                              <button type="submit" class="btn btn-primary float-right">Update</button>
+                            <div className="card-footer">
+                              <button type="button" className="btn btn-secondary float-right">Cancel</button>
+                              <button
+                                type="button"
+                                className="btn btn-primary float-right"
+                              // onClick={btnText === 'Add' ? addGender : updateGender}
+                              >
+                                {/* {btnText} */}
+            Update
+            </button>
                             </div>
                           </div>
                         </section>

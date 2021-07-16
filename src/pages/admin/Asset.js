@@ -83,10 +83,20 @@ function Asset() {
               </div>
             </div>
           </div>
-          <div className="card-footer">
-            <button type="submit" className="btn btn-primary float-right">Add</button>
-            <button type="submit" class="btn btn-default float-right">Cancel</button>
+          <div className="row">
+              {/* <a href="#" className="btn btn-primary float-right">Register</a> */}
+              <div className="card-footer">
+            <button type="button" className="btn btn-secondary float-right">Cancel</button>
+            <button 
+              type="button" 
+              className="btn btn-primary float-right" 
+              // onClick={btnText === 'Add' ? addGender : updateGender}
+              >
+            {/* {btnText} */}
+            Add
+            </button>
           </div>
+            </div>
         </div>
         {/* /.row */}
         <div className="row">

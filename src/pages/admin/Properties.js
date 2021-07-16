@@ -219,6 +219,7 @@ function Properties() {
         </div>
         <div className="card card-info">
           <div className="card-body">
+          <div className="row">
             <h4>{btnText} Property</h4>
             <div className="input-group mb-3 ">
               <div className="input-group-prepend">
@@ -228,9 +229,10 @@ function Properties() {
               </div>
               <input type="text" maxLength="100" ref={textboxRef} className="form-control" placeholder="Property Name" value={property} onChange={(e) => setProperty(e.target.value)} />
             </div>
-            <div className="custom-control custom-switch" style={{ marginLeft: 50 }}>
+            <div className="custom-control custom-switch" style={{ marginLeft: 10 }}>
+            <label className="custom-control-label" htmlFor="switch-mandatory">Is Mandatory?</label>
               <input type="checkbox" className="custom-control-input" id="switch-mandatory" checked={mandatory} onChange={(e) => setMandatory(e.target.checked)} />
-              <label className="custom-control-label" htmlFor="switch-mandatory">Mandatory</label>
+            </div>
             </div>
           </div>
           <div className="card-footer">

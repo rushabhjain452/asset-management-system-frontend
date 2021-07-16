@@ -231,7 +231,7 @@ function Gender() {
                       maxLength="20" 
                       className="form-control float-right" 
                       placeholder="Search"
-                      onChange={onSearchTextChange} />
+                      onChange={onSearchTextChange}/>
                     <div className="input-group-append">
                       <span className="input-group-text" id="basic-addon2">
                         <i className="fas fa-search"></i>
