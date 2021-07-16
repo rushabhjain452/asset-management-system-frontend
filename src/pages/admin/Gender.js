@@ -48,8 +48,21 @@ function Gender() {
       .then((response) => {
         setLoading(false);
         if (response.status === 200) {
-          setData(response.data);
-          setDataCopy(response.data);
+          // Sort Data
+          const data = response.data;
+          data.sort((a, b) => {
+            let val1 = a.name.toLowerCase();
+            let val2 = b.name.toLowerCase();
+            if (val1 < val2) {
+              return -1;
+            }
+            if (val1 > val2) {
+              return 1;
+            }
+            return 0;
+          });
+          setData(data);
+          setDataCopy(data);
         }
         else {
           // showSweetAlert('error', 'Network Error', errorMessage);
@@ -66,8 +79,41 @@ function Gender() {
       });
   };
 
+  const validateInput = () => {
+    // const char_only_regex = /^[a-zA-Z_() ]*$/;
+    const char_only_regex = /^[a-zA-Z_()// ]*$/;
+    // const char_only_regex = /^[_A-zA-Z]*((-|\s)*[_A-zA-Z])*$/g;
+    let result = true;
+    let error = '';
+    if (gender.length == 0) {
+      result = false;
+      error = 'Please enter value for Gender.';
+      textboxRef.current.focus();
+    }
+    else if (!gender.match(char_only_regex)) {
+      result = false;
+      error = 'Please enter valid Gender. Gender can only contain characters.';
+      textboxRef.current.focus();
+    }
+    else if (btnText == 'Add') {
+      // Check if already exists
+      const filterData = data.filter((item) => item.name.toLowerCase() == gender.toLowerCase());
+      if (filterData.length > 0) {
+        result = false;
+        error = 'Gender already exists with given name.';
+        textboxRef.current.focus();
+      }
+    }
+    // Display Error
+    if (result === false) {
+      showToast('warning', error);
+    }
+    console.log(result);
+    return result;
+  };
+
   const addGender = () => {
-    if (gender.length > 0) {
+    if (validateInput()) {
       setLoading(true);
       const requestData = {
         name: gender
@@ -88,10 +134,6 @@ function Gender() {
           setLoading(false);
           showSweetAlert('error', 'Error', 'Failed to add Gender. Please try again...');
         });
-    } else {
-      // showSweetAlert('warning', 'Invalid Input', 'Please enter valid value for Gender.');
-      showToast('warning', 'Please enter valid value for Gender.');
-      textboxRef.current.focus();
     }
   };
 
@@ -129,7 +171,7 @@ function Gender() {
   };
 
   const updateGender = () => {
-    if (gender.length > 0) {
+    if (validateInput()) {
       setLoading(true);
       const requestData = {
         name: gender
@@ -151,10 +193,6 @@ function Gender() {
           setLoading(false);
           showSweetAlert('error', 'Error', 'Failed to update Gender. Please try again...');
         });
-    } else {
-      // showSweetAlert('warning', 'Invalid Input', 'Please enter valid value for Gender.');
-      showToast('warning', 'Please enter valid value for Gender.');
-      textboxRef.current.focus();
     }
   };
 
@@ -165,12 +203,12 @@ function Gender() {
 
   const onSearchTextChange = (e) => {
     const searchText = e.target.value.toLowerCase();
-    if(searchText.length > 0){
+    if (searchText.length > 0) {
       // let searchData = dataCopy.filter((item) => item.name.startsWith(searchText));
       // let searchData = dataCopy.filter((item) => item.name.includes(searchText));
       let searchData = dataCopy.filter((item) => item.name.toLowerCase().includes(searchText));
       setData(searchData);
-    }else{
+    } else {
       setData(dataCopy);
     }
   };
@@ -210,11 +248,11 @@ function Gender() {
           </div>
           <div className="card-footer">
             <button type="button" className="btn btn-secondary float-right" onClick={onCancel}>Cancel</button>
-            <button 
-              type="button" 
-              className="btn btn-primary float-right" 
+            <button
+              type="button"
+              className="btn btn-primary float-right"
               onClick={btnText === 'Add' ? addGender : updateGender}>
-                {btnText}
+              {btnText}
             </button>
           </div>
         </div>
@@ -225,11 +263,11 @@ function Gender() {
                 <h3 className="card-title">List of Gender</h3>
                 <div className="card-tools">
                   <div className="input-group input-group-sm">
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       name="table_search"
-                      maxLength="20" 
-                      className="form-control float-right" 
+                      maxLength="20"
+                      className="form-control float-right"
                       placeholder="Search"
                       onChange={onSearchTextChange} />
                     <div className="input-group-append">

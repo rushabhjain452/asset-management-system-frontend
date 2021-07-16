@@ -48,8 +48,21 @@ function Role() {
       .then((response) => {
         setLoading(false);
         if (response.status === 200) {
-          setData(response.data);
-          setDataCopy(response.data);
+          // Sort Data
+          const data = response.data;
+          data.sort((a, b) => {
+            let val1 = a.name.toLowerCase();
+            let val2 = b.name.toLowerCase();
+            if (val1 < val2) {
+              return -1;
+            }
+            if (val1 > val2) {
+              return 1;
+            }
+            return 0;
+          });
+          setData(data);
+          setDataCopy(data);
         }
         else {
           showToast('error', errorMessage);
@@ -61,8 +74,39 @@ function Role() {
       });
   };
 
+  const validateInput = () => {
+    const char_only_regex = /^[a-zA-Z_()// ]*$/;
+    let result = true;
+    let error = '';
+    if (role.length == 0) {
+      result = false;
+      error = 'Please enter value for Role.';
+      textboxRef.current.focus();
+    }
+    else if (!role.match(char_only_regex)) {
+      result = false;
+      error = 'Please enter valid Role. Role can only contain characters.';
+      textboxRef.current.focus();
+    }
+    else if (btnText == 'Add') {
+      // Check if already exists
+      const filterData = data.filter((item) => item.name.toLowerCase() == role.toLowerCase());
+      if (filterData.length > 0) {
+        result = false;
+        error = 'Role already exists with given name.';
+        textboxRef.current.focus();
+      }
+    }
+    // Display Error
+    if (result === false) {
+      showToast('warning', error);
+    }
+    console.log(result);
+    return result;
+  };
+
   const addRole = () => {
-    if (role.length > 0) {
+    if (validateInput()) {
       setLoading(true);
       const requestData = {
         name: role
@@ -83,9 +127,6 @@ function Role() {
           setLoading(false);
           showSweetAlert('error', 'Error', 'Failed to add Role. Please try again...');
         });
-    } else {
-      showToast('warning', 'Please enter valid value for Role.');
-      textboxRef.current.focus();
     }
   };
 
@@ -123,7 +164,7 @@ function Role() {
   };
 
   const updateRole = () => {
-    if (role.length > 0) {
+    if (validateInput()) {
       setLoading(true);
       const requestData = {
         name: role
@@ -145,9 +186,6 @@ function Role() {
           setLoading(false);
           showSweetAlert('error', 'Error', 'Failed to update Role. Please try again...');
         });
-    } else {
-      showToast('warning', 'Please enter valid value for Role.');
-      textboxRef.current.focus();
     }
   };
 
@@ -158,10 +196,10 @@ function Role() {
 
   const onSearchTextChange = (e) => {
     const searchText = e.target.value.toLowerCase();
-    if(searchText.length > 0){
+    if (searchText.length > 0) {
       let searchData = dataCopy.filter((item) => item.name.toLowerCase().includes(searchText));
       setData(searchData);
-    }else{
+    } else {
       setData(dataCopy);
     }
   };
@@ -201,11 +239,11 @@ function Role() {
           </div>
           <div className="card-footer">
             <button type="button" className="btn btn-secondary float-right" onClick={onCancel}>Cancel</button>
-            <button 
-              type="button" 
-              className="btn btn-primary float-right" 
+            <button
+              type="button"
+              className="btn btn-primary float-right"
               onClick={btnText === 'Add' ? addRole : updateRole}>
-                {btnText}
+              {btnText}
             </button>
           </div>
         </div>
@@ -216,11 +254,11 @@ function Role() {
                 <h3 className="card-title">List of Role</h3>
                 <div className="card-tools">
                   <div className="input-group input-group-sm">
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       name="table_search"
-                      maxLength="20" 
-                      className="form-control float-right" 
+                      maxLength="20"
+                      className="form-control float-right"
                       placeholder="Search"
                       onChange={onSearchTextChange} />
                     <div className="input-group-append">

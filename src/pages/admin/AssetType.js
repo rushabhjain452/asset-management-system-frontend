@@ -48,8 +48,21 @@ function AssetType() {
       .then((response) => {
         setLoading(false);
         if (response.status === 200) {
-          setData(response.data);
-          setDataCopy(response.data);
+          // Sort Data
+          const data = response.data;
+          data.sort((a, b) => {
+            let val1 = a.assetType.toLowerCase();
+            let val2 = b.assetType.toLowerCase();
+            if (val1 < val2) {
+              return -1;
+            }
+            if (val1 > val2) {
+              return 1;
+            }
+            return 0;
+          });
+          setData(data);
+          setDataCopy(data);
         }
         else {
           showToast('error', errorMessage);
@@ -61,8 +74,39 @@ function AssetType() {
       });
   };
 
+  const validateInput = () => {
+    const char_only_regex = /^[a-zA-Z_()// ]*$/;
+    let result = true;
+    let error = '';
+    if (assetType.length == 0) {
+      result = false;
+      error = 'Please enter value for Asset Type.';
+      textboxRef.current.focus();
+    }
+    else if (!assetType.match(char_only_regex)) {
+      result = false;
+      error = 'Please enter valid Asset Type. Asset Type can only contain characters.';
+      textboxRef.current.focus();
+    }
+    else if (btnText == 'Add') {
+      // Check if already exists
+      const filterData = data.filter((item) => item.assetType.toLowerCase() == assetType.toLowerCase());
+      if (filterData.length > 0) {
+        result = false;
+        error = 'Asset Type already exists with given name.';
+        textboxRef.current.focus();
+      }
+    }
+    // Display Error
+    if (result === false) {
+      showToast('warning', error);
+    }
+    console.log(result);
+    return result;
+  };
+
   const addAssetType = () => {
-    if (assetType.length > 0) {
+    if (validateInput()) {
       setLoading(true);
       const requestData = {
         assetType: assetType
@@ -83,9 +127,6 @@ function AssetType() {
           setLoading(false);
           showSweetAlert('error', 'Error', 'Failed to add Asset Type. Please try again...');
         });
-    } else {
-      showToast('warning', 'Please enter valid value for Asset Type.');
-      textboxRef.current.focus();
     }
   };
 
@@ -123,7 +164,7 @@ function AssetType() {
   };
 
   const updateAssetType = () => {
-    if (assetType.length > 0) {
+    if (validateInput()) {
       setLoading(true);
       const requestData = {
         assetType: assetType
@@ -145,9 +186,6 @@ function AssetType() {
           setLoading(false);
           showSweetAlert('error', 'Error', 'Failed to update Asset Type. Please try again...');
         });
-    } else {
-      showToast('warning', 'Please enter valid value for Asset Type.');
-      textboxRef.current.focus();
     }
   };
 
