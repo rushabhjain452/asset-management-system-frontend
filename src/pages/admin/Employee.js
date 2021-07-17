@@ -377,7 +377,6 @@ function AddEmployee() {
 
   const onCancel = () => {
     clearControls();
-    setBtnText('Add');
   };
 
   const statusChange = (e, employeeId) => {

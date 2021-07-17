@@ -40,11 +40,9 @@ button {
   color: #fff;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* Override Admin LTE CSS */
+.select2-container--default .select2-selection--single {
+  border: 1px solid #ced4da;
+  padding: .46875rem .75rem;
+  height: calc(2.25rem + 2px) !important;
 }

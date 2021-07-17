@@ -1,6 +1,5 @@
 /* @extend display-flex; */
 
-display-flex,
 .display-flex,
 .display-flex-center,
 .signup-content,
@@ -14,7 +13,6 @@ display-flex,
 
 /* @extend list-type-ulli; */
 
-list-type-ulli,
 .socials {
     list-style-type: none;
     margin: 0;
@@ -24,7 +22,7 @@ list-type-ulli,
 
 /* poppins-300 - latin */
 
-a:focus,
+/* a:focus,
 a:active {
     text-decoration: none;
     outline: none;
@@ -33,20 +31,18 @@ a:active {
     -webkit-transition: all 300ms ease 0s;
     -o-transition: all 300ms ease 0s;
     -ms-transition: all 300ms ease 0s;
-}
+} */
 
-input,
-select,
-textarea {
+/* input, select, textarea {
     outline: none;
     appearance: unset !important;
     -moz-appearance: unset !important;
     -webkit-appearance: unset !important;
     -o-appearance: unset !important;
     -ms-appearance: unset !important;
-}
+} */
 
-input::-webkit-outer-spin-button,
+/* input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
     appearance: none !important;
     -moz-appearance: none !important;
@@ -81,9 +77,9 @@ input[type=radio] {
     -webkit-appearance: radio !important;
     -o-appearance: radio !important;
     -ms-appearance: radio !important;
-}
+} */
 
-img {
+/* img {
     max-width: 100%;
     height: auto;
 }
@@ -104,9 +100,8 @@ h2 {
     padding: 0;
     font-weight: bold;
     color: #222;
-    /* font-family: Poppins; */
     font-size: 36px;
-}
+} */
 
 .main {
     height: 100%;
@@ -117,20 +112,27 @@ h2 {
     display: flex;
     align-items: center;
     justify-content: center;
-}
-
-.clear {
-    clear: both;
-}
-
-body {
-    font-size: 13px;
+    /* body css */
+    /* font-size: 13px; */
     line-height: 1.8;
     color: #222;
     background: #f8f8f8;
     font-weight: 400;
     font-family: Poppins;
 }
+
+.clear {
+    clear: both;
+}
+
+/* body {
+    font-size: 13px;
+    line-height: 1.8;
+    color: #222;
+    background: #f8f8f8;
+    font-weight: 400;
+    font-family: Poppins;
+} */
 
 .my-container {
     /* width: 900px; */
@@ -277,7 +279,7 @@ figure {
     margin-bottom: 0px;
 }
 
-input {
+.input-style {
     width: 100%;
     display: block;
     border: none;
@@ -285,45 +287,57 @@ input {
     padding: 6px 30px;
     font-family: Poppins;
     box-sizing: border-box;
+    outline: none;
+    appearance: unset !important;
+    -moz-appearance: unset !important;
+    -webkit-appearance: unset !important;
+    -o-appearance: unset !important;
+    -ms-appearance: unset !important;
 }
 
-input::-webkit-input-placeholder {
+.input-style::-webkit-input-placeholder {
     color: #999;
 }
 
-input::-moz-placeholder {
+.input-style::-moz-placeholder {
     color: #999;
 }
 
-input:-ms-input-placeholder {
+.input-style:-ms-input-placeholder {
     color: #999;
 }
 
-input:-moz-placeholder {
+.input-style:-moz-placeholder {
     color: #999;
 }
 
-input:focus {
+.input-style:focus {
     border-bottom: 1px solid #222;
+    outline: none;
+    box-shadow: none !important;
+    -moz-box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    -o-box-shadow: none !important;
+    -ms-box-shadow: none !important;
 }
 
-input:focus::-webkit-input-placeholder {
+.input-style:focus::-webkit-input-placeholder {
     color: #222;
 }
 
-input:focus::-moz-placeholder {
+.input-style:focus::-moz-placeholder {
     color: #222;
 }
 
-input:focus:-ms-input-placeholder {
+.input-style:focus:-ms-input-placeholder {
     color: #222;
 }
 
-input:focus:-moz-placeholder {
+.input-style:focus:-moz-placeholder {
     color: #222;
 }
 
-input[type=checkbox]:not(old) {
+/* input[type=checkbox]:not(old) {
     width: 2em;
     margin: 0;
     padding: 0;
@@ -375,14 +389,14 @@ input[type=checkbox]:not(old):checked+label>span:before {
     text-align: center;
     font-family: 'Material-Design-Iconic-Font';
     font-weight: bold;
-}
+} */
 
 .agree-term {
     display: inline-block;
     width: auto;
 }
 
-label {
+.label-style {
     position: absolute;
     left: 0;
     top: 50%;
@@ -398,9 +412,8 @@ label {
     top: 22%;
 }
 
-label.error {
+/* label.error {
     position: relative;
-    /*background: url("../images/unchecked.gif") no-repeat;*/
     background-position-y: 3px;
     padding-left: 20px;
     display: block;
@@ -424,10 +437,9 @@ label.valid:after {
     width: 100%;
     height: 100%;
     position: absolute;
-    /* right: 0; */
     font-size: 16px;
     color: green;
-}
+} */
 
 .label-agree-term {
     position: relative;

@@ -10,7 +10,7 @@ import { showSweetAlert } from '../helpers/sweetAlert';
 function Login() {
 
   const [email, setEmail] = useState("rushabh@bbd.co.za");
-  const [password, setPassword] = useState("Rushabh@12345");
+  const [password, setPassword] = useState("Rushabh@123456");
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState();
 
@@ -118,12 +118,12 @@ function Login() {
               <h2 className="form-title">Asset Management System Login</h2>
               <form method="POST" className="register-form" id="login-form">
                 <div className="form-group">
-                  <label htmlFor="your_name"><i className="zmdi zmdi-account material-icons-name"></i></label>
-                  <input type="text" maxLength="50" ref={emailRef} name="your_name" id="your_name" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} autoFocus />
+                  <label htmlFor="your_name" className="label-style"><i className="zmdi zmdi-account material-icons-name"></i></label>
+                  <input type="text" className="input-style" maxLength="50" ref={emailRef} name="your_name" id="your_name" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} autoFocus />
                 </div>
                 <div className="form-group">
-                  <label htmlFor="your_pass"><i className="zmdi zmdi-lock"></i></label>
-                  <input type="password" maxLength="50" ref={passwordRef} name="your_pass" id="your_pass" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} />
+                  <label htmlFor="your_pass" className="label-style"><i className="zmdi zmdi-lock"></i></label>
+                  <input type="password" className="input-style" maxLength="50" ref={passwordRef} name="your_pass" id="your_pass" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} />
                 </div>
                 <Link to="/forget-password" className="signup-image-link">Forget Password?</Link>
                 {/* <div className="form-group">

@@ -93,12 +93,12 @@ function App() {
             <PrivateRoute exact path='/admin/dashboard' component={AdminDashboard} />
             <PrivateRoute exact path='/admin/gender' component={Gender} />
             <PrivateRoute exact path='/admin/role' component={Role} />
-            <PrivateRoute exact path='/admin/asset-type' component={AssetType} />
+            <PrivateRoute exact path='/admin/asset-types' component={AssetType} />
             <PrivateRoute exact path='/admin/properties' component={Properties} />
-            <PrivateRoute exact path='/admin/asset' component={Asset} />
+            <PrivateRoute exact path='/admin/assets' component={Asset} />
             <PrivateRoute exact path='/admin/add-employee' component={AddEmployee} />
             <PrivateRoute exact path='/admin/view-employees' component={ViewEmployees} />
-            <PrivateRoute exact path='/admin/asset-properties' component={AssetProperties} />
+            <PrivateRoute exact path='/admin/assettype-properties' component={AssetProperties} />
             <PrivateRoute exact path='/admin/assign-asset' component={AssignAsset} />
             <PrivateRoute exact path='/admin/auction' component={Auction} />
             <PrivateRoute exact path='/admin/view-bids' component={ViewBids} />

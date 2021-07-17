@@ -32,6 +32,7 @@ function Gender() {
   const [dataCopy, setDataCopy] = useState([]);
   const [gender, setGender] = useState('');
   const [genderId, setGenderId] = useState(0);
+  
   const [btnText, setBtnText] = useState('Add');
 
   const [loading, setLoading] = useState(false);

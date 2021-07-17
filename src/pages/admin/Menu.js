@@ -53,9 +53,9 @@ function Menu() {
               </li> */}
               <li className="nav-item menu-open">
                 {/* <a href="./index.html" className="nav-link active"> */}
-                <NavLink exact to="/admin/asset-type" className="nav-link" activeClassName="active">
+                <NavLink exact to="/admin/asset-types" className="nav-link" activeClassName="active">
                   <i className="nav-icon fas fa-headset"></i>
-                  <p className="menu-link-style">Asset Type</p>
+                  <p className="menu-link-style">Asset Types</p>
                 </NavLink>
               </li>
               <li className="nav-item menu-open">
@@ -67,16 +67,16 @@ function Menu() {
               </li>
               <li className="nav-item menu-open">
                 {/* <a href="./index.html" className="nav-link active"> */}
-                <NavLink exact to="/admin/asset" className="nav-link" activeClassName="active">
-                  <i className="nav-icon fas fa-laptop"></i>
-                  <p className="menu-link-style">Asset</p>
+                <NavLink exact to="/admin/assettype-properties" className="nav-link" activeClassName="active">
+                  <i className=" nav-icon fas fa-laptop"></i>
+                  <p className="menu-link-style">Asset Type Properties</p>
                 </NavLink>
               </li>
               <li className="nav-item menu-open">
                 {/* <a href="./index.html" className="nav-link active"> */}
-                <NavLink exact to="/admin/asset-properties" className="nav-link" activeClassName="active">
-                  <i className=" nav-icon fas fa-laptop"></i>
-                  <p className="menu-link-style">Asset Type Properties</p>
+                <NavLink exact to="/admin/assets" className="nav-link" activeClassName="active">
+                  <i className="nav-icon fas fa-laptop"></i>
+                  <p className="menu-link-style">Assets</p>
                 </NavLink>
               </li>
               <li className="nav-item menu-open">
