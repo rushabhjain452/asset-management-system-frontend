@@ -27,7 +27,7 @@ import 'admin-lte/plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.mi
 // import 'admin-lte/plugins/datatables-buttons/js/buttons.colVis.min.js';
 
 function AssetProperties() {
-  
+
   useEffect(() => {
     $(function () {
       //Initialize Select2 Elements
@@ -49,12 +49,12 @@ function AssetProperties() {
           <div className="container-fluid">
             <div className="row mb-2">
               <div className="col-sm-6">
-                <h1 className="m-0">Asset Properties</h1>
+                <h1 className="m-0">Asset Type Properties</h1>
               </div>{/* /.col */}
               <div className="col-sm-6">
                 <ol className="breadcrumb float-sm-right">
                   <li className="breadcrumb-item"><a href="#">Home</a></li>
-                  <li className="breadcrumb-item active">Asset Properties</li>
+                  <li className="breadcrumb-item active">Asset Type Properties</li>
                 </ol>
               </div>{/* /.col */}
             </div>{/* /.row */}
@@ -62,32 +62,46 @@ function AssetProperties() {
         </div>
         <div className="card card-info">
           <div className="card-body">
-            <h4>Add Asset Properties </h4>
-            {/* <label>Minimal (.select2-danger)</label> */}
-            <div className="row">
-              <div className="col-md-10">
-                <div className="form-group">
-                  <h6>Property Name:</h6>
-                  <select className="form-control select2">
-                    <option selected="selected">Alabama</option>
-                    <option>Alaska</option>
-                    <option>California</option>
-                    <option>Delaware</option>
-                    <option>Tennessee</option>
-                    <option>Texas</option>
-                    <option>Washington</option>
-                  </select>
-                </div>
-                <div className="form-group">
+              <h4>Add Asset Type Properties </h4>
+              {/* <label>Minimal (.select2-danger)</label> */}
+              <div className="row">
+                <div className="col-md-12">
+                  <div className="form-group">
+                    <h6>Asset Type:</h6>
+                    <select className="form-control select2">
+                      <option selected="selected">Alabama</option>
+                      <option>Alaska</option>
+                      <option>California</option>
+                      <option>Delaware</option>
+                      <option>Tennessee</option>
+                      <option>Texas</option>
+                      <option>Washington</option>
+                    </select>
+                  </div>
+                  <div className="row">
+                  <h6>Properties:</h6>
+                  <div className="custom-control custom-checkbox" style={{ marginLeft: 10 }}>
+                    <label className="custom-control-label" htmlFor="switch-mandatory">Is Mandatory?</label>
+                    <input type="checkbox" className="custom-control-input" id="switch-mandatory" />
+                  </div>
+                  </div>
+                  {/* <div className="form-group">
                   <h6>Property Value:</h6>
                     <input type="text" maxLength="20" className="form-control" placeholder="Property Value" />
-                </div>
-              </div>
+                </div> */}
+                  </div>
             </div>
+            <div className="card-footer">
+            <button type="button" className="btn btn-secondary float-right">Cancel</button>
+            <button
+              type="button"
+              className="btn btn-primary float-right"
+              // 
+              >
+                Add
+              {/* {btnText} */}
+            </button>
           </div>
-          <div className="card-footer">
-            <button type="submit" className="btn btn-primary float-right">Add</button>
-            <button type="submit" className="btn btn-default float-right">Cancel</button>
           </div>
         </div>
         {/* /.row */}

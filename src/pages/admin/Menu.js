@@ -76,7 +76,7 @@ function Menu() {
                 {/* <a href="./index.html" className="nav-link active"> */}
                 <NavLink exact to="/admin/asset-properties" className="nav-link" activeClassName="active">
                   <i className=" nav-icon fas fa-laptop"></i>
-                  <p className="menu-link-style">Asset Properties</p>
+                  <p className="menu-link-style">Asset Type Properties</p>
                 </NavLink>
               </li>
               <li className="nav-item menu-open">

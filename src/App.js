@@ -63,7 +63,7 @@ import Asset from "./pages/admin/Asset";
 import Profile from "./pages/Profile";
 import AddEmployee from "./pages/admin/Employee";
 import ViewEmployees from "./pages/admin/ViewEmployees";
-import AssetProperties from "./pages/admin/AssetProperties";
+import AssetProperties from "./pages/admin/AssetTypeProperties";
 import AssignAsset from "./pages/admin/AssignAsset";
 import Auction from "./pages/admin/Auction";
 import Bids from "./pages/Bids";
