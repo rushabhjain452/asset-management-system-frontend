@@ -105,7 +105,7 @@ function Bids() {
                         </div>
                       </div>
                     </div>
-                  <div class="form-group">
+                  <div className="form-group">
                   <h6>Bid Amount:</h6>
                     <input type="number" maxLength="20" className="form-control" placeholder="Bid Amount" />
                 </div>

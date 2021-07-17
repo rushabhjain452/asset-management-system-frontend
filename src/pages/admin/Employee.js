@@ -1,24 +1,438 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { NavLink } from 'react-router-dom';
 import Header from '../Header';
 import Footer from '../Footer';
 import Menu from './Menu';
+import axios from 'axios';
+import femaleAvatar from 'admin-lte/dist/img/avatar3.png';
+import maleAvatar from 'admin-lte/dist/img/avatar5.png';
+
+import Loader from '../../components/Loader';
+import { errorMessage } from '../../config';
+import { showToast, showSweetAlert, showConfirmAlert } from '../../helpers/sweetAlert';
+import { authHeader, logout } from '../../services/authService';
+
+const apiurl = process.env.REACT_APP_URL;
 
 function AddEmployee() {
+  const [data, setData] = useState([]);
+  const [dataCopy, setDataCopy] = useState([]);
+  const [genderData, setGenderData] = useState([]);
+
+  const [employeeId, setEmployeeId] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [genderId, setGenderId] = useState(1);
+  const [emailId, setEmailId] = useState('');
+  const [mobileNumber, setMobileNumber] = useState('');
+  const [profilePicture, setProfilePicture] = useState('');  // Image Path
+  const [base64Image, setBase64Image] = useState('');  // Image in Base64 format
+  const [profileImage, setProfileImage] = useState({});  // File object
+  const [isProfilePictureChanged, setIsProfilePictureChanged] = useState(false);
+
+  const [employeeIdDisabled, setEmployeeIdDisabled] = useState(false);
+
+  const [btnText, setBtnText] = useState('Add');
+
+  const [loading, setLoading] = useState(false);
+
+  const employeeIdRef = useRef(null);
+  const firstNameRef = useRef(null);
+  const lastNameRef = useRef(null);
+  const emailIdRef = useRef(null);
+  const mobileNumberRef = useRef(null);
+
+  useEffect(() => {
+    fetchGenderData();
+    fetchData();
+  }, []);
+
+  const fetchGenderData = () => {
+    axios.get(apiurl + '/genders')
+      .then((response) => {
+        if (response.status == 200) {
+          setGenderData(response.data);
+        } else {
+          showSweetAlert('error', 'Network Error', errorMessage);
+        }
+      })
+      .catch((error) => {
+        showSweetAlert('error', 'Network Error', errorMessage);
+      });
+  };
+
+  const getGender = (id) => {
+    id = parseInt(id);
+    if(genderData.length > 0){
+      const filterData = genderData.filter((item) => item.genderId === id);
+      if(filterData.length > 0){
+        return filterData[0].name;
+      }else{
+        return '';
+      }
+    }else{
+      return '';
+    }
+  }
+
+  const fetchData = () => {
+    setLoading(true);
+    axios.get(apiurl + '/employees', { headers: authHeader() })
+      .then((response) => {
+        setLoading(false);
+        if (response.status === 200) {
+          // Sort Data
+          const data = response.data;
+          data.sort((a, b) => a.employeeId - b.employeeId);
+          setData(data);
+          setDataCopy(data);
+        }
+        else {
+          showToast('error', errorMessage);
+        }
+      })
+      .catch((error) => {
+        setLoading(false);
+        showToast('error', errorMessage);
+      });
+  };
+
+  const onProfileSelected = (e) => {
+    // console.log('Path : ' + e.target.value);
+    setProfilePicture(e.target.value);
+    setIsProfilePictureChanged(true);
+    console.log('File : ');
+    console.log(e.target.files);
+    if (e.target.files.length > 0) {
+      const file = e.target.files[0];
+      setProfileImage(file);
+      console.log('File : ' + file);
+      let result = true;
+      let error = '';
+      // Validate file
+      if (file.size > 1048576) {
+        // Don't allow if greater than 1 MB
+        result = false;
+        error = 'Please select image with size less than 1 MB.';
+      }
+      else if (file.type != 'image/jpeg' && file.type != 'image/png') {
+        result = false;
+        error = 'Please select valid Image. Only JPG and PNG images are allowed.';
+      }
+      // Display Error if validation failed
+      if (result === false) {
+        showToast('warning', error);
+      }
+      else {
+        // Display image if validation successful
+        var reader = new FileReader();
+        reader.onload = (rawFile) => {
+          // console.log(rawFile);
+          // console.log(rawFile.target.result);
+          if (rawFile.target.readyState === 2) {
+            setBase64Image(rawFile.target.result);
+          }
+        }
+        reader.readAsDataURL(file);
+      }
+    } else {
+      showToast('warning', 'No image selected.');
+    }
+  }
+
+  const removeProfilePicture = () => {
+    setIsProfilePictureChanged(true);
+    setProfilePicture('');
+    setBase64Image('');
+  }
+
+  const validateInput = () => {
+    const char_only_regex = /^[a-zA-Z_()// -]*$/;
+    const num_only_regex = /^[0-9]*$/;
+    const email_regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    let result = true;
+    let error = '';
+    if (employeeId.length == 0) {
+      result = false;
+      error = 'Please enter value for Employee Id.';
+      employeeIdRef.current.focus();
+    }
+    else if (!employeeId.toString().match(num_only_regex)) {
+      result = false;
+      error = 'Please enter valid Employee Id. Employee Id can only contain numbers.';
+      employeeIdRef.current.focus();
+    }
+    else if (firstName.length == 0) {
+      result = false;
+      error = 'Please enter value for Employee First Name.';
+      firstNameRef.current.focus();
+    }
+    else if (!firstName.match(char_only_regex)) {
+      result = false;
+      error = 'Please enter valid Employee First Name. First Name can only contain characters.';
+      firstNameRef.current.focus();
+    }
+    else if (lastName.length == 0) {
+      result = false;
+      error = 'Please enter value for Employee Last Name.';
+      lastNameRef.current.focus();
+    }
+    else if (!lastName.match(char_only_regex)) {
+      result = false;
+      error = 'Please enter valid Employee Last Name. Last Name can only contain characters.';
+      lastNameRef.current.focus();
+    }
+    else if (genderId === 0) {
+      result = false;
+      error = 'Please select Gender of Employee.';
+    }
+    else if (emailId.length == 0) {
+      result = false;
+      error = 'Please enter value for Email Address.';
+      emailIdRef.current.focus();
+    }
+    else if (!emailId.match(email_regex) || !emailId.includes("@bbd.co.za")) {
+      result = false;
+      error = 'Please enter valid Email Address of BBD Domain only.';
+      emailIdRef.current.focus();
+    }
+    else if (mobileNumber.length == 0) {
+      result = false;
+      error = 'Please enter value for Mobile Number.';
+      mobileNumberRef.current.focus();
+    }
+    else if (!mobileNumber.match(num_only_regex) || mobileNumber.length !== 10) {
+      result = false;
+      error = 'Please enter valid Mobile Number. Mobile number can only contain numbers and must be of 10 digits.';
+      mobileNumberRef.current.focus();
+    }
+    else if (btnText == 'Add') {
+      // Check if Employee Id already exists
+      const filterData = data.filter((item) => item.employeeId == employeeId);
+      if (filterData.length > 0) {
+        result = false;
+        error = 'Given Employee Id already exists for another employee.';
+        employeeIdRef.current.focus();
+      }
+      else {
+        // Check if email already exists
+        const filterData = data.filter((item) => item.emailId.toLowerCase() == emailId.toLowerCase());
+        if (filterData.length > 0) {
+          result = false;
+          error = 'Given Email Id already exists for another employee.';
+          emailIdRef.current.focus();
+        }
+        else {
+          // Check if mobile number already exists
+          const filterData = data.filter((item) => item.mobileNumber.toLowerCase() == mobileNumber.toLowerCase());
+          if (filterData.length > 0) {
+            result = false;
+            error = 'Given Mobile Number already exists for another employee.';
+            mobileNumberRef.current.focus();
+          }
+        }
+      }
+    }
+    // Display Error if validation failed
+    if (result === false) {
+      showToast('warning', error);
+    }
+    return result;
+  };
+
+  const addEmployee = () => {
+    if (validateInput()) {
+      setLoading(true);
+      const formData = new FormData();
+      formData.append('employeeId', employeeId);
+      formData.append('firstName', firstName);
+      formData.append('lastName', lastName);
+      formData.append('genderId', genderId);
+      formData.append('emailId', emailId);
+      formData.append('mobileNumber', mobileNumber);
+      if (profilePicture != '') {
+        formData.append('profilePicture', profileImage);
+      }else{
+        formData.append('profilePicture', null);
+      }
+      axios.post(apiurl + '/employees/register', formData, { headers: {...authHeader(), 'Content-Type': 'multipart/form-data' } })
+        .then((response) => {
+          setLoading(false);
+          if (response.status === 201) {
+            showSweetAlert('success', 'Success', 'Employee added successfully.');
+            fetchData();
+          }
+          else {
+            showSweetAlert('error', 'Error', 'Failed to add Employee. Please try again...');
+          }
+          clearControls();
+        })
+        .catch((error) => {
+          setLoading(false);
+          showSweetAlert('error', 'Error', 'Failed to add Employee. Please try again...');
+        });
+    }
+  };
+
+  const deleteEmployee = (id, name) => {
+    showConfirmAlert('Delete Confirmation', `Do you really want to delete the employee '${name}' ?`)
+      .then((result) => {
+        if (result.isConfirmed) {
+          setLoading(true);
+          axios.delete(apiurl + '/employees/' + id, { headers: authHeader() })
+            .then((response) => {
+              setLoading(false);
+              if (response.status === 200) {
+                showSweetAlert('success', 'Success', 'Employee deleted successfully.');
+                fetchData();
+              }
+              else {
+                showSweetAlert('error', 'Error', 'Failed to delete Employee. Please try again...');
+              }
+              clearControls();
+            })
+            .catch((error) => {
+              setLoading(false);
+              showSweetAlert('error', 'Error', 'Failed to delete Employee. Please try again...');
+              clearControls();
+            });
+        }
+      });
+  };
+
+  const editEmployee = (id) => {
+    const filterData = data.filter((item) => item.employeeId === id);
+    if(filterData.length > 0){
+      let obj = filterData[0];
+      setBtnText('Update');
+      setEmployeeId(obj.employeeId);
+      setFirstName(obj.firstName);
+      setLastName(obj.lastName);
+      setGenderId(obj.genderId);
+      console.log(getGender(obj.genderId));
+      setEmailId(obj.emailId);
+      setMobileNumber(obj.mobileNumber);
+      // setProfilePicture(obj.profilePicture);
+      setBase64Image(obj.profilePicture);
+      setEmployeeIdDisabled(true);
+      firstNameRef.current.focus();
+    } 
+  };
+
+  const updateEmployee = () => {
+    if (validateInput()) {
+      setLoading(true);
+      const formData = new FormData();
+      formData.append('employeeId', employeeId);
+      formData.append('firstName', firstName);
+      formData.append('lastName', lastName);
+      formData.append('genderId', genderId);
+      formData.append('emailId', emailId);
+      formData.append('mobileNumber', mobileNumber);
+      let url = apiurl + '/employees/';
+      if(isProfilePictureChanged){
+        url += 'employee-with-profile/' + employeeId;
+        if (profilePicture != '') {
+          formData.append('profilePicture', profileImage);
+        }else{
+          formData.append('profilePicture', null);
+        }
+      }else{
+        url += employeeId;
+      }
+      console.log(url);
+      axios.put(url, formData, { headers: {...authHeader(), 'Content-Type': 'multipart/form-data' } })
+        .then((response) => {
+          setLoading(false);
+          if (response.status === 200) {
+            showSweetAlert('success', 'Success', 'Employee updated successfully.');
+            fetchData();
+          }
+          else {
+            showSweetAlert('error', 'Error', 'Failed to update Employee. Please try again...');
+          }
+          clearControls();
+        })
+        .catch((error) => {
+          setLoading(false);
+          showSweetAlert('error', 'Error', 'Failed to update Employee. Please try again...');
+        });
+    }
+  };
+
+  const clearControls = () => {
+    setEmployeeId('');
+    setFirstName('');
+    setLastName('');
+    // setGenderId(0);
+    setGenderId(1);
+    setEmailId('');
+    setMobileNumber('');
+    setProfilePicture('');
+    setBase64Image('');
+    setEmployeeIdDisabled(false);
+    setIsProfilePictureChanged(false);
+    setBtnText('Add');
+  };
+
+  const onCancel = () => {
+    clearControls();
+    setBtnText('Add');
+  };
+
+  const statusChange = (e, employeeId) => {
+    const status = e.target.checked;
+    axios.put(apiurl + '/employees/' + employeeId + '/update-status/' + status, {}, { headers: authHeader() })
+      .then((response) => {
+        setLoading(false);
+        if (response.status === 200) {
+          showToast('success', 'Status of Employee updated successfully.');
+          fetchData();
+        }
+        else {
+          showSweetAlert('error', 'Error', 'Failed to update status of Employee. Please try again...');
+          fetchData();
+        }
+      })
+      .catch((error) => {
+        setLoading(false);
+        showSweetAlert('error', 'Error', 'Failed to update status of Employee. Please try again...');
+        fetchData();
+      });
+  };
+
+  const onSearchTextChange = (e) => {
+    const searchText = e.target.value.toLowerCase();
+    if (searchText.length > 0) {
+      let searchData = dataCopy.filter((item) => item.firstName.toLowerCase().includes(searchText) ||
+        item.lastName.toLowerCase().includes(searchText) ||
+        item.genderName.toLowerCase().startsWith(searchText) ||
+        item.emailId.toLowerCase().includes(searchText) ||
+        item.mobileNumber.toLowerCase().includes(searchText) ||
+        item.roleName.toLowerCase().includes(searchText)
+      );
+      setData(searchData);
+    } else {
+      setData(dataCopy);
+    }
+  };
+
   return (
     <div>
       <Header />
       <Menu />
+      <Loader loading={loading} />
       <div className="content-wrapper">
         {/* Content Header (Page header) */}
         <section className="content-header">
           <div className="container-fluid">
             <div className="row mb-2">
               <div className="col-sm-6">
-                <h1>Employee Registration</h1>
+                <h1>{btnText} Employee</h1>
               </div>
               <div className="col-sm-6">
                 <ol className="breadcrumb float-sm-right">
-                  <li className="breadcrumb-item"><a href="#">Home</a></li>
+                  <li className="breadcrumb-item"><NavLink exact to="/admin/dashboard">Home</NavLink></li>
                   <li className="breadcrumb-item active">Add Employee</li>
                 </ol>
               </div>
@@ -42,100 +456,119 @@ function AddEmployee() {
                   <div className="form-group">
                     {/* <input type="text" id="inputName" className="form-control" /> */}
                     <h6>Employee Id:</h6>
-                    <div className="input-group mb-3 ">
+                    <div className="input-group mb-3">
                       <div className="input-group-prepend">
                         <span className="input-group-text">
                           <i className="fas fa-id-badge" />
                         </span>
                       </div>
-                      <input type="number" maxLength="20" className="form-control" placeholder="Employee Id" />
+                      <input type="number" maxLength="10" ref={employeeIdRef} className="form-control" placeholder="Employee Id" disabled={employeeIdDisabled} value={employeeId} onChange={(e) => setEmployeeId(e.target.value)} />
                     </div>
                   </div>
                   <div className="form-group">
                     <h6>First Name:</h6>
-                    <div className="input-group mb-3 ">
+                    <div className="input-group mb-3">
                       <div className="input-group-prepend">
                         <span className="input-group-text">
                           <i className="fas fa-user-circle" />
                         </span>
                       </div>
-                      <input type="text" maxLength="20" className="form-control" placeholder="Employee First Name" />
+                      <input type="text" maxLength="50" ref={firstNameRef} className="form-control" placeholder="Employee First Name" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
                     </div>
                   </div>
                   <div className="form-group">
                     <h6>Last Name:</h6>
-                    <div className="input-group mb-3 ">
+                    <div className="input-group mb-3">
                       <div className="input-group-prepend">
                         <span className="input-group-text">
                           <i className="fas fa-user-circle" />
                         </span>
                       </div>
-                      <input type="text" maxLength="20" className="form-control" placeholder="Employee Last Name" />
+                      <input type="text" maxLength="50" ref={lastNameRef} className="form-control" placeholder="Employee Last Name" value={lastName} onChange={(e) => setLastName(e.target.value)} />
                     </div>
                   </div>
-                  <div class="row">
+                  <div className="row">
                     <h6>Gender:</h6>
-                    <div class="col-sm-1">
-                      <div className="form-group">
-                        <div className="input-group mb-3 ">
-                          <div className="input-group-prepend">
-                            <span className="input-group-text">
-                              <i className="fas fa-male" />
-                            </span>
+                    {
+                      genderData.map((item) => (
+                        <div className="col-sm-1" key={item.genderId}>
+                          <div className="form-group" title={item.name}>
+                            <div className="input-group mb-3">
+                              <div className="input-group-prepend">
+                                <span className="input-group-text">
+                                  {item.name == "Female" ? <i className="fas fa-female" /> : <i className="fas fa-male" />}
+                                </span>
+                              </div>
+                              <input
+                                type="radio"
+                                className="form-control"
+                                name="gender"
+                                value={item.genderName}
+                                // defaultChecked={genderId === item.genderId ? true : false}
+                                checked={genderId === item.genderId ? true : false}
+                                onChange={(e) => setGenderId(item.genderId)}
+                              />
+                            </div>
                           </div>
-                          <input type="radio" className="form-control" />
                         </div>
-                      </div>
-                    </div>
-                    <div class="col-sm-1">
-                      <div className="form-group">
-                        <div className="input-group mb-3 ">
-                          <div className="input-group-prepend">
-                            <span className="input-group-text">
-                              <i className="fas fa-female" />
-                            </span>
-                          </div>
-                          <input type="radio" className="form-control" />
-                        </div>
-                      </div>
-                    </div>
+                      ))
+                    }
                   </div>
                   <div className="form-group">
                     <h6>Email Address:</h6>
-                    <div className="input-group mb-3 ">
+                    <div className="input-group mb-3">
                       <div className="input-group-prepend">
                         <span className="input-group-text">
                           <i className="fas fa-envelope-open-text" />
                         </span>
                       </div>
-                      <input type="email" maxLength="20" className="form-control" placeholder="Email Address" />
+                      <input type="email" maxLength="50" ref={emailIdRef} className="form-control" placeholder="Email Address" value={emailId} onChange={(e) => setEmailId(e.target.value)} />
                     </div>
                   </div>
                   <div className="form-group">
                     {/* <input type="text" id="inputName" className="form-control" /> */}
                     <h6>Mobile Number:</h6>
-                    <div className="input-group mb-3 ">
+                    <div className="input-group mb-3">
                       <div className="input-group-prepend">
                         <span className="input-group-text">
                           <i className="fas fa-mobile" />
                         </span>
                       </div>
-                      <input type="number" maxLength="20" className="form-control" placeholder="Employee Mobile Number" />
+                      <input type="number" maxLength="10" ref={mobileNumberRef} className="form-control" placeholder="Employee Mobile Number" value={mobileNumber} onChange={(e) => setMobileNumber(e.target.value)} />
                     </div>
                   </div>
-                  {/* <div class="row"> */}
-                  <div className="form-group">
-                    <h6>Profile Picture:</h6>
-                    <div className="input-group mb-3 ">
-                      <div className="input-group-prepend">
-                        <span className="input-group-text">
-                          <i className="fas fa-images" />
-                        </span>
+                  <div className="row">
+                    <div className="col-md-8">
+                      <div className="form-group">
+                        <h6>Profile Picture:</h6>
+                        <div className="input-group mb-3">
+                          <div className="input-group-prepend">
+                            <span className="input-group-text">
+                              <i className="fas fa-images" />
+                            </span>
+                          </div>
+                          <input
+                            type="file"
+                            className="form-control"
+                            id="profile-picture"
+                            accept=".jpg,.jpeg,.png"
+                            value={profilePicture}
+                            onChange={onProfileSelected}
+                          />
+                        </div>
                       </div>
-                      <input type="file" className="form-control" id="exampleInputFile" />
+                    </div>
+                    <div className="col-md-4">
+                      <img src={base64Image != '' ? base64Image : getGender(genderId) === 'Female' ? femaleAvatar : maleAvatar} 
+                        className="img-circle elevation-2" width="100" height="100" alt="No image selected" />
+                      {
+                        base64Image != '' &&
+                        <button type="button" onClick={removeProfilePicture} title="Remove Profile Picture">
+                          <i className="nav-icon fas fa-trash-alt" />
+                        </button>
+                      }
                     </div>
                   </div>
-                  {/* </div> */}
                 </div>
                 {/* /.card-body */}
               </div>
@@ -143,17 +576,14 @@ function AddEmployee() {
             </div>
           </div>
           <div className="row">
-            {/* <a href="#" className="btn btn-primary float-right">Register</a> */}
             <div className="card-footer">
-              <button type="button" className="btn btn-secondary float-right">Cancel</button>
+              <button type="button" className="btn btn-secondary float-right" onClick={onCancel}>Cancel</button>
               <button
                 type="button"
                 className="btn btn-primary float-right"
-              // onClick={btnText === 'Add' ? addGender : updateGender}
-              >
-                {/* {btnText} */}
-            Register
-            </button>
+                onClick={btnText === 'Add' ? addEmployee : updateEmployee}>
+                {btnText}
+              </button>
             </div>
           </div>
         </section>
@@ -167,12 +597,24 @@ function AddEmployee() {
               <div className="col-sm-6">
                 <h1>List Of Employees</h1>
               </div>
-              {/* <div className="col-sm-6">
-                <ol className="breadcrumb float-sm-right">
-                  <li className="breadcrumb-item"><a href="#">Home</a></li>
-                  <li className="breadcrumb-item active">List Of Employees</li>
-                </ol>
-              </div> */}
+              <div className="col-sm-6">
+                <div className="card-tools">
+                  <div className="input-group input-group-sm">
+                    <input
+                      type="text"
+                      name="table_search"
+                      maxLength="20"
+                      className="form-control float-right"
+                      placeholder="Search"
+                      onChange={onSearchTextChange} />
+                    <div className="input-group-append">
+                      <span className="input-group-text" id="basic-addon2">
+                        <i className="fas fa-search"></i>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>{/* /.container-fluid */}
         </section>
@@ -180,153 +622,67 @@ function AddEmployee() {
         <section className="content">
           {/* Default box */}
           <div className="card">
-            <div className="card-header">
-              <h3 className="card-title">Employees</h3>
-              {/* <div className="card-tools">
-                <button type="button" className="btn btn-tool" data-card-widget="collapse" title="Collapse">
-                  <i className="fas fa-minus" />
-                </button>
-                <button type="button" className="btn btn-tool" data-card-widget="remove" title="Remove">
-                  <i className="fas fa-times" />
-                </button>
-              </div> */}
-            </div>
             <div className="card-body p-0">
               <table className="table table-striped projects">
                 <thead>
                   <tr>
-                    <th style={{ width: '1%' }}>
-                      #
-              </th>
-                    <th style={{ width: '20%' }}>
-                      Project Name
-              </th>
-                    <th style={{ width: '30%' }}>
-                      Team Members
-              </th>
-                    <th>
-                      Project Progress
-              </th>
-                    <th style={{ width: '8%' }} className="text-center">
-                      Status
-              </th>
-                    <th style={{ width: '20%' }}>
-                    </th>
+                    <th>Employee Id</th>
+                    <th>Profile Picture</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Gender</th>
+                    <th>Email Id</th>
+                    <th>Mobile Number</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Edit</th>
+                    <th>Delete</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>
-                      #
-              </td>
-                    <td>
-                      <a>
-                        XYZ
-                </a>
-                      <br />
-                      <small>
-                        Created 01.01.2019
-                </small>
-                    </td>
-                    <td>
-                      <ul className="list-inline">
-                        <li className="list-inline-item">
-                          <img alt="Avatar" className="table-avatar" src="../../dist/img/avatar.png" />
-                        </li>
-                        <li className="list-inline-item">
-                          <img alt="Avatar" className="table-avatar" src="../../dist/img/avatar2.png" />
-                        </li>
-                        <li className="list-inline-item">
-                          <img alt="Avatar" className="table-avatar" src="../../dist/img/avatar3.png" />
-                        </li>
-                        <li className="list-inline-item">
-                          <img alt="Avatar" className="table-avatar" src="../../dist/img/avatar4.png" />
-                        </li>
-                      </ul>
-                    </td>
-                    <td className="project_progress">
-                      <div className="progress progress-sm">
-                        <div className="progress-bar bg-green" role="progressbar" aria-valuenow={57} aria-valuemin={0} aria-valuemax={100} style={{ width: '57%' }}>
-                        </div>
-                      </div>
-                      <small>
-                        57% Complete
-                </small>
-                    </td>
-                    <td className="project-state">
-                      <span className="badge badge-success">Success</span>
-                    </td>
-                    <td className="project-actions text-right">
-                      <a className="btn btn-primary btn-sm" href="#">
-                        <i className="fas fa-folder">
-                        </i>
-                  View
-                </a>
-                      <a className="btn btn-info btn-sm" href="#">
-                        <i className="fas fa-pencil-alt">
-                        </i>
-                  Edit
-                </a>
-                      <a className="btn btn-danger btn-sm" href="#">
-                        <i className="fas fa-trash">
-                        </i>
-                  Delete
-                </a>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      #
-              </td>
-                    <td>
-                      <a>
-                        ABC
-                </a>
-                      <br />
-                      <small>
-                        Created 01.01.2019
-                </small>
-                    </td>
-                    <td>
-                      <ul className="list-inline">
-                        <li className="list-inline-item">
-                          <img alt="Avatar" className="table-avatar" src="../../dist/img/avatar.png" />
-                        </li>
-                        <li className="list-inline-item">
-                          <img alt="Avatar" className="table-avatar" src="../../dist/img/avatar2.png" />
-                        </li>
-                      </ul>
-                    </td>
-                    <td className="project_progress">
-                      <div className="progress progress-sm">
-                        <div className="progress-bar bg-green" role="progressbar" aria-valuenow={47} aria-valuemin={0} aria-valuemax={100} style={{ width: '47%' }}>
-                        </div>
-                      </div>
-                      <small>
-                        47% Complete
-                </small>
-                    </td>
-                    <td className="project-state">
-                      <span className="badge badge-success">Success</span>
-                    </td>
-                    <td className="project-actions text-right">
-                      <a className="btn btn-primary btn-sm" href="#">
-                        <i className="fas fa-folder">
-                        </i>
-                  View
-                </a>
-                      <a className="btn btn-info btn-sm" href="#">
-                        <i className="fas fa-pencil-alt">
-                        </i>
-                  Edit
-                </a>
-                      <a className="btn btn-danger btn-sm" href="#">
-                        <i className="fas fa-trash">
-                        </i>
-                  Delete
-                </a>
-                    </td>
-                  </tr>
+                  {
+                    data.length > 0 && data.map((item, index) => (
+                      <tr key={item.employeeId}>
+                        <td>{item.employeeId}</td>
+                        <td>
+                          {
+                            item.profilePicture !== '' ?
+                              <img src={item.profilePicture} className="img-circle elevation-2" width="100" height="100" /> :
+                              item.genderName === "Male" ?
+                                <img src={maleAvatar} className="img-circle elevation-2" width="100" height="100" /> :
+                                <img src={femaleAvatar} className="img-circle elevation-2" width="100" height="100" />
+                          }
+                        </td>
+                        <td>{item.firstName}</td>
+                        <td>{item.lastName}</td>
+                        <td>{item.genderName}</td>
+                        <td>{item.emailId}</td>
+                        <td>{item.mobileNumber}</td>
+                        <td>{item.roleName}</td>
+                        <td>
+                          <div className="custom-control custom-switch">
+                            <input
+                              type="checkbox"
+                              className="custom-control-input"
+                              id={'status-' + item.employeeId}
+                              onChange={(e) => statusChange(e, item.employeeId)}
+                              defaultChecked={item.status} />
+                            <label className="custom-control-label" htmlFor={'status-' + item.employeeId}></label>
+                          </div>
+                        </td>
+                        <td>
+                          <button className="btn btn-success btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Edit" onClick={() => editEmployee(item.employeeId)}>
+                            <i className="fa fa-edit"></i>
+                          </button>
+                        </td>
+                        <td>
+                          <button className="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Delete" onClick={() => deleteEmployee(item.employeeId, item.firstName + ' ' + item.lastName)}>
+                            <i className="fa fa-trash"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  }
                 </tbody>
               </table>
             </div>

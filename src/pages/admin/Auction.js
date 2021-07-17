@@ -76,15 +76,15 @@ function Auction() {
                     <option>Washington</option>
                   </select>
                 </div>
-                <div class="form-group">
+                <div className="form-group">
                   <h6>Minimum Bid Amount:</h6>
                     <input type="number" maxLength="20" className="form-control" placeholder="Minimum Bid Amount" />
                 </div>
-                <div class="form-group">
+                <div className="form-group">
                   <h6>Bid Start Date:</h6>
                     <input type="date" maxLength="20" className="form-control" placeholder="Bid Start Date" />
                 </div>
-                <div class="form-group">
+                <div className="form-group">
                   <h6>Bid End Date:</h6>
                     <input type="date" maxLength="20" className="form-control" placeholder="Bid End Date" />
                 </div>
@@ -93,7 +93,7 @@ function Auction() {
           </div>
           <div className="card-footer">
             <button type="submit" className="btn btn-primary float-right">Add</button>
-            <button type="submit" class="btn btn-default float-right">Cancel</button>
+            <button type="submit" className="btn btn-default float-right">Cancel</button>
           </div>
         </div>
         {/* /.row */}

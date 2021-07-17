@@ -1,4 +1,5 @@
 import React from 'react';
+import { NavLink } from 'react-router-dom';
 import Header from './Header';
 import Footer from './Footer';
 import Menu from './admin/Menu';
@@ -19,7 +20,7 @@ function Profile() {
               </div>
               <div className="col-sm-6">
                 <ol className="breadcrumb float-sm-right">
-                  <li className="breadcrumb-item"><a href="#">Home</a></li>
+                  <li className="breadcrumb-item"><NavLink exact to="/admin/dashboard">Home</NavLink></li>
                   <li className="breadcrumb-item active">Employee Profile</li>
                 </ol>
               </div>
@@ -82,7 +83,7 @@ function Profile() {
                   </div>{/* /.card-header */}
                   <div className="card-body">
                     <div className="tab-content">
-                      <div class="active tab-pane" id="update-profile">
+                      <div className="active tab-pane" id="update-profile">
                         <section className="content">
                           <div className="row">
                             <div className="col-md-12">
@@ -110,9 +111,9 @@ function Profile() {
                                       <input type="text" maxLength="20" className="form-control" placeholder="Employee Last Name" />
                                     </div>
                                   </div>
-                                  <div class="row">
+                                  <div className="row">
                                     <h6>Gender:</h6>
-                                    <div class="col-sm-2">
+                                    <div className="col-sm-2">
                                       <div className="form-group">
                                         <div className="input-group mb-3 ">
                                           <div className="input-group-prepend">
@@ -124,7 +125,7 @@ function Profile() {
                                         </div>
                                       </div>
                                     </div>
-                                    <div class="col-sm-2">
+                                    <div className="col-sm-2">
                                       <div className="form-group">
                                         <div className="input-group mb-3 ">
                                           <div className="input-group-prepend">
@@ -160,7 +161,7 @@ function Profile() {
                                       <input type="number" maxLength="20" className="form-control" placeholder="Employee Mobile Number" />
                                     </div>
                                   </div>
-                                  {/* <div class="row"> */}
+                                  {/* <div className="row"> */}
                                   <div className="form-group">
                                     <h6>Profile Picture:</h6>
                                     <div className="input-group mb-3 ">
@@ -195,34 +196,34 @@ function Profile() {
                           </div>
                         </section>
                       </div>
-                      <div class="active tab-pane" id="update-profile-picture">
-                      <div className="form-group">
-                                    <h6>Profile Picture:</h6>
-                                    <div className="input-group mb-3 ">
-                                      <div className="input-group-prepend">
-                                        <span className="input-group-text">
-                                          <i className="fas fa-images" />
-                                        </span>
-                                      </div>
-                                      <input type="file" className="form-control" id="exampleInputFile" />
-                                    </div>
-                                  </div>
+                      <div className="active tab-pane" id="update-profile-picture">
+                        <div className="form-group">
+                          <h6>Profile Picture:</h6>
+                          <div className="input-group mb-3 ">
+                            <div className="input-group-prepend">
+                              <span className="input-group-text">
+                                <i className="fas fa-images" />
+                              </span>
+                            </div>
+                            <input type="file" className="form-control" id="exampleInputFile" />
+                          </div>
+                        </div>
                         <div className="row">
-                            {/* <a href="#" className="btn btn-primary float-right">Register</a> */}
-                            <div className="card-footer">
-                              <button type="button" className="btn btn-secondary float-right">Cancel</button>
-                              <button
-                                type="button"
-                                className="btn btn-primary float-right"
-                              // onClick={btnText === 'Add' ? addGender : updateGender}
-                              >
-                                {/* {btnText} */}
+                          {/* <a href="#" className="btn btn-primary float-right">Register</a> */}
+                          <div className="card-footer">
+                            <button type="button" className="btn btn-secondary float-right">Cancel</button>
+                            <button
+                              type="button"
+                              className="btn btn-primary float-right"
+                            // onClick={btnText === 'Add' ? addGender : updateGender}
+                            >
+                              {/* {btnText} */}
             Update
             </button>
-                            </div>
                           </div>
+                        </div>
                       </div>
-                      <div class="active tab-pane" id="update-password">
+                      <div className="active tab-pane" id="update-password">
                         <section className="content">
                           <div className="row">
                             <div className="col-md-12">
@@ -281,10 +282,10 @@ function Profile() {
                           </div>
                         </section>
                       </div>
-                      <div class="active tab-pane" id="settings">
+                      <div className="active tab-pane" id="settings">
                         <div className="row">
-                          <div class="card-footer">
-                            {/* <button type="cancel" class="btn btn-secondary float-left">Cancel</button> */}
+                          <div className="card-footer">
+                            {/* <button type="cancel" className="btn btn-secondary float-left">Cancel</button> */}
                             <span className="nav-link logout-link" title="Logout" >
                               <i className="fas fa-sign-out-alt"></i> Logout
                             </span>
@@ -308,7 +309,7 @@ function Profile() {
 
       <Footer />
     </div>
-  )
+  );
 }
 
 export default Profile;

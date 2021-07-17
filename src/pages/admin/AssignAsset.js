@@ -76,7 +76,7 @@ function AssignAsset() {
                     <option>Washington</option>
                   </select>
                 </div>
-                <div class="form-group">
+                <div className="form-group">
                   <h6>Assign Date:</h6>
                     <input type="date" maxLength="20" className="form-control" placeholder="Assign Date" />
                 </div>
@@ -85,7 +85,7 @@ function AssignAsset() {
           </div>
           <div className="card-footer">
             <button type="submit" className="btn btn-primary float-right">Assign</button>
-            <button type="submit" class="btn btn-default float-right">Cancel</button>
+            <button type="submit" className="btn btn-default float-right">Cancel</button>
           </div>
         </div>
         {/* /.row */}

@@ -81,7 +81,7 @@ function Gender() {
 
   const validateInput = () => {
     // const char_only_regex = /^[a-zA-Z_() ]*$/;
-    const char_only_regex = /^[a-zA-Z_()// ]*$/;
+    const char_only_regex = /^[a-zA-Z_()// -]*$/;
     // const char_only_regex = /^[_A-zA-Z]*((-|\s)*[_A-zA-Z])*$/g;
     let result = true;
     let error = '';
@@ -104,7 +104,7 @@ function Gender() {
         textboxRef.current.focus();
       }
     }
-    // Display Error
+    // Display Error if validation failed
     if (result === false) {
       showToast('warning', error);
     }
@@ -282,7 +282,7 @@ function Gender() {
                 <table id="gender-table" className="table table-bordered table-striped">
                   <thead>
                     <tr>
-                      <th>Sr No</th>
+                      <th>#</th>
                       <th>Gender Name</th>
                       <th>Edit</th>
                       <th>Delete</th>

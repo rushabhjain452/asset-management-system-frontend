@@ -81,7 +81,7 @@ function SaleAsset() {
           </div>
           <div className="card-footer">
             <button type="submit" className="btn btn-primary float-right">Sale</button>
-            <button type="submit" class="btn btn-default float-right">Cancel</button>
+            <button type="submit" className="btn btn-default float-right">Cancel</button>
           </div>
         </div>
         {/* /.row */}

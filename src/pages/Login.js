@@ -115,7 +115,7 @@ function Login() {
               <figure><img src={require('../images/signin-image.jpg').default} alt="sign In" className="img img-fluid" /></figure>
             </div>
             <div className="signin-form">
-              <h2 className="form-title">Login</h2>
+              <h2 className="form-title">Asset Management System Login</h2>
               <form method="POST" className="register-form" id="login-form">
                 <div className="form-group">
                   <label htmlFor="your_name"><i className="zmdi zmdi-account material-icons-name"></i></label>

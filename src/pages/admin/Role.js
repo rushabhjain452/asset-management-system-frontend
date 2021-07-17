@@ -8,21 +8,6 @@ import Loader from '../../components/Loader';
 import { errorMessage } from '../../config';
 import { showToast, showSweetAlert, showConfirmAlert } from '../../helpers/sweetAlert';
 import { authHeader, logout } from '../../services/authService';
-// import 'admin-lte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css';
-// import 'admin-lte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css';
-// import 'admin-lte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css';
-// import 'admin-lte/plugins/datatables/jquery.dataTables.min.js';
-// import 'admin-lte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js';
-// import 'admin-lte/plugins/datatables-responsive/js/dataTables.responsive.min.js';
-// import 'admin-lte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js';
-// import 'admin-lte/plugins/datatables-buttons/js/dataTables.buttons.min.js';
-// import 'admin-lte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js';
-// import 'admin-lte/plugins/jszip/jszip.min.js';
-// import 'admin-lte/plugins/pdfmake/pdfmake.min.js';
-// import 'admin-lte/plugins/pdfmake/vfs_fonts.js';
-// import 'admin-lte/plugins/datatables-buttons/js/buttons.html5.min.js';
-// import 'admin-lte/plugins/datatables-buttons/js/buttons.print.min.js';
-// import 'admin-lte/plugins/datatables-buttons/js/buttons.colVis.min.js';
 
 const apiurl = process.env.REACT_APP_URL;
 
@@ -75,7 +60,7 @@ function Role() {
   };
 
   const validateInput = () => {
-    const char_only_regex = /^[a-zA-Z_()// ]*$/;
+    const char_only_regex = /^[a-zA-Z_()// -]*$/;
     let result = true;
     let error = '';
     if (role.length == 0) {
@@ -97,7 +82,7 @@ function Role() {
         textboxRef.current.focus();
       }
     }
-    // Display Error
+    // Display Error if validation failed
     if (result === false) {
       showToast('warning', error);
     }
@@ -273,7 +258,7 @@ function Role() {
                 <table id="role-table" className="table table-bordered table-striped">
                   <thead>
                     <tr>
-                      <th>Sr No</th>
+                      <th>#</th>
                       <th>Role Name</th>
                       <th>Edit</th>
                       <th>Delete</th>

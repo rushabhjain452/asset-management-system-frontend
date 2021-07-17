@@ -33,26 +33,24 @@ function Menu() {
                   <p className="menu-link-style">Dashboard</p>
                 </NavLink>
               </li>
-              <li class="nav-item menu-open">
-                    <NavLink exact to="/admin/add-employee" class="nav-link" activeClassName="active">
-                      <i class="fas fa-user-plus nav-icon"></i>
+              <li className="nav-item menu-open">
+                    <NavLink exact to="/admin/add-employee" className="nav-link" activeClassName="active">
+                      <i className="fas fa-user-plus nav-icon"></i>
                       <p className="menu-link-style">Employee</p>
                     </NavLink>
               </li>
-              <li className="nav-item menu-open">
-                {/* <a href="./index.html" className="nav-link active"> */}
+              {/* <li className="nav-item menu-open">
                 <NavLink exact to="/admin/gender" className="nav-link" activeClassName="active">
                   <i className=" nav-icon fas fa-venus-mars" />
                   <p className="menu-link-style">Gender</p>
                 </NavLink>
-              </li>
-              <li className="nav-item menu-open">
-                {/* <a href="./index.html" className="nav-link active"> */}
+              </li> */}
+              {/* <li className="nav-item menu-open">
                 <NavLink exact to="/admin/role" className="nav-link" activeClassName="active">
                   <i className="nav-icon fas fa-user-tag"></i>
                   <p className="menu-link-style">Role</p>
                 </NavLink>
-              </li>
+              </li> */}
               <li className="nav-item menu-open">
                 {/* <a href="./index.html" className="nav-link active"> */}
                 <NavLink exact to="/admin/asset-type" className="nav-link" activeClassName="active">
@@ -77,42 +75,42 @@ function Menu() {
               <li className="nav-item menu-open">
                 {/* <a href="./index.html" className="nav-link active"> */}
                 <NavLink exact to="/admin/asset-properties" className="nav-link" activeClassName="active">
-                  <i class=" nav-icon fas fa-laptop"></i>
+                  <i className=" nav-icon fas fa-laptop"></i>
                   <p className="menu-link-style">Asset Properties</p>
                 </NavLink>
               </li>
               <li className="nav-item menu-open">
                 {/* <a href="./index.html" className="nav-link active"> */}
                 <NavLink exact to="/admin/assign-asset" className="nav-link" activeClassName="active">
-                  <i class="nav-icon fas fa-laptop-code"></i>
+                  <i className="nav-icon fas fa-laptop-code"></i>
                   <p className="menu-link-style">Assign Asset</p>
                 </NavLink>
               </li>
               <li className="nav-item menu-open">
                 {/* <a href="./index.html" className="nav-link active"> */}
                 <NavLink exact to="/admin/auction" className="nav-link" activeClassName="active">
-                  <i class="nav-icon fas fa-gavel"></i>
+                  <i className="nav-icon fas fa-gavel"></i>
                   <p className="menu-link-style">Auction</p>
                 </NavLink>
               </li>
-              <li class="nav-item menu-open">
-                <a href="#" class="nav-link">
-                  <i class="nav-icon fas fa-user-tie"></i>
+              <li className="nav-item menu-open">
+                <a href="#" className="nav-link">
+                  <i className="nav-icon fas fa-user-tie"></i>
                   <p className="menu-link-style">
                     Bid
-                    <i class="right fas fa-angle-left"></i>
+                    <i className="right fas fa-angle-left"></i>
                   </p>
                 </a>
-                <ul class="nav nav-treeview">
-                  <li class="nav-item">
-                    <NavLink exact to="/bids" class="nav-link">
-                      <i class="fas fa-gavel nav-icon"></i>
+                <ul className="nav nav-treeview">
+                  <li className="nav-item">
+                    <NavLink exact to="/bids" className="nav-link">
+                      <i className="fas fa-gavel nav-icon"></i>
                       <p className="menu-link-style">Bid On Asset</p>
                     </NavLink>
                   </li>
-                  <li class="nav-item">
-                    <NavLink exact to="/admin/view-bids" class="nav-link">
-                      <i class="fas fa-gavel nav-icon"></i>
+                  <li className="nav-item">
+                    <NavLink exact to="/admin/view-bids" className="nav-link">
+                      <i className="fas fa-gavel nav-icon"></i>
                       <p className="menu-link-style">View Bid's</p>
                     </NavLink>
                   </li>
@@ -121,7 +119,7 @@ function Menu() {
               <li className="nav-item menu-open">
                 {/* <a href="./index.html" className="nav-link active"> */}
                 <NavLink exact to="/admin/sale-asset" className="nav-link" activeClassName="active">
-                  <i class="nav-icon fas money-bill-alt"></i>
+                  <i className="nav-icon fas money-bill-alt"></i>
                   <p>Sale Asset</p>
                 </NavLink>
               </li>

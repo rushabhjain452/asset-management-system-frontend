@@ -31,21 +31,21 @@ function UserMenu() {
               <li className="nav-item menu-open">
                 {/* <a href="./index.html" className="nav-link active"> */}
                 <NavLink exact to="/view-assign-asset" className="nav-link" activeClassName="active">
-                  <i class=" nav-icon fas fa-gavel"></i>
+                  <i className=" nav-icon fas fa-gavel"></i>
                   <p>View Assign Asset</p>
                 </NavLink>
               </li>
               <li className="nav-item menu-open">
                 {/* <a href="./index.html" className="nav-link active"> */}
                 <NavLink exact to="/view-asset-sales" className="nav-link" activeClassName="active">
-                  <i class=" nav-icon fas fa-gavel"></i>
+                  <i className=" nav-icon fas fa-gavel"></i>
                   <p>View Asset Sales</p>
                 </NavLink>
               </li>
               <li className="nav-item menu-open">
                 {/* <a href="./index.html" className="nav-link active"> */}
                 <NavLink exact to="/bids" className="nav-link" activeClassName="active">
-                  <i class=" nav-icon fas fa-gavel"></i>
+                  <i className=" nav-icon fas fa-gavel"></i>
                   <p>Bid On Asset</p>
                 </NavLink>
               </li>

@@ -78,7 +78,7 @@ function AssetProperties() {
                     <option>Washington</option>
                   </select>
                 </div>
-                <div class="form-group">
+                <div className="form-group">
                   <h6>Property Value:</h6>
                     <input type="text" maxLength="20" className="form-control" placeholder="Property Value" />
                 </div>
@@ -87,7 +87,7 @@ function AssetProperties() {
           </div>
           <div className="card-footer">
             <button type="submit" className="btn btn-primary float-right">Add</button>
-            <button type="submit" class="btn btn-default float-right">Cancel</button>
+            <button type="submit" className="btn btn-default float-right">Cancel</button>
           </div>
         </div>
         {/* /.row */}

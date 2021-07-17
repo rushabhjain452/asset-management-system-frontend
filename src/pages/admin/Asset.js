@@ -76,7 +76,7 @@ function Asset() {
                     <option>Washington</option>
                   </select>
                 </div>
-                <div class="form-group">
+                <div className="form-group">
                   <h6>Purchase Date:</h6>
                     <input type="date" maxLength="20" className="form-control" placeholder="Purchase Date" />
                 </div>
