@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { NavLink } from 'react-router-dom';
 import Header from '../Header';
 import Footer from '../Footer';
@@ -7,11 +7,14 @@ import axios from 'axios';
 import Loader from '../../components/Loader';
 import { errorMessage } from '../../config';
 import { showToast, showSweetAlert, showConfirmAlert } from '../../helpers/sweetAlert';
-import { authHeader, logout } from '../../services/authService';
+import { authHeader } from '../../services/authService';
+import { AuthContext } from '../../context/AuthContext';
 
 const apiurl = process.env.REACT_APP_URL;
 
 function Properties() {
+  const { state, logout } = useContext(AuthContext);
+  const token = state.token;
 
   const [data, setData] = useState([]);
   const [dataCopy, setDataCopy] = useState([]);
@@ -30,7 +33,7 @@ function Properties() {
 
   const fetchData = () => {
     setLoading(true);
-    axios.get(apiurl + '/properties', { headers: authHeader() })
+    axios.get(apiurl + '/properties', { headers: authHeader(token) })
       .then((response) => {
         setLoading(false);
         if (response.status === 200) {
@@ -57,6 +60,9 @@ function Properties() {
       .catch((error) => {
         setLoading(false);
         showToast('error', errorMessage);
+        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+          logout();
+        }
       });
   };
 
@@ -76,8 +82,8 @@ function Properties() {
     }
     else if (btnText == 'Add') {
       // Check if already exists
-      const filterData = data.filter((item) => item.propertyName.toLowerCase() == property.toLowerCase());
-      if (filterData.length > 0) {
+      const findItem = data.find((item) => item.propertyName.toLowerCase() == property.toLowerCase());
+      if(findItem){
         result = false;
         error = 'Property already exists with given name.';
         textboxRef.current.focus();
@@ -87,7 +93,6 @@ function Properties() {
     if (result === false) {
       showToast('warning', error);
     }
-    console.log(result);
     return result;
   };
 
@@ -98,7 +103,7 @@ function Properties() {
         propertyName: property,
         mandatory: mandatory
       };
-      axios.post(apiurl + '/properties', requestData, { headers: authHeader() })
+      axios.post(apiurl + '/properties', requestData, { headers: authHeader(token) })
         .then((response) => {
           setLoading(false);
           if (response.status === 201) {
@@ -114,6 +119,9 @@ function Properties() {
         .catch((error) => {
           setLoading(false);
           showSweetAlert('error', 'Error', 'Failed to add Property. Please try again...');
+          if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+            logout();
+          }
         });
     }
   };
@@ -123,7 +131,7 @@ function Properties() {
       .then((result) => {
         if (result.isConfirmed) {
           setLoading(true);
-          axios.delete(apiurl + '/properties/' + id, { headers: authHeader() })
+          axios.delete(apiurl + '/properties/' + id, { headers: authHeader(token) })
             .then((response) => {
               setLoading(false);
               if (response.status === 200) {
@@ -140,6 +148,9 @@ function Properties() {
               setLoading(false);
               showSweetAlert('error', 'Error', 'Failed to delete Property. Please try again...');
               setProperty('');
+              if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+                logout();
+              }
             });
         }
       });
@@ -149,7 +160,6 @@ function Properties() {
     setBtnText('Update');
     setPropertyId(id);
     setProperty(name);
-    console.log(mandatory);
     setMandatory(mandatory);
     textboxRef.current.focus();
   };
@@ -161,7 +171,7 @@ function Properties() {
         propertyName: property,
         mandatory: mandatory
       };
-      axios.put(apiurl + '/properties/' + propertyId, requestData, { headers: authHeader() })
+      axios.put(apiurl + '/properties/' + propertyId, requestData, { headers: authHeader(token) })
         .then((response) => {
           setLoading(false);
           if (response.status === 200) {
@@ -178,6 +188,9 @@ function Properties() {
         .catch((error) => {
           setLoading(false);
           showSweetAlert('error', 'Error', 'Failed to update Property. Please try again...');
+          if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+            logout();
+          }
         });
     }
   };
@@ -190,7 +203,8 @@ function Properties() {
 
   const statusChange = (e, assetTypeId) => {
     const status = e.target.checked;
-    axios.put(apiurl + '/properties/' + assetTypeId + '/update-status/' + status, {}, { headers: authHeader() })
+    setLoading(true);
+    axios.put(apiurl + '/properties/' + assetTypeId + '/update-status/' + status, {}, { headers: authHeader(token) })
       .then((response) => {
         setLoading(false);
         if (response.status === 200) {
@@ -206,6 +220,9 @@ function Properties() {
         setLoading(false);
         showSweetAlert('error', 'Error', 'Failed to update status of Property. Please try again...');
         fetchData();
+        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+          logout();
+        }
       });
   };
 
@@ -242,20 +259,20 @@ function Properties() {
         </div>
         <div className="card card-info">
           <div className="card-body">
-          <div className="row">
-            <h4>{btnText} Property</h4>
-            <div className="input-group mb-3 ">
-              <div className="input-group-prepend">
-                <span className="input-group-text">
-                  <i className="fas fa-info-circle" />
-                </span>
+            <div className="row">
+              <h4>{btnText} Property</h4>
+              <div className="input-group mb-3 ">
+                <div className="input-group-prepend">
+                  <span className="input-group-text">
+                    <i className="fas fa-info-circle" />
+                  </span>
+                </div>
+                <input type="text" maxLength="100" ref={textboxRef} className="form-control" placeholder="Property Name" value={property} onChange={(e) => setProperty(e.target.value)} />
               </div>
-              <input type="text" maxLength="100" ref={textboxRef} className="form-control" placeholder="Property Name" value={property} onChange={(e) => setProperty(e.target.value)} />
-            </div>
-            <div className="custom-control custom-switch" style={{ marginLeft: 10 }}>
-            <label className="custom-control-label" htmlFor="switch-mandatory">Is Mandatory?</label>
-              <input type="checkbox" className="custom-control-input" id="switch-mandatory" checked={mandatory} onChange={(e) => setMandatory(e.target.checked)} />
-            </div>
+              <div className="custom-control custom-switch" style={{ marginLeft: 60 }}>
+                <input type="checkbox" className="custom-control-input" id="switch-mandatory" checked={mandatory} onChange={(e) => setMandatory(e.target.checked)} />
+                <label className="custom-control-label" htmlFor="switch-mandatory">Is Mandatory?</label>
+              </div>
             </div>
           </div>
           <div className="card-footer">

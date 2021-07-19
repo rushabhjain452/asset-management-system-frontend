@@ -1,4 +1,6 @@
+import React, { useReducer } from 'react';
 import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
+import { AuthContext } from './context/AuthContext';
 import PrivateRoute from './PrivateRoute';
 import Login from './pages/Login';
 import Error from './pages/Error';
@@ -75,48 +77,78 @@ import ViewAssetSales from "./pages/ViewAssetSales";
 // import 'admin-lte/dist/js/demo.js';
 // AdminLTE dashboard demo (This is only for demo purposes)
 // import 'admin-lte/dist/js/pages/dashboard.js';
+import { initialAuthState, authReducer, LOGIN, LOGOUT, SET_EMPLOYEE_ID } from './context/reducers';
 
+const App = () => {
 
-function App() {
+  const [authState, dispatch] = useReducer(authReducer, initialAuthState);
+
+  const login = (username, token, role, employeeId, gender, emailId, profilePicture) => {
+    dispatch({
+      type: LOGIN, 
+      payload: {
+        username: username,
+        token: token,
+        role: role,
+        employeeId: employeeId,
+        gender: gender,
+        emailId: emailId,
+        profilePicture: profilePicture
+      } 
+    });
+  };
+  
+  const logout = () => {
+    dispatch({ type: LOGOUT });
+  };
+
+  const setEmployeeId = (employeeId) => {
+    dispatch({
+      type: SET_EMPLOYEE_ID, 
+      payload: employeeId
+    });
+  }
+
   return (
-    <Router>
+    <AuthContext.Provider value={{ state: authState, dispatch: dispatch, login: login, logout: logout, setEmployeeId: setEmployeeId }}>
       <ErrorBoundary>
-        <Switch>
-          <>
-            <Route exact path="/" component={Login} />
-            <Route exact path="/login" component={Login} />
-            <Route exact path='/forget-password' component={ForgetPassword} />
-            <Route exact path='/verify-otp-update-password' component={VerifyOtpAndUpdatePassword} />
-            <PrivateRoute exact path='/profile' component={Profile} />
-            <Route exact path='/error' component={Error} />
-            {/* Admin Pages */}
-            <PrivateRoute exact path='/admin/dashboard' component={AdminDashboard} />
-            <PrivateRoute exact path='/admin/gender' component={Gender} />
-            <PrivateRoute exact path='/admin/role' component={Role} />
-            <PrivateRoute exact path='/admin/asset-types' component={AssetType} />
-            <PrivateRoute exact path='/admin/properties' component={Properties} />
-            <PrivateRoute exact path='/admin/assets' component={Asset} />
-            <PrivateRoute exact path='/admin/add-employee' component={AddEmployee} />
-            <PrivateRoute exact path='/admin/view-employees' component={ViewEmployees} />
-            <PrivateRoute exact path='/admin/assettype-properties' component={AssetProperties} />
-            <PrivateRoute exact path='/admin/assign-asset' component={AssignAsset} />
-            <PrivateRoute exact path='/admin/auction' component={Auction} />
-            <PrivateRoute exact path='/admin/view-bids' component={ViewBids} />
-            <PrivateRoute exact path='/admin/sale-asset' component={SaleAsset} />
+        <Router>
+          <Switch>
+            <>
+              <Route exact path="/" component={Login} />
+              <Route exact path="/login" component={Login} />
+              <Route exact path='/forget-password' component={ForgetPassword} />
+              <Route exact path='/verify-otp-update-password' component={VerifyOtpAndUpdatePassword} />
+              <PrivateRoute exact path='/profile' component={Profile} />
+              <Route exact path='/error' component={Error} />
+              {/* Admin Pages */}
+              <PrivateRoute exact path='/admin/dashboard' component={AdminDashboard} />
+              <PrivateRoute exact path='/admin/gender' component={Gender} />
+              <PrivateRoute exact path='/admin/role' component={Role} />
+              <PrivateRoute exact path='/admin/asset-types' component={AssetType} />
+              <PrivateRoute exact path='/admin/properties' component={Properties} />
+              <PrivateRoute exact path='/admin/assets' component={Asset} />
+              <PrivateRoute exact path='/admin/add-employee' component={AddEmployee} />
+              <PrivateRoute exact path='/admin/view-employees' component={ViewEmployees} />
+              <PrivateRoute exact path='/admin/assettype-properties' component={AssetProperties} />
+              <PrivateRoute exact path='/admin/assign-asset' component={AssignAsset} />
+              <PrivateRoute exact path='/admin/auction' component={Auction} />
+              <PrivateRoute exact path='/admin/view-bids' component={ViewBids} />
+              <PrivateRoute exact path='/admin/sale-asset' component={SaleAsset} />
 
-            {/* User Pages */}
-            <PrivateRoute exact path='/dashboard' component={UserDashboard} />
-            <PrivateRoute exact path='/bids' component={Bids} />
-            <PrivateRoute exact path='/view-assign-asset' component={ViewAssignAsset} />
-            <PrivateRoute exact path='/view-asset-sales' component={ViewAssetSales} />
-            {/* <Route component={Error} /> */}
-            {/* <Redirect to="/error" /> */}
-          </>
-        </Switch>
-        {/* <IdleTimeTracker /> */}
+              {/* User Pages */}
+              <PrivateRoute exact path='/dashboard' component={UserDashboard} />
+              <PrivateRoute exact path='/bids' component={Bids} />
+              <PrivateRoute exact path='/view-assign-asset' component={ViewAssignAsset} />
+              <PrivateRoute exact path='/view-asset-sales' component={ViewAssetSales} />
+              {/* <Route component={Error} /> */}
+              {/* <Redirect to="/error" /> */}
+            </>
+          </Switch>
+        </Router>
       </ErrorBoundary>
-    </Router>
+    </AuthContext.Provider>
   );
-}
+};
 
 export default App;

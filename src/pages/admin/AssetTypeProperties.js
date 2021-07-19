@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { NavLink } from 'react-router-dom';
 import Footer from '../Footer';
 import Header from '../Header';
@@ -17,11 +17,14 @@ import Select from 'react-select';
 import Loader from '../../components/Loader';
 import { errorMessage } from '../../config';
 import { showToast, showSweetAlert, showConfirmAlert } from '../../helpers/sweetAlert';
-import { authHeader, logout } from '../../services/authService';
+import { authHeader } from '../../services/authService';
+import { AuthContext } from '../../context/AuthContext';
 
 const apiurl = process.env.REACT_APP_URL;
 
 function AssetProperties() {
+  const { state, logout } = useContext(AuthContext);
+  const token = state.token;
 
   const [assetTypes, setAssetTypes] = useState([]);
   const [properties, setProperties] = useState([]);
@@ -46,50 +49,37 @@ function AssetProperties() {
     //     theme: 'bootstrap4'
     //   })
     // });
+    fetchData();
     fetchAssetTypes();
     fetchProperties();
   }, []);
 
   const fetchData = () => {
-    // setLoading(true);
-    // axios.get(apiurl + '/genders')
-    //   .then((response) => {
-    //     setLoading(false);
-    //     if (response.status === 200) {
-    //       // Sort Data
-    //       const data = response.data;
-    //       data.sort((a, b) => {
-    //         let val1 = a.name.toLowerCase();
-    //         let val2 = b.name.toLowerCase();
-    //         if (val1 < val2) {
-    //           return -1;
-    //         }
-    //         if (val1 > val2) {
-    //           return 1;
-    //         }
-    //         return 0;
-    //       });
-    //       setData(data);
-    //       setDataCopy(data);
-    //     }
-    //     else {
-    //       // showSweetAlert('error', 'Network Error', errorMessage);
-    //       showToast('error', errorMessage);
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     setLoading(false);
-    //     // showSweetAlert('error', 'Network Error', errorMessage);
-    //     showToast('error', errorMessage);
-    //     if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-    //       // dispatch(logout());
-    //     }
-    //   });
+    setLoading(true);
+    axios.get(apiurl + '/asset-type-properties', { headers: authHeader(token) })
+      .then((response) => {
+        setLoading(false);
+        if (response.status === 200) {
+          setData(response.data);
+          setDataCopy(response.data);
+          // console.log(response.data);
+        }
+        else {
+          showToast('error', errorMessage);
+        }
+      })
+      .catch((error) => {
+        setLoading(false);
+        showToast('error', errorMessage);
+        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+          logout();
+        }
+      });
   };
 
   const fetchAssetTypes = () => {
     setLoading(true);
-    axios.get(apiurl + '/asset-types/status/true', { headers: authHeader() })
+    axios.get(apiurl + '/asset-types/status/true', { headers: authHeader(token) })
       .then((response) => {
         setLoading(false);
         if (response.status === 200) {
@@ -116,12 +106,15 @@ function AssetProperties() {
       .catch((error) => {
         setLoading(false);
         showToast('error', errorMessage);
+        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+          logout();
+        }
       });
   };
 
   const fetchProperties = () => {
     setLoading(true);
-    axios.get(apiurl + '/properties', { headers: authHeader() })
+    axios.get(apiurl + '/properties/status/true', { headers: authHeader(token) })
       .then((response) => {
         setLoading(false);
         if (response.status === 200) {
@@ -140,7 +133,6 @@ function AssetProperties() {
           });
           setProperties(data);
           data.forEach((item) => item.checked = false);
-          console.log(data);
         }
         else {
           showToast('error', errorMessage);
@@ -149,6 +141,9 @@ function AssetProperties() {
       .catch((error) => {
         setLoading(false);
         showToast('error', errorMessage);
+        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+          logout();
+        }
       });
   };
 
@@ -158,9 +153,9 @@ function AssetProperties() {
     setProperties((data) => {
       const newData = [...data];
       const property = newData.find(item => item.propertyId == propertyId);
-      console.log(property);
+      // console.log(property);
       property.checked = checked;
-      console.log(newData);
+      // console.log(newData);
       return newData;
     });
   }
@@ -177,6 +172,14 @@ function AssetProperties() {
       result = false;
       error = 'Please select at least one property.';
     }
+    else if (btnText == 'Add') {
+      const findItem = data.find((item) => item.assetTypeId == assetType.value);
+      if(findItem){
+        result = false;
+        error = 'Properties already exists for selected Asset Type.';
+        selectRef.current.focus();
+      }
+    }
     // Display Error if validation failed
     if (result === false) {
       showToast('warning', error);
@@ -186,8 +189,7 @@ function AssetProperties() {
 
   const addAssetTypeProperties = () => {
     let propertyIds = [];
-    properties.forEach((item) => item.checked ? propertyIds.push(item.propertyId) : '');
-    console.log(propertyIds);
+    properties.forEach((item) => item.checked ? propertyIds.push({propertyId: item.propertyId}) : '');
     // console.log(assetType);
     if (validateInput(propertyIds)) {
       setLoading(true);
@@ -195,7 +197,7 @@ function AssetProperties() {
         assetTypeId: assetType.value,
         propertyList: propertyIds
       };
-      axios.post(apiurl + '/asset-type-properties', requestData, { headers: authHeader() })
+      axios.post(apiurl + '/asset-type-properties', requestData, { headers: authHeader(token) })
         .then((response) => {
           setLoading(false);
           if (response.status === 201) {
@@ -210,35 +212,41 @@ function AssetProperties() {
         .catch((error) => {
           setLoading(false);
           showSweetAlert('error', 'Error', 'Failed to add Asset Type Properties. Please try again...');
+          if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+            logout();
+          }
         });
     }
   };
 
-  // const deleteAssetType = (id, name) => {
-  //   showConfirmAlert('Delete Confirmation', `Do you really want to delete the Asset Type '${name}' ?`)
-  //     .then((result) => {
-  //       if (result.isConfirmed) {
-  //         setLoading(true);
-  //         axios.delete(apiurl + '/asset-types/' + id, { headers: authHeader() })
-  //           .then((response) => {
-  //             setLoading(false);
-  //             if (response.status === 200) {
-  //               showSweetAlert('success', 'Success', 'Asset Type deleted successfully.');
-  //               fetchData();
-  //             }
-  //             else {
-  //               showSweetAlert('error', 'Error', 'Failed to delete Asset Type. Please try again...');
-  //             }
-  //             setAssetType('');
-  //           })
-  //           .catch((error) => {
-  //             setLoading(false);
-  //             showSweetAlert('error', 'Error', 'Failed to delete Asset Type. Please try again...');
-  //             setAssetType('');
-  //           });
-  //       }
-  //     });
-  // };
+  const deleteAssetTypeProperties = (id, name) => {
+    showConfirmAlert('Delete Confirmation', `Do you really want to delete the properties of Asset Type '${name}' ?`)
+      .then((result) => {
+        if (result.isConfirmed) {
+          setLoading(true);
+          axios.delete(apiurl + '/asset-type-properties/' + id, { headers: authHeader(token) })
+            .then((response) => {
+              setLoading(false);
+              if (response.status === 200) {
+                showSweetAlert('success', 'Success', 'Properties of Asset Type deleted successfully.');
+                fetchData();
+              }
+              else {
+                showSweetAlert('error', 'Error', 'Failed to delete Properties of Asset Type. Please try again...');
+              }
+              setAssetType('');
+            })
+            .catch((error) => {
+              setLoading(false);
+              showSweetAlert('error', 'Error', 'Failed to delete Properties of Asset Type. Please try again...');
+              setAssetType('');
+              if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+                logout();
+              }
+            });
+        }
+      });
+  };
 
   const editAssetTypeProperties = (id, name) => {
     // setBtnText('Update');
@@ -253,7 +261,7 @@ function AssetProperties() {
     //   const requestData = {
     //     assetType: assetType
     //   };
-    //   axios.put(apiurl + '/asset-types/' + assetTypeId, requestData, { headers: authHeader() })
+    //   axios.put(apiurl + '/asset-types/' + assetTypeId, requestData, { headers: authHeader(token) })
     //     .then((response) => {
     //       setLoading(false);
     //       if (response.status === 200) {
@@ -269,6 +277,9 @@ function AssetProperties() {
     //     .catch((error) => {
     //       setLoading(false);
     //       showSweetAlert('error', 'Error', 'Failed to update Asset Type. Please try again...');
+    //       if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+    //         logout();
+    //       }
     //     });
     // }
   };
@@ -285,6 +296,18 @@ function AssetProperties() {
 
   const onCancel = () => {
     clearControls();
+  };
+
+  const onSearchTextChange = (e) => {
+    const searchText = e.target.value.toLowerCase();
+    if (searchText.length > 0) {
+      let searchData = dataCopy.filter((item) => item.assetType.toLowerCase().includes(searchText) ||
+        item.propertyList.find(item => item.propertyName.toLowerCase().includes(searchText)) != undefined
+      );
+      setData(searchData);
+    } else {
+      setData(dataCopy);
+    }
   };
 
   return (
@@ -373,12 +396,17 @@ function AssetProperties() {
                 <h3 className="card-title">List of Asset Properties</h3>
                 <div className="card-tools">
                   <div className="input-group input-group-sm">
-                    <input type="text" name="table_search" className="form-control float-right" placeholder="Search" />
-
+                    <input
+                      type="text"
+                      name="table_search"
+                      maxLength="20"
+                      className="form-control float-right"
+                      placeholder="Search"
+                      onChange={onSearchTextChange} />
                     <div className="input-group-append">
-                      <button type="submit" className="btn btn-default">
+                      <span className="input-group-text" id="basic-addon2">
                         <i className="fas fa-search"></i>
-                      </button>
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -387,37 +415,41 @@ function AssetProperties() {
                 <table id="example1" className="table table-bordered table-striped">
                   <thead>
                     <tr>
-                      <th>Rendering engine</th>
-                      <th>Browser</th>
-                      <th>Platform(s)</th>
-                      <th>Engine version</th>
-                      <th>CSS grade</th>
+                      <th>#</th>
+                      <th>Asset Type</th>
+                      <th>Properties</th>
                       <th>Edit</th>
                       <th>Delete</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td>Other browsers</td>
-                      <td>All others</td>
-                      <td>-</td>
-                      <td>-</td>
-                      <td>U</td>
-                      <td>
-                        <ul className="list-inline m-0">
-                          <li className="list-inline-item">
-                            <button className="btn btn-success btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Edit"><i className="fa fa-edit"></i></button>
-                          </li>
-                        </ul>
-                      </td>
-                      <td>
-                        <ul className="list-inline m-0">
-                          <li className="list-inline-item">
-                            <button className="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Delete"><i className="fa fa-trash"></i></button>
-                          </li>
-                        </ul>
-                      </td>
-                    </tr>
+                    {
+                      data.length > 0 && data.map((item, index) => (
+                        <tr key={item.assetTypeId}>
+                          <td>{index + 1}</td>
+                          <td>{item.assetType}</td>
+                          <td>
+                            <ol>
+                              {
+                                item.propertyList.map((property) => (
+                                  <li key={property.propertyId}>{property.propertyName} ({property.mandatory ? 'Mandatory' : 'Optional'})</li>
+                                ))
+                              }
+                            </ol>
+                          </td>
+                          <td>
+                            <button className="btn btn-success btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Edit" onClick={() => editAssetTypeProperties(item.assetTypeId)}>
+                              <i className="fa fa-edit"></i>
+                            </button>
+                          </td>
+                          <td>
+                            <button className="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Delete" onClick={() => deleteAssetTypeProperties(item.assetTypeId, item.assetType)}>
+                              <i className="fa fa-trash"></i>
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    }
                   </tbody>
                 </table>
               </div>

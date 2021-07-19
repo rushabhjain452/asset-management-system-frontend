@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useContext } from 'react';
 import { Link, Redirect } from 'react-router-dom';
 import './css/style.css';
 import "material-design-iconic-font/dist/css/material-design-iconic-font.min.css";
@@ -6,8 +6,10 @@ import axios from 'axios';
 import Loader from '../components/Loader';
 import { errorMessage } from '../config';
 import { showToastWithProgress, showSweetAlert } from '../helpers/sweetAlert';
+import { AuthContext } from '../context/AuthContext';
 
 function ForgetPassword() {
+  const { setEmployeeId } = useContext(AuthContext);
 
   const [email, setEmail] = useState("");
   const [mobileNumber, setMobileNumber] = useState("");
@@ -69,15 +71,17 @@ function ForgetPassword() {
           setLoading(false);
           if (response.status === 200) {
             const data = response.data;
-            sessionStorage.setItem('employeeId', data.employeeId);
+            // sessionStorage.setItem('employeeId', data.employeeId);
+            // dispatch({type: 'SET_EMPLOYEE_ID', payload: data.employeeId});
+            setEmployeeId(data.employeeId);
             showToastWithProgress('success', 'OTP sent successfully');
           }
           setRedirect(true);
         })
         .catch((error) => {
           setLoading(false);
-          console.log(error);
-          console.log(error.response);
+          // console.log(error);
+          // console.log(error.response);
           let msg = errorMessage;
           if (error.response && error.response.data) {
             msg = error.response.data.message;

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useContext } from 'react';
 import { Link, Redirect } from 'react-router-dom';
 import './css/style.css';
 import "material-design-iconic-font/dist/css/material-design-iconic-font.min.css";
@@ -6,8 +6,11 @@ import axios from 'axios';
 import Loader from '../components/Loader';
 import { errorMessage } from '../config';
 import { showToastWithProgress, showSweetAlert } from '../helpers/sweetAlert';
+import { AuthContext } from '../context/AuthContext';
 
 function VerifyOtpAndUpdatePassword() {
+  const { state } = useContext(AuthContext);
+  
   const [otp, setOtp] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -65,15 +68,16 @@ function VerifyOtpAndUpdatePassword() {
   const handleUpdatePassword = () => {
     if(validateInput()){
       setLoading(true);
+      const employeeId = state.employeeId;
       const apiurl = process.env.REACT_APP_URL;
       const requestData = {
-        employeeId: sessionStorage.getItem('employeeId'),
+        employeeId: employeeId,
         otp: otp,
         password: password
       };
       axios.put(apiurl + '/employees/forget-password', requestData)
         .then((response) => {
-          console.log(response.data);
+          // console.log(response.data);
           setLoading(false);
           if (response.status === 200) {
             showToastWithProgress('success', 'Password updated successfully');
@@ -82,7 +86,7 @@ function VerifyOtpAndUpdatePassword() {
         })
         .catch((error) => {
           setLoading(false);
-          console.log(error.response);
+          // console.log(error.response);
           let msg = errorMessage;
           if (error.response && error.response.data) {
             msg = error.response.data.message;

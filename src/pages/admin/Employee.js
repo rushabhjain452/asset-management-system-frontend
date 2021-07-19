@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { NavLink } from 'react-router-dom';
 import Header from '../Header';
 import Footer from '../Footer';
@@ -10,11 +10,15 @@ import maleAvatar from 'admin-lte/dist/img/avatar5.png';
 import Loader from '../../components/Loader';
 import { errorMessage } from '../../config';
 import { showToast, showSweetAlert, showConfirmAlert } from '../../helpers/sweetAlert';
-import { authHeader, logout } from '../../services/authService';
+import { authHeader } from '../../services/authService';
+import { AuthContext } from '../../context/AuthContext';
 
 const apiurl = process.env.REACT_APP_URL;
 
 function AddEmployee() {
+  const { state, logout } = useContext(AuthContext);
+  const token = state.token;
+
   const [data, setData] = useState([]);
   const [dataCopy, setDataCopy] = useState([]);
   const [genderData, setGenderData] = useState([]);
@@ -77,7 +81,7 @@ function AddEmployee() {
 
   const fetchData = () => {
     setLoading(true);
-    axios.get(apiurl + '/employees', { headers: authHeader() })
+    axios.get(apiurl + '/employees', { headers: authHeader(token) })
       .then((response) => {
         setLoading(false);
         if (response.status === 200) {
@@ -94,6 +98,9 @@ function AddEmployee() {
       .catch((error) => {
         setLoading(false);
         showToast('error', errorMessage);
+        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+          logout();
+        }
       });
   };
 
@@ -101,12 +108,12 @@ function AddEmployee() {
     // console.log('Path : ' + e.target.value);
     setProfilePicture(e.target.value);
     setIsProfilePictureChanged(true);
-    console.log('File : ');
-    console.log(e.target.files);
+    // console.log('File : ');
+    // console.log(e.target.files);
     if (e.target.files.length > 0) {
       const file = e.target.files[0];
       setProfileImage(file);
-      console.log('File : ' + file);
+      // console.log('File : ' + file);
       let result = true;
       let error = '';
       // Validate file
@@ -208,8 +215,8 @@ function AddEmployee() {
     }
     else if (btnText == 'Add') {
       // Check if Employee Id already exists
-      const filterData = data.filter((item) => item.employeeId == employeeId);
-      if (filterData.length > 0) {
+      const findItem = data.find((item) => item.employeeId == parseInt(employeeId));
+      if(findItem){
         result = false;
         error = 'Given Employee Id already exists for another employee.';
         employeeIdRef.current.focus();
@@ -255,7 +262,7 @@ function AddEmployee() {
       }else{
         formData.append('profilePicture', null);
       }
-      axios.post(apiurl + '/employees/register', formData, { headers: {...authHeader(), 'Content-Type': 'multipart/form-data' } })
+      axios.post(apiurl + '/employees/register', formData, { headers: {...authHeader(token), 'Content-Type': 'multipart/form-data' } })
         .then((response) => {
           setLoading(false);
           if (response.status === 201) {
@@ -270,6 +277,9 @@ function AddEmployee() {
         .catch((error) => {
           setLoading(false);
           showSweetAlert('error', 'Error', 'Failed to add Employee. Please try again...');
+          if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+            logout();
+          }
         });
     }
   };
@@ -279,7 +289,7 @@ function AddEmployee() {
       .then((result) => {
         if (result.isConfirmed) {
           setLoading(true);
-          axios.delete(apiurl + '/employees/' + id, { headers: authHeader() })
+          axios.delete(apiurl + '/employees/' + id, { headers: authHeader(token) })
             .then((response) => {
               setLoading(false);
               if (response.status === 200) {
@@ -295,6 +305,9 @@ function AddEmployee() {
               setLoading(false);
               showSweetAlert('error', 'Error', 'Failed to delete Employee. Please try again...');
               clearControls();
+              if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+                logout();
+              }
             });
         }
       });
@@ -309,7 +322,7 @@ function AddEmployee() {
       setFirstName(obj.firstName);
       setLastName(obj.lastName);
       setGenderId(obj.genderId);
-      console.log(getGender(obj.genderId));
+      // console.log(getGender(obj.genderId));
       setEmailId(obj.emailId);
       setMobileNumber(obj.mobileNumber);
       // setProfilePicture(obj.profilePicture);
@@ -340,8 +353,8 @@ function AddEmployee() {
       }else{
         url += employeeId;
       }
-      console.log(url);
-      axios.put(url, formData, { headers: {...authHeader(), 'Content-Type': 'multipart/form-data' } })
+      // console.log(url);
+      axios.put(url, formData, { headers: {...authHeader(token), 'Content-Type': 'multipart/form-data' } })
         .then((response) => {
           setLoading(false);
           if (response.status === 200) {
@@ -356,6 +369,9 @@ function AddEmployee() {
         .catch((error) => {
           setLoading(false);
           showSweetAlert('error', 'Error', 'Failed to update Employee. Please try again...');
+          if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+            logout();
+          }
         });
     }
   };
@@ -381,7 +397,8 @@ function AddEmployee() {
 
   const statusChange = (e, employeeId) => {
     const status = e.target.checked;
-    axios.put(apiurl + '/employees/' + employeeId + '/update-status/' + status, {}, { headers: authHeader() })
+    setLoading(true);
+    axios.put(apiurl + '/employees/' + employeeId + '/update-status/' + status, {}, { headers: authHeader(token) })
       .then((response) => {
         setLoading(false);
         if (response.status === 200) {
@@ -397,6 +414,9 @@ function AddEmployee() {
         setLoading(false);
         showSweetAlert('error', 'Error', 'Failed to update status of Employee. Please try again...');
         fetchData();
+        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+          logout();
+        }
       });
   };
 
@@ -643,15 +663,7 @@ function AddEmployee() {
                     data.length > 0 && data.map((item, index) => (
                       <tr key={item.employeeId}>
                         <td>{item.employeeId}</td>
-                        <td>
-                          {
-                            item.profilePicture !== '' ?
-                              <img src={item.profilePicture} className="img-circle elevation-2" width="100" height="100" /> :
-                              item.genderName === "Male" ?
-                                <img src={maleAvatar} className="img-circle elevation-2" width="100" height="100" /> :
-                                <img src={femaleAvatar} className="img-circle elevation-2" width="100" height="100" />
-                          }
-                        </td>
+                        <td><img src={item.profilePicture != '' ? item.profilePicture : item.genderName === 'Female' ? femaleAvatar : maleAvatar} className="img-circle elevation-2" width="100" height="100" /></td>
                         <td>{item.firstName}</td>
                         <td>{item.lastName}</td>
                         <td>{item.genderName}</td>

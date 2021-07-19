@@ -13,8 +13,16 @@
 //     });
 // };
 
-export const authHeader = () => {
-  const token = sessionStorage.getItem('token');
+// export const authHeader = () => {
+//   const token = sessionStorage.getItem('token');
+//   if (token) {
+//     return { 'Authorization': 'Bearer ' + token };
+//   } else {
+//     return {};
+//   }
+// };
+
+export const authHeader = (token) => {
   if (token) {
     return { 'Authorization': 'Bearer ' + token };
   } else {
@@ -22,10 +30,10 @@ export const authHeader = () => {
   }
 };
 
-export const logout = () => {
-  sessionStorage.removeItem('employeeId');
-  sessionStorage.removeItem('name');
-  sessionStorage.removeItem('emailId');
-  sessionStorage.removeItem('role');
-  sessionStorage.removeItem('token');
-};
+// export const logout = () => {
+//   // sessionStorage.removeItem('employeeId');
+//   // sessionStorage.removeItem('name');
+//   // sessionStorage.removeItem('emailId');
+//   // sessionStorage.removeItem('role');
+//   // sessionStorage.removeItem('token');
+// };

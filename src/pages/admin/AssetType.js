@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { NavLink } from 'react-router-dom';
 import Header from '../Header';
 import Footer from '../Footer';
@@ -7,11 +7,14 @@ import axios from 'axios';
 import Loader from '../../components/Loader';
 import { errorMessage } from '../../config';
 import { showToast, showSweetAlert, showConfirmAlert } from '../../helpers/sweetAlert';
-import { authHeader, logout } from '../../services/authService';
+import { authHeader } from '../../services/authService';
+import { AuthContext } from '../../context/AuthContext';
 
 const apiurl = process.env.REACT_APP_URL;
 
 function AssetType() {
+  const { state, logout } = useContext(AuthContext);
+  const token = state.token;
 
   const [data, setData] = useState([]);
   const [dataCopy, setDataCopy] = useState([]);
@@ -29,7 +32,7 @@ function AssetType() {
 
   const fetchData = () => {
     setLoading(true);
-    axios.get(apiurl + '/asset-types', { headers: authHeader() })
+    axios.get(apiurl + '/asset-types', { headers: authHeader(token) })
       .then((response) => {
         setLoading(false);
         if (response.status === 200) {
@@ -56,6 +59,9 @@ function AssetType() {
       .catch((error) => {
         setLoading(false);
         showToast('error', errorMessage);
+        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+          logout();
+        }
       });
   };
 
@@ -75,8 +81,8 @@ function AssetType() {
     }
     else if (btnText == 'Add') {
       // Check if already exists
-      const filterData = data.filter((item) => item.assetType.toLowerCase() == assetType.toLowerCase());
-      if (filterData.length > 0) {
+      const findItem = data.find((item) => item.assetType.toLowerCase() == assetType.toLowerCase());
+      if(findItem){
         result = false;
         error = 'Asset Type already exists with given name.';
         textboxRef.current.focus();
@@ -86,7 +92,6 @@ function AssetType() {
     if (result === false) {
       showToast('warning', error);
     }
-    console.log(result);
     return result;
   };
 
@@ -96,7 +101,7 @@ function AssetType() {
       const requestData = {
         assetType: assetType
       };
-      axios.post(apiurl + '/asset-types', requestData, { headers: authHeader() })
+      axios.post(apiurl + '/asset-types', requestData, { headers: authHeader(token) })
         .then((response) => {
           setLoading(false);
           if (response.status === 201) {
@@ -111,6 +116,9 @@ function AssetType() {
         .catch((error) => {
           setLoading(false);
           showSweetAlert('error', 'Error', 'Failed to add Asset Type. Please try again...');
+          if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+            logout();
+          }
         });
     }
   };
@@ -120,7 +128,7 @@ function AssetType() {
       .then((result) => {
         if (result.isConfirmed) {
           setLoading(true);
-          axios.delete(apiurl + '/asset-types/' + id, { headers: authHeader() })
+          axios.delete(apiurl + '/asset-types/' + id, { headers: authHeader(token) })
             .then((response) => {
               setLoading(false);
               if (response.status === 200) {
@@ -136,6 +144,9 @@ function AssetType() {
               setLoading(false);
               showSweetAlert('error', 'Error', 'Failed to delete Asset Type. Please try again...');
               setAssetType('');
+              if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+                logout();
+              }
             });
         }
       });
@@ -154,7 +165,7 @@ function AssetType() {
       const requestData = {
         assetType: assetType
       };
-      axios.put(apiurl + '/asset-types/' + assetTypeId, requestData, { headers: authHeader() })
+      axios.put(apiurl + '/asset-types/' + assetTypeId, requestData, { headers: authHeader(token) })
         .then((response) => {
           setLoading(false);
           if (response.status === 200) {
@@ -170,6 +181,9 @@ function AssetType() {
         .catch((error) => {
           setLoading(false);
           showSweetAlert('error', 'Error', 'Failed to update Asset Type. Please try again...');
+          if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+            logout();
+          }
         });
     }
   };
@@ -181,7 +195,8 @@ function AssetType() {
 
   const statusChange = (e, assetTypeId) => {
     const status = e.target.checked;
-    axios.put(apiurl + '/asset-types/' + assetTypeId + '/update-status/' + status, {}, { headers: authHeader() })
+    setLoading(true);
+    axios.put(apiurl + '/asset-types/' + assetTypeId + '/update-status/' + status, {}, { headers: authHeader(token) })
       .then((response) => {
         setLoading(false);
         if (response.status === 200) {
@@ -198,6 +213,9 @@ function AssetType() {
         setLoading(false);
         showSweetAlert('error', 'Error', 'Failed to update status of Asset Type. Please try again...');
         fetchData();
+        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+          logout();
+        }
       });
   };
 
@@ -221,7 +239,7 @@ function AssetType() {
           <div className="container-fluid">
             <div className="row mb-2">
               <div className="col-sm-6">
-                <h1 className="m-0">Asset Type</h1>
+                <h1 className="m-0">Asset Types</h1>
               </div>{/* /.col */}
               <div className="col-sm-6">
                 <ol className="breadcrumb float-sm-right">

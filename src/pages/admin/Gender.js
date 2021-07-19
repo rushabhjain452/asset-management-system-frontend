@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { NavLink } from 'react-router-dom';
 import Header from '../Header';
 import Footer from '../Footer';
@@ -7,7 +7,8 @@ import axios from 'axios';
 import Loader from '../../components/Loader';
 import { errorMessage } from '../../config';
 import { showToast, showSweetAlert, showConfirmAlert } from '../../helpers/sweetAlert';
-import { authHeader, logout } from '../../services/authService';
+import { authHeader } from '../../services/authService';
+import { AuthContext } from '../../context/AuthContext';
 // import 'admin-lte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css';
 // import 'admin-lte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css';
 // import 'admin-lte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css';
@@ -27,6 +28,8 @@ import { authHeader, logout } from '../../services/authService';
 const apiurl = process.env.REACT_APP_URL;
 
 function Gender() {
+  const { state, logout } = useContext(AuthContext);
+  const token = state.token;
 
   const [data, setData] = useState([]);
   const [dataCopy, setDataCopy] = useState([]);
@@ -74,9 +77,6 @@ function Gender() {
         setLoading(false);
         // showSweetAlert('error', 'Network Error', errorMessage);
         showToast('error', errorMessage);
-        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-          // dispatch(logout());
-        }
       });
   };
 
@@ -98,8 +98,8 @@ function Gender() {
     }
     else if (btnText == 'Add') {
       // Check if already exists
-      const filterData = data.filter((item) => item.name.toLowerCase() == gender.toLowerCase());
-      if (filterData.length > 0) {
+      const findItem = data.find((item) => item.name.toLowerCase() == gender.toLowerCase());
+      if(findItem){
         result = false;
         error = 'Gender already exists with given name.';
         textboxRef.current.focus();
@@ -109,7 +109,6 @@ function Gender() {
     if (result === false) {
       showToast('warning', error);
     }
-    console.log(result);
     return result;
   };
 
@@ -119,7 +118,7 @@ function Gender() {
       const requestData = {
         name: gender
       };
-      axios.post(apiurl + '/genders', requestData, { headers: authHeader() })
+      axios.post(apiurl + '/genders', requestData, { headers: authHeader(token) })
         .then((response) => {
           setLoading(false);
           if (response.status === 201) {
@@ -134,6 +133,9 @@ function Gender() {
         .catch((error) => {
           setLoading(false);
           showSweetAlert('error', 'Error', 'Failed to add Gender. Please try again...');
+          if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+            logout();
+          }
         });
     }
   };
@@ -143,7 +145,7 @@ function Gender() {
       .then((result) => {
         if (result.isConfirmed) {
           setLoading(true);
-          axios.delete(apiurl + '/genders/' + id, { headers: authHeader() })
+          axios.delete(apiurl + '/genders/' + id, { headers: authHeader(token) })
             .then((response) => {
               setLoading(false);
               if (response.status === 200) {
@@ -159,6 +161,9 @@ function Gender() {
               setLoading(false);
               showSweetAlert('error', 'Error', 'Failed to delete Gender. Please try again...');
               setGender('');
+              if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+                logout();
+              }
             });
         }
       });
@@ -177,7 +182,7 @@ function Gender() {
       const requestData = {
         name: gender
       };
-      axios.put(apiurl + '/genders/' + genderId, requestData, { headers: authHeader() })
+      axios.put(apiurl + '/genders/' + genderId, requestData, { headers: authHeader(token) })
         .then((response) => {
           setLoading(false);
           if (response.status === 200) {
@@ -193,6 +198,9 @@ function Gender() {
         .catch((error) => {
           setLoading(false);
           showSweetAlert('error', 'Error', 'Failed to update Gender. Please try again...');
+          if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+            logout();
+          }
         });
     }
   };

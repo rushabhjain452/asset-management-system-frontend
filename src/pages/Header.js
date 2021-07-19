@@ -1,24 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Redirect, Link } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 import { logout } from '../services/authService';
 
 function Header() {
 
-  const [logout, setLogout] = useState(false);
+  const { logout } = useContext(AuthContext);
+
+  // const [logout, setLogout] = useState(false);
+
+  // const handleLogout = () => {
+  //   // logout();
+  //   sessionStorage.removeItem('employeeId');
+  //   sessionStorage.removeItem('name');
+  //   sessionStorage.removeItem('emailId');
+  //   sessionStorage.removeItem('role');
+  //   sessionStorage.removeItem('token');
+  //   setLogout(true);
+  // };
 
   const handleLogout = () => {
-    // logout();
-    sessionStorage.removeItem('employeeId');
-    sessionStorage.removeItem('name');
-    sessionStorage.removeItem('emailId');
-    sessionStorage.removeItem('role');
-    sessionStorage.removeItem('token');
-    setLogout(true);
-  };
-
-  if(logout) {
-    return <Redirect to="/login" />;
+    logout();
   }
+
+  // if(logout) {
+  //   return <Redirect to="/login" />;
+  // }
 
   return (
     <div>

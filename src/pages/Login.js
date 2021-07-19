@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useContext } from 'react';
 import { Link, Redirect } from 'react-router-dom';
 import './css/style.css';
 import 'material-design-iconic-font/dist/css/material-design-iconic-font.min.css';
@@ -6,13 +6,14 @@ import axios from 'axios';
 import Loader from '../components/Loader';
 import { errorMessage } from '../config';
 import { showSweetAlert } from '../helpers/sweetAlert';
+import { AuthContext } from '../context/AuthContext';
 
 function Login() {
+  const authContext = useContext(AuthContext);
 
   const [email, setEmail] = useState("rushabh@bbd.co.za");
   const [password, setPassword] = useState("Rushabh@123456");
   const [loading, setLoading] = useState(false);
-  const [response, setResponse] = useState();
 
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
@@ -53,31 +54,30 @@ function Login() {
       setLoading(true);
       axios.post(apiurl + '/employees/authenticate', requestData)
         .then((response) => {
-          console.log('then...');
-          console.log(response.data);
+          // console.log(response.data);
           setLoading(false);
           if (response.status === 200) {
             const data = response.data;
             // sessionStorage.setItem('user', JSON.stringify({ employeeId: data.employeeId, email: data.emailId, role: data.role, token: data.token }));
-            sessionStorage.setItem('employeeId', data.employeeId);
-            sessionStorage.setItem('name', data.firstName + ' ' + data.lastName);
-            sessionStorage.setItem('emailId', data.emailId);
-            sessionStorage.setItem('role', data.role);
-            sessionStorage.setItem('token', data.token);
-            console.log('Set values in sessionStorage');
+            // sessionStorage.setItem('employeeId', data.employeeId);
+            // sessionStorage.setItem('name', data.firstName + ' ' + data.lastName);
+            // sessionStorage.setItem('emailId', data.emailId);
+            // sessionStorage.setItem('role', data.role);
+            // sessionStorage.setItem('token', data.token);
             // Swal.fire({
             //   title: 'Success',
             //   text: 'Login success...',
             //   icon: 'success',
             //   confirmButtonColor: '#3085d6'
             // });
+            // login(username, token, role, employeeId, emailId, profilePicture) 
+            authContext.login(data.firstName + ' ' + data.lastName, data.token, data.role, data.employeeId, data.gender, data.emailId, data.profilePicture);
           }
-          setResponse(response.data);
         })
         .catch((error) => {
           setLoading(false);
-          console.log(error);
-          console.log(error.response);
+          // console.log(error);
+          // console.log(error.response);
           let msg = errorMessage;
           if (error.response && error.response.data) {
             msg = error.response.data.message;
@@ -93,14 +93,26 @@ function Login() {
     }
   };
 
-  if(response) {
-    console.log('Role checking : ' + response.role);
-    if (response.role === "User") {
+  // if(response) {
+  //   console.log('Role checking : ' + response.role);
+  //   if (response.role === "User") {
+  //     // console.log('User');
+  //     return <Redirect to="/dashboard" />;
+  //   }
+  //   else if (response.role === "Admin") {
+  //     console.log('Admin');
+  //     return <Redirect to="/admin/dashboard" />;
+  //   }
+  // }
+
+  if(authContext.state.isLoggedIn) {
+    // console.log('Role checking : ' + authContext.state.role);
+    if (authContext.state.role === "User") {
       // console.log('User');
       return <Redirect to="/dashboard" />;
     }
-    else if (response.role === "Admin") {
-      console.log('Admin');
+    else if (authContext.state.role === "Admin") {
+      // console.log('Admin');
       return <Redirect to="/admin/dashboard" />;
     }
   }

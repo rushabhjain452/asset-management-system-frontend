@@ -1,9 +1,15 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { NavLink } from 'react-router-dom';
-import avatar from 'admin-lte/dist/img/avatar5.png';
+import femaleAvatar from 'admin-lte/dist/img/avatar3.png';
+import maleAvatar from 'admin-lte/dist/img/avatar5.png';
+import { AuthContext } from '../../context/AuthContext';
 
 function Menu() {
-  const name = sessionStorage.getItem('name');
+  // const name = sessionStorage.getItem('name');
+  const { state } = useContext(AuthContext);
+  const username = state.username;
+  const profilePicture = state.profilePicture;
+  const gender = state.gender;
 
   return (
     <div>
@@ -17,11 +23,12 @@ function Menu() {
         <div className="sidebar">
           <div className="user-panel mt-3 pb-3 mb-3 d-flex">
             <div className="image">
-              <img src={avatar} className="img-circle elevation-2" alt="User Image" />
+              {/* <img src={maleAvatar} className="img-circle elevation-2" alt="User Image" /> */}
+              <img src={profilePicture != '' ? profilePicture : gender === 'Female' ? femaleAvatar : maleAvatar} className="img-circle elevation-2" width="100" height="100" />
             </div>
             <div className="info">
               {/* <a href="#" className="d-block">{name}</a> */}
-              <NavLink to="/profile" className="d-block">{name}</NavLink>
+              <NavLink to="/profile" className="d-block">{username}</NavLink>
             </div>
           </div>
           <nav className="mt-2">

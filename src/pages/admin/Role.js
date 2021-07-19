@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { NavLink } from 'react-router-dom';
 import Header from '../Header';
 import Footer from '../Footer';
@@ -7,11 +7,14 @@ import axios from 'axios';
 import Loader from '../../components/Loader';
 import { errorMessage } from '../../config';
 import { showToast, showSweetAlert, showConfirmAlert } from '../../helpers/sweetAlert';
-import { authHeader, logout } from '../../services/authService';
+import { authHeader } from '../../services/authService';
+import { AuthContext } from '../../context/AuthContext';
 
 const apiurl = process.env.REACT_APP_URL;
 
 function Role() {
+  const { state, logout } = useContext(AuthContext);
+  const token = state.token;
 
   const [data, setData] = useState([]);
   const [dataCopy, setDataCopy] = useState([]);
@@ -29,7 +32,7 @@ function Role() {
 
   const fetchData = () => {
     setLoading(true);
-    axios.get(apiurl + '/roles', { headers: authHeader() })
+    axios.get(apiurl + '/roles', { headers: authHeader(token) })
       .then((response) => {
         setLoading(false);
         if (response.status === 200) {
@@ -56,6 +59,9 @@ function Role() {
       .catch((error) => {
         setLoading(false);
         showToast('error', errorMessage);
+        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+          logout();
+        }
       });
   };
 
@@ -75,8 +81,8 @@ function Role() {
     }
     else if (btnText == 'Add') {
       // Check if already exists
-      const filterData = data.filter((item) => item.name.toLowerCase() == role.toLowerCase());
-      if (filterData.length > 0) {
+      const findItem = data.find((item) => item.name.toLowerCase() == role.toLowerCase());
+      if(findItem){
         result = false;
         error = 'Role already exists with given name.';
         textboxRef.current.focus();
@@ -86,7 +92,6 @@ function Role() {
     if (result === false) {
       showToast('warning', error);
     }
-    console.log(result);
     return result;
   };
 
@@ -96,7 +101,7 @@ function Role() {
       const requestData = {
         name: role
       };
-      axios.post(apiurl + '/roles', requestData, { headers: authHeader() })
+      axios.post(apiurl + '/roles', requestData, { headers: authHeader(token) })
         .then((response) => {
           setLoading(false);
           if (response.status === 201) {
@@ -111,6 +116,9 @@ function Role() {
         .catch((error) => {
           setLoading(false);
           showSweetAlert('error', 'Error', 'Failed to add Role. Please try again...');
+          if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+            logout();
+          }
         });
     }
   };
@@ -120,7 +128,7 @@ function Role() {
       .then((result) => {
         if (result.isConfirmed) {
           setLoading(true);
-          axios.delete(apiurl + '/roles/' + id, { headers: authHeader() })
+          axios.delete(apiurl + '/roles/' + id, { headers: authHeader(token) })
             .then((response) => {
               setLoading(false);
               if (response.status === 200) {
@@ -136,6 +144,9 @@ function Role() {
               setLoading(false);
               showSweetAlert('error', 'Error', 'Failed to delete Role. Please try again...');
               setRole('');
+              if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+                logout();
+              }
             });
         }
       });
@@ -154,7 +165,7 @@ function Role() {
       const requestData = {
         name: role
       };
-      axios.put(apiurl + '/roles/' + roleId, requestData, { headers: authHeader() })
+      axios.put(apiurl + '/roles/' + roleId, requestData, { headers: authHeader(token) })
         .then((response) => {
           setLoading(false);
           if (response.status === 200) {
@@ -170,6 +181,9 @@ function Role() {
         .catch((error) => {
           setLoading(false);
           showSweetAlert('error', 'Error', 'Failed to update Role. Please try again...');
+          if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+            logout();
+          }
         });
     }
   };
