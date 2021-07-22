@@ -13,8 +13,12 @@ import { AuthContext } from '../../context/AuthContext';
 const apiurl = process.env.REACT_APP_URL;
 
 function Properties() {
-  const { state, logout } = useContext(AuthContext);
-  const token = state.token;
+  const { state, logout, updateContextState } = useContext(AuthContext);
+  let token = state.token;
+  if (!token) {
+    token = sessionStorage.getItem('token');
+    updateContextState();
+  }
 
   const [data, setData] = useState([]);
   const [dataCopy, setDataCopy] = useState([]);
@@ -83,7 +87,7 @@ function Properties() {
     else if (btnText == 'Add') {
       // Check if already exists
       const findItem = data.find((item) => item.propertyName.toLowerCase() == property.toLowerCase());
-      if(findItem){
+      if (findItem) {
         result = false;
         error = 'Property already exists with given name.';
         textboxRef.current.focus();

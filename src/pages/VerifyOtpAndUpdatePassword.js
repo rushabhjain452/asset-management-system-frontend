@@ -112,19 +112,19 @@ function VerifyOtpAndUpdatePassword() {
             <div className="signin-form">
               <h2 className="form-title">Verify OTP And Update Password</h2>
               <form method="POST" className="register-form" id="updatepassword-form">
-                <div className="form-group">
+                <div className="my-form-group">
                   <label htmlFor="your_otp" className="label-style"><i className="zmdi zmdi-account material-icons-name"></i></label>
                   <input type="text" className="input-style" maxLength="6" ref={otpRef} name="your_otp" id="your_otp" placeholder="Enter OTP" value={otp} onChange={e => setOtp(e.target.value)} autoFocus />
                 </div>
-                <div className="form-group">
+                <div className="my-form-group">
                   <label htmlFor="your_pass" className="label-style"><i className="zmdi zmdi-lock"></i></label>
                   <input type="password" className="input-style" maxLength="50" ref={passwordRef} name="your_pass" id="your_pass" placeholder="New Password" value={password} onChange={e => setPassword(e.target.value)} />
                 </div>
-                <div className="form-group">
+                <div className="my-form-group">
                   <label htmlFor="your_pass" className="label-style"><i className="zmdi zmdi-lock"></i></label>
                   <input type="password" className="input-style" maxLength="50" ref={confirmPasswordRef} name="your_confirm_pass" id="your_confirm_pass" placeholder="Confirm New Password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} />
                 </div>
-                <div className="form-group form-button">
+                <div className="my-form-group form-button">
                   <button type="button" name="signin" id="signin" className="form-submit" onClick={handleUpdatePassword}>Update Password</button>
                 </div>
                 <Link to="/login" className="signup-image-link">Back to Login</Link>

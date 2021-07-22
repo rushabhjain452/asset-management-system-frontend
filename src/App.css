@@ -2,6 +2,11 @@ button {
   margin: 0 5px !important;
 }
 
+/* Admin LTE Layout styles */
+.content-wrapper{ 
+  min-height: 100vh !important;
+}
+
 .App {
   text-align: center;
 }
@@ -36,13 +41,22 @@ button {
   cursor: pointer;
 }
 
-.menu-link-style {
+/* .menu-link-style {
   color: #fff;
-}
+} */
 
 /* Override Admin LTE CSS */
 .select2-container--default .select2-selection--single {
   border: 1px solid #ced4da;
   padding: .46875rem .75rem;
   height: calc(2.25rem + 2px) !important;
+}
+
+.required:after {
+  content:" *";
+  color: red;
+}
+
+.sort-style {
+  cursor: pointer;
 }

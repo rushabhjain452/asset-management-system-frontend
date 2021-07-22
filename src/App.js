@@ -63,8 +63,7 @@ import AssetType from "./pages/admin/AssetType";
 import Properties from "./pages/admin/Properties";
 import Asset from "./pages/admin/Asset";
 import Profile from "./pages/Profile";
-import AddEmployee from "./pages/admin/Employee";
-import ViewEmployees from "./pages/admin/ViewEmployees";
+import Employee from "./pages/admin/Employee";
 import AssetProperties from "./pages/admin/AssetTypeProperties";
 import AssignAsset from "./pages/admin/AssignAsset";
 import Auction from "./pages/admin/Auction";
@@ -84,6 +83,15 @@ const App = () => {
   const [authState, dispatch] = useReducer(authReducer, initialAuthState);
 
   const login = (username, token, role, employeeId, gender, emailId, profilePicture) => {
+    // Store data in session storage
+    sessionStorage.setItem('username', username);
+    sessionStorage.setItem('token', token);
+    sessionStorage.setItem('role', role);
+    sessionStorage.setItem('employeeId', employeeId);
+    sessionStorage.setItem('gender', gender);
+    sessionStorage.setItem('emailId', emailId);
+    sessionStorage.setItem('profilePicture', profilePicture);
+    // Update Context state
     dispatch({
       type: LOGIN, 
       payload: {
@@ -99,8 +107,41 @@ const App = () => {
   };
   
   const logout = () => {
+    // Remove data from session storage
+    sessionStorage.removeItem('username');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('role');
+    sessionStorage.removeItem('employeeId');
+    sessionStorage.removeItem('gender');
+    sessionStorage.removeItem('emailId');
+    sessionStorage.removeItem('profilePicture');
+    // Update Context state
     dispatch({ type: LOGOUT });
   };
+
+  const updateContextState = () => {
+    let token = sessionStorage.getItem('token');
+    if(token){
+      const username = sessionStorage.getItem('username');
+      const role = sessionStorage.getItem('role');
+      const employeeId = sessionStorage.getItem('employeeId');
+      const gender = sessionStorage.getItem('gender');
+      const emailId = sessionStorage.getItem('emailId');
+      const profilePicture = sessionStorage.getItem('profilePicture');
+      dispatch({
+        type: LOGIN, 
+        payload: {
+          username: username,
+          token: token,
+          role: role,
+          employeeId: employeeId,
+          gender: gender,
+          emailId: emailId,
+          profilePicture: profilePicture
+        } 
+      });
+    }
+  }
 
   const setEmployeeId = (employeeId) => {
     dispatch({
@@ -110,7 +151,7 @@ const App = () => {
   }
 
   return (
-    <AuthContext.Provider value={{ state: authState, dispatch: dispatch, login: login, logout: logout, setEmployeeId: setEmployeeId }}>
+    <AuthContext.Provider value={{ state: authState, dispatch: dispatch, login: login, logout: logout, setEmployeeId: setEmployeeId, updateContextState: updateContextState }}>
       <ErrorBoundary>
         <Router>
           <Switch>
@@ -119,8 +160,9 @@ const App = () => {
               <Route exact path="/login" component={Login} />
               <Route exact path='/forget-password' component={ForgetPassword} />
               <Route exact path='/verify-otp-update-password' component={VerifyOtpAndUpdatePassword} />
-              <PrivateRoute exact path='/profile' component={Profile} />
               <Route exact path='/error' component={Error} />
+              {/* Private Routes */}
+              <PrivateRoute path='/profile' component={Profile} />
               {/* Admin Pages */}
               <PrivateRoute exact path='/admin/dashboard' component={AdminDashboard} />
               <PrivateRoute exact path='/admin/gender' component={Gender} />
@@ -128,14 +170,12 @@ const App = () => {
               <PrivateRoute exact path='/admin/asset-types' component={AssetType} />
               <PrivateRoute exact path='/admin/properties' component={Properties} />
               <PrivateRoute exact path='/admin/assets' component={Asset} />
-              <PrivateRoute exact path='/admin/add-employee' component={AddEmployee} />
-              <PrivateRoute exact path='/admin/view-employees' component={ViewEmployees} />
+              <PrivateRoute exact path='/admin/employee' component={Employee} />
               <PrivateRoute exact path='/admin/assettype-properties' component={AssetProperties} />
               <PrivateRoute exact path='/admin/assign-asset' component={AssignAsset} />
               <PrivateRoute exact path='/admin/auction' component={Auction} />
               <PrivateRoute exact path='/admin/view-bids' component={ViewBids} />
               <PrivateRoute exact path='/admin/sale-asset' component={SaleAsset} />
-
               {/* User Pages */}
               <PrivateRoute exact path='/dashboard' component={UserDashboard} />
               <PrivateRoute exact path='/bids' component={Bids} />

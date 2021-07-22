@@ -15,9 +15,13 @@ import { AuthContext } from '../../context/AuthContext';
 
 const apiurl = process.env.REACT_APP_URL;
 
-function AddEmployee() {
-  const { state, logout } = useContext(AuthContext);
-  const token = state.token;
+function Employee() {
+  const { state, logout, updateContextState } = useContext(AuthContext);
+  let token = state.token;
+  if (!token) {
+    token = sessionStorage.getItem('token');
+    updateContextState();
+  }
 
   const [data, setData] = useState([]);
   const [dataCopy, setDataCopy] = useState([]);
@@ -52,8 +56,10 @@ function AddEmployee() {
   }, []);
 
   const fetchGenderData = () => {
+    setLoading(true);
     axios.get(apiurl + '/genders')
       .then((response) => {
+        setLoading(false);
         if (response.status == 200) {
           setGenderData(response.data);
         } else {
@@ -61,6 +67,7 @@ function AddEmployee() {
         }
       })
       .catch((error) => {
+        setLoading(false);
         showSweetAlert('error', 'Network Error', errorMessage);
       });
   };
@@ -159,7 +166,7 @@ function AddEmployee() {
     const email_regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     let result = true;
     let error = '';
-    if (employeeId.length == 0) {
+    if (employeeId.length === 0) {
       result = false;
       error = 'Please enter value for Employee Id.';
       employeeIdRef.current.focus();
@@ -169,7 +176,7 @@ function AddEmployee() {
       error = 'Please enter valid Employee Id. Employee Id can only contain numbers.';
       employeeIdRef.current.focus();
     }
-    else if (firstName.length == 0) {
+    else if (firstName.length === 0) {
       result = false;
       error = 'Please enter value for Employee First Name.';
       firstNameRef.current.focus();
@@ -179,7 +186,7 @@ function AddEmployee() {
       error = 'Please enter valid Employee First Name. First Name can only contain characters.';
       firstNameRef.current.focus();
     }
-    else if (lastName.length == 0) {
+    else if (lastName.length === 0) {
       result = false;
       error = 'Please enter value for Employee Last Name.';
       lastNameRef.current.focus();
@@ -193,7 +200,7 @@ function AddEmployee() {
       result = false;
       error = 'Please select Gender of Employee.';
     }
-    else if (emailId.length == 0) {
+    else if (emailId.length === 0) {
       result = false;
       error = 'Please enter value for Email Address.';
       emailIdRef.current.focus();
@@ -203,7 +210,7 @@ function AddEmployee() {
       error = 'Please enter valid Email Address of BBD Domain only.';
       emailIdRef.current.focus();
     }
-    else if (mobileNumber.length == 0) {
+    else if (mobileNumber.length === 0) {
       result = false;
       error = 'Please enter value for Mobile Number.';
       mobileNumberRef.current.focus();
@@ -336,7 +343,6 @@ function AddEmployee() {
     if (validateInput()) {
       setLoading(true);
       const formData = new FormData();
-      formData.append('employeeId', employeeId);
       formData.append('firstName', firstName);
       formData.append('lastName', lastName);
       formData.append('genderId', genderId);
@@ -520,7 +526,7 @@ function AddEmployee() {
                               </div>
                               <input
                                 type="radio"
-                                className="form-control"
+                                className="form-control radio-style"
                                 name="gender"
                                 value={item.genderName}
                                 // defaultChecked={genderId === item.genderId ? true : false}
@@ -594,7 +600,6 @@ function AddEmployee() {
               {/* /.card */}
             </div>
           </div>
-          <div className="row">
             <div className="card-footer">
               <button type="button" className="btn btn-secondary float-right" onClick={onCancel}>Cancel</button>
               <button
@@ -604,7 +609,6 @@ function AddEmployee() {
                 {btnText}
               </button>
             </div>
-          </div>
         </section>
         {/* /.content */}
       </div>
@@ -708,4 +712,4 @@ function AddEmployee() {
   );
 }
 
-export default AddEmployee;
+export default Employee;

@@ -13,8 +13,12 @@ import { AuthContext } from '../../context/AuthContext';
 const apiurl = process.env.REACT_APP_URL;
 
 function AssetType() {
-  const { state, logout } = useContext(AuthContext);
-  const token = state.token;
+  const { state, logout, updateContextState } = useContext(AuthContext);
+  let token = state.token;
+  if (!token) {
+    token = sessionStorage.getItem('token');
+    updateContextState();
+  }
 
   const [data, setData] = useState([]);
   const [dataCopy, setDataCopy] = useState([]);
@@ -230,7 +234,7 @@ function AssetType() {
   };
 
   return (
-    <div>
+    <div className="wrapper">
       <Header />
       <Menu />
       <Loader loading={loading} />

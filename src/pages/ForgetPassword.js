@@ -113,15 +113,15 @@ function ForgetPassword() {
             <div className="signin-form">
               <h2 className="form-title">Send OTP for Verification</h2>
               <form method="POST" className="register-form" id="forgetpassword-form">
-                <div className="form-group">
+                <div className="my-form-group">
                   <label htmlFor="your_email" className="label-style"><i className="zmdi zmdi-account material-icons-name"></i></label>
                   <input type="text" className="input-style" maxLength="50" ref={emailRef} name="your_email" id="your_email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} autoFocus />
                 </div>
-                <div className="form-group">
+                <div className="my-form-group">
                   <label htmlFor="your_mobileno" className="label-style"><i className="zmdi zmdi-lock"></i></label>
                   <input type="text" className="input-style" maxLength="10" ref={mobileRef} name="your_mobileno" id="your_mobileno" placeholder="Mobile Number" value={mobileNumber} onChange={e => setMobileNumber(e.target.value)} />
                 </div>
-                <div className="form-group form-button">
+                <div className="my-form-group form-button">
                   {/* <input type="submit" name="signin" id="signin" className="form-submit" value="Login" /> */}
                   <button type="button" name="sendotp" id="sendotp" className="form-submit" onClick={handleSendOtp}>Send OTP</button>
                 </div>

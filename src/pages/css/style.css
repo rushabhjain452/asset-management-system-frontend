@@ -69,15 +69,15 @@ input[type=checkbox] {
     -webkit-appearance: checkbox !important;
     -o-appearance: checkbox !important;
     -ms-appearance: checkbox !important;
-}
+} */
 
-input[type=radio] {
+.radio-style {
     appearance: radio !important;
     -moz-appearance: radio !important;
     -webkit-appearance: radio !important;
     -o-appearance: radio !important;
     -ms-appearance: radio !important;
-} */
+}
 
 /* img {
     max-width: 100%;
@@ -269,13 +269,13 @@ figure {
     width: 100%;
 }
 
-.form-group {
+.my-form-group {
     position: relative;
     margin-bottom: 25px;
     overflow: hidden;
 }
 
-.form-group:last-child {
+.my-form-group:last-child {
     margin-bottom: 0px;
 }
 

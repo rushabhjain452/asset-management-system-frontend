@@ -7,7 +7,7 @@
 //     .then((response) => {
 //       let result = response.data.result;
 //       if (result.success) {
-//         localStorage.setItem("user", JSON.stringify({ username: result.username, token: result.token }));
+//         sessionStorage.setItem("user", JSON.stringify({ username: result.username, token: result.token }));
 //       }
 //       return response.data;
 //     });

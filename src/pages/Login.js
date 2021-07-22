@@ -9,10 +9,10 @@ import { showSweetAlert } from '../helpers/sweetAlert';
 import { AuthContext } from '../context/AuthContext';
 
 function Login() {
-  const authContext = useContext(AuthContext);
+  const { state, login } = useContext(AuthContext);
 
   const [email, setEmail] = useState("rushabh@bbd.co.za");
-  const [password, setPassword] = useState("Rushabh@123456");
+  const [password, setPassword] = useState("Rushabh@12345");
   const [loading, setLoading] = useState(false);
 
   const emailRef = useRef(null);
@@ -71,7 +71,7 @@ function Login() {
             //   confirmButtonColor: '#3085d6'
             // });
             // login(username, token, role, employeeId, emailId, profilePicture) 
-            authContext.login(data.firstName + ' ' + data.lastName, data.token, data.role, data.employeeId, data.gender, data.emailId, data.profilePicture);
+            login(data.firstName + ' ' + data.lastName, data.token, data.role, data.employeeId, data.gender, data.emailId, data.profilePicture);
           }
         })
         .catch((error) => {
@@ -105,13 +105,14 @@ function Login() {
   //   }
   // }
 
-  if(authContext.state.isLoggedIn) {
-    // console.log('Role checking : ' + authContext.state.role);
-    if (authContext.state.role === "User") {
+  console.log(state);
+  if(state.isLoggedIn) {
+    // console.log('Role checking : ' + state.role);
+    if (state.role === "User") {
       // console.log('User');
       return <Redirect to="/dashboard" />;
     }
-    else if (authContext.state.role === "Admin") {
+    else if (state.role === "Admin") {
       // console.log('Admin');
       return <Redirect to="/admin/dashboard" />;
     }
@@ -129,20 +130,20 @@ function Login() {
             <div className="signin-form">
               <h2 className="form-title">Asset Management System Login</h2>
               <form method="POST" className="register-form" id="login-form">
-                <div className="form-group">
+                <div className="my-form-group">
                   <label htmlFor="your_name" className="label-style"><i className="zmdi zmdi-account material-icons-name"></i></label>
                   <input type="text" className="input-style" maxLength="50" ref={emailRef} name="your_name" id="your_name" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} autoFocus />
                 </div>
-                <div className="form-group">
+                <div className="my-form-group">
                   <label htmlFor="your_pass" className="label-style"><i className="zmdi zmdi-lock"></i></label>
                   <input type="password" className="input-style" maxLength="50" ref={passwordRef} name="your_pass" id="your_pass" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} />
                 </div>
                 <Link to="/forget-password" className="signup-image-link">Forget Password?</Link>
-                {/* <div className="form-group">
+                {/* <div className="my-form-group">
                   <input type="checkbox" name="remember-me" id="remember-me" className="agree-term" />
                   <label htmlFor="remember-me" className="label-agree-term"><span><span></span></span>Remember me</label>
                 </div> */}
-                <div className="form-group form-button">
+                <div className="my-form-group form-button">
                   {/* <input type="submit" name="signin" id="signin" className="form-submit" value="Login" /> */}
                   <button type="button" name="signin" id="signin" className="form-submit" onClick={handleLogin}>Login</button>
                 </div>

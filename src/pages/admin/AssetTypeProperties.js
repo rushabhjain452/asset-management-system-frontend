@@ -3,7 +3,6 @@ import { NavLink } from 'react-router-dom';
 import Footer from '../Footer';
 import Header from '../Header';
 import Menu from './Menu';
-import $ from 'jquery';
 import 'admin-lte/plugins/select2/css/select2.min.css';
 import 'admin-lte/plugins/icheck-bootstrap/icheck-bootstrap.min.css';
 import 'admin-lte/plugins/bootstrap4-duallistbox/bootstrap-duallistbox.min.css';
@@ -23,8 +22,12 @@ import { AuthContext } from '../../context/AuthContext';
 const apiurl = process.env.REACT_APP_URL;
 
 function AssetProperties() {
-  const { state, logout } = useContext(AuthContext);
-  const token = state.token;
+  const { state, logout, updateContextState } = useContext(AuthContext);
+  let token = state.token;
+  if (!token) {
+    token = sessionStorage.getItem('token');
+    updateContextState();
+  }
 
   const [assetTypes, setAssetTypes] = useState([]);
   const [properties, setProperties] = useState([]);
@@ -249,39 +252,53 @@ function AssetProperties() {
   };
 
   const editAssetTypeProperties = (id, name) => {
-    // setBtnText('Update');
-    // setAssetTypeId(id);
-    // setAssetType(name);
-    // textboxRef.current.focus();
+    setBtnText('Update');
+    // findItem : {value: 1, label: "Laptop"}
+    const findItem = assetTypes.find((item) => item.value === id);
+    setAssetType(findItem);
+    let obj = data.find((item) => item.assetTypeId === id);
+    let propertyIds = obj.propertyList.map((item) => item.propertyId);
+    setProperties(prevProperties => {
+      let newProperties = [...prevProperties];
+      newProperties.forEach((item) => {
+        if(propertyIds.includes(item.propertyId))
+          item.checked = true;
+        else
+          item.checked = false;
+      });
+      return newProperties;
+    });
+    selectRef.current.focus();
   };
 
   const updateAssetTypeProperties = () => {
-    // if (validateInput()) {
-    //   setLoading(true);
-    //   const requestData = {
-    //     assetType: assetType
-    //   };
-    //   axios.put(apiurl + '/asset-types/' + assetTypeId, requestData, { headers: authHeader(token) })
-    //     .then((response) => {
-    //       setLoading(false);
-    //       if (response.status === 200) {
-    //         showSweetAlert('success', 'Success', 'Asset Type updated successfully.');
-    //         fetchData();
-    //       }
-    //       else {
-    //         showSweetAlert('error', 'Error', 'Failed to update Asset Type. Please try again...');
-    //       }
-    //       setAssetType('');
-    //       setBtnText('Add');
-    //     })
-    //     .catch((error) => {
-    //       setLoading(false);
-    //       showSweetAlert('error', 'Error', 'Failed to update Asset Type. Please try again...');
-    //       if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-    //         logout();
-    //       }
-    //     });
-    // }
+    let propertyIds = [];
+    properties.forEach((item) => item.checked ? propertyIds.push({propertyId: item.propertyId}) : '');
+    if (validateInput(propertyIds)) {
+      setLoading(true);
+      const requestData = {
+        propertyList: propertyIds
+      };
+      axios.put(apiurl + '/asset-type-properties/' + assetType.value, requestData, { headers: authHeader(token) })
+        .then((response) => {
+          setLoading(false);
+          if (response.status === 200) {
+            showSweetAlert('success', 'Success', 'Asset Type Properties updated successfully.');
+            fetchData();
+          }
+          else {
+            showSweetAlert('error', 'Error', 'Failed to update Asset Type Properties. Please try again...');
+          }
+          clearControls();
+        })
+        .catch((error) => {
+          setLoading(false);
+          showSweetAlert('error', 'Error', 'Failed to update Asset Type Properties. Please try again...');
+          if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+            logout();
+          }
+        });
+    }
   };
 
   const clearControls = () => {
@@ -324,7 +341,7 @@ function AssetProperties() {
               </div>{/* /.col */}
               <div className="col-sm-6">
                 <ol className="breadcrumb float-sm-right">
-                <li className="breadcrumb-item"><NavLink exact to="/admin/dashboard">Home</NavLink></li>
+                  <li className="breadcrumb-item"><NavLink exact to="/admin/dashboard">Home</NavLink></li>
                   <li className="breadcrumb-item active">Asset Type Properties</li>
                 </ol>
               </div>{/* /.col */}
@@ -336,7 +353,7 @@ function AssetProperties() {
             <h4>{btnText} Asset Type with Properties </h4>
             <div className="container-fluid">
               <div className="row">
-                <div className="col-md-12">
+                <div className="col-md-10">
                   <div>
                     <label>Asset Type:</label>
                     <Select 
@@ -412,7 +429,7 @@ function AssetProperties() {
                 </div>
               </div>
               <div className="card-body">
-                <table id="example1" className="table table-bordered table-striped">
+                <table id="asset-type-properties-table" className="table table-bordered table-striped">
                   <thead>
                     <tr>
                       <th>#</th>
