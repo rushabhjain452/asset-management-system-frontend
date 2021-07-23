@@ -3,7 +3,7 @@ import Header from './Header';
 import Footer from './Footer';
 import UserMenu from './UserMenu';
 
-function ViewAssetSales() {
+const ViewAssetSales = () => {
   return (
     <div>
       <Header />

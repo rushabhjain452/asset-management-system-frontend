@@ -215,7 +215,7 @@ const UpdateProfile = (props) => {
     const num_only_regex = /^[0-9]*$/;
     const email_regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     let result = true;
-    let error = '';
+    let error = errorMessage;
     if (firstName.length === 0) {
       result = false;
       error = 'Please enter value for Employee First Name.';
@@ -413,7 +413,7 @@ const UpdateProfilePicture = (props) => {
       const file = e.target.files[0];
       setProfileImage(file);
       let result = true;
-      let error = '';
+      let error = errorMessage;
       // Validate file
       if (file.size > 1048576) {
         // Don't allow if greater than 1 MB
@@ -502,11 +502,11 @@ const UpdateProfilePicture = (props) => {
         </div>
         <div className="col-md-4">
           <img src={base64Image != '' ? base64Image : profilePicture ? profilePicture : props.data.profilePicture != "" ? props.data.profilePicture != "" : gender === 'Female' ? femaleAvatar : maleAvatar}
-            className="img-circle elevation-2" width="100" height="100" alt="No image selected" />
+            className="img-circle elevation-2" width="100" height="100" alt="No image selected" />&nbsp;&nbsp;&nbsp;
           {
             (base64Image != '' || (profilePicture || props.data.profilePicture != '')) &&
-            <button type="button" onClick={removeProfilePicture} title="Remove Profile Picture">
-              <i className="nav-icon fas fa-trash-alt" />
+            <button className="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Remove Profile Picture" onClick={removeProfilePicture}>
+              <i className="fa fa-trash-alt" />
             </button>
           }
         </div>
@@ -534,7 +534,7 @@ const UpdatePassword = (props) => {
   const validateInput = () => {
     const password_regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@%!])[0-9a-zA-Z@%!]{8,}$/;
     let result = true;
-    let error = '';
+    let error = errorMessage;
     if (oldPassword.length === 0) {
       result = false;
       error = 'Please enter value for Old Password.';

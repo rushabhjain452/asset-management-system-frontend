@@ -12,7 +12,7 @@ import { AuthContext } from '../../context/AuthContext';
 
 const apiurl = process.env.REACT_APP_URL;
 
-function Role() {
+const Role = () => {
   const { state, logout, updateContextState } = useContext(AuthContext);
   let token = state.token;
   if (!token) {
@@ -72,7 +72,7 @@ function Role() {
   const validateInput = () => {
     const char_only_regex = /^[a-zA-Z_()// -]*$/;
     let result = true;
-    let error = '';
+    let error = errorMessage;
     if (role.length == 0) {
       result = false;
       error = 'Please enter value for Role.';

@@ -12,7 +12,7 @@ import { AuthContext } from '../../context/AuthContext';
 
 const apiurl = process.env.REACT_APP_URL;
 
-function AssetType() {
+const AssetType = () => {
   const { state, logout, updateContextState } = useContext(AuthContext);
   let token = state.token;
   if (!token) {
@@ -72,7 +72,7 @@ function AssetType() {
   const validateInput = () => {
     const char_only_regex = /^[a-zA-Z_()// -]*$/;
     let result = true;
-    let error = '';
+    let error = errorMessage;
     if (assetType.length == 0) {
       result = false;
       error = 'Please enter value for Asset Type.';
@@ -256,12 +256,12 @@ function AssetType() {
         </div>
         <div className="card card-info">
           <div className="card-body">
-            <h4>{btnText} Asset Type </h4>
+            <label htmlFor="assetType">{btnText} Asset Type </label>
             <div className="input-group mb-3 ">
               <div className="input-group-prepend">
                 <span className="input-group-text"><i className="fas fa-headset" /></span>
               </div>
-              <input type="text" maxLength="20" ref={textboxRef} className="form-control" placeholder="Asset Type Name" value={assetType} onChange={(e) => setAssetType(e.target.value)} />
+              <input type="text" maxLength="20" ref={textboxRef} id="assetType" className="form-control" placeholder="Asset Type Name" value={assetType} onChange={(e) => setAssetType(e.target.value)} />
             </div>
           </div>
           <div className="card-footer">

@@ -4,7 +4,7 @@ import femaleAvatar from 'admin-lte/dist/img/avatar3.png';
 import maleAvatar from 'admin-lte/dist/img/avatar5.png';
 import { AuthContext } from '../../context/AuthContext';
 
-function Menu() {
+const Menu = () => {
   // const name = sessionStorage.getItem('name');
   const { state, updateContextState } = useContext(AuthContext);
   let username = state.username;
@@ -93,12 +93,17 @@ function Menu() {
               </NavLink>
             </li>
             <li className="nav-item menu-open">
-              {/* <a href="./index.html" className="nav-link active"> */}
-              <NavLink exact to="/admin/assign-asset" className="nav-link" activeClassName="active">
+              <NavLink exact to="/admin/assign-return-asset" className="nav-link" activeClassName="active">
                 <i className="nav-icon fas fa-laptop-code"></i>
-                <p>Assign Asset</p>
+                <p>Assign/Return Asset</p>
               </NavLink>
             </li>
+            {/* <li className="nav-item menu-open">
+              <NavLink exact to="/admin/return-assigned-asset" className="nav-link" activeClassName="active">
+                <i className="nav-icon fas fa-laptop-code"></i>
+                <p>Return Assigned Asset</p>
+              </NavLink>
+            </li> */}
             <li className="nav-item menu-open">
               {/* <a href="./index.html" className="nav-link active"> */}
               <NavLink exact to="/admin/auction" className="nav-link" activeClassName="active">

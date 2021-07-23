@@ -27,7 +27,7 @@ import { AuthContext } from '../../context/AuthContext';
 
 const apiurl = process.env.REACT_APP_URL;
 
-function Gender() {
+const Gender = () => {
   const { state, logout, updateContextState } = useContext(AuthContext);
   let token = state.token;
   if (!token) {
@@ -89,7 +89,7 @@ function Gender() {
     const char_only_regex = /^[a-zA-Z_()// -]*$/;
     // const char_only_regex = /^[_A-zA-Z]*((-|\s)*[_A-zA-Z])*$/g;
     let result = true;
-    let error = '';
+    let error = errorMessage;
     if (gender.length == 0) {
       result = false;
       error = 'Please enter value for Gender.';

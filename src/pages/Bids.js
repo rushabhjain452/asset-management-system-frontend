@@ -3,7 +3,7 @@ import Footer from './Footer'
 import Header from './Header'
 import Menu from './admin/Menu'
 
-function Bids() {
+const Bids = () => {
   return (
     <div>
       <Header />

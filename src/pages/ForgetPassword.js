@@ -8,7 +8,7 @@ import { errorMessage } from '../config';
 import { showToastWithProgress, showSweetAlert } from '../helpers/sweetAlert';
 import { AuthContext } from '../context/AuthContext';
 
-function ForgetPassword() {
+const ForgetPassword = () => {
   const { setEmployeeId } = useContext(AuthContext);
 
   const [email, setEmail] = useState("");
@@ -23,7 +23,7 @@ function ForgetPassword() {
     const email_regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     const mobile_regex = /^[0-9]{10}$/;
     let result = true;
-    let error = '';
+    let error = errorMessage;
 
     if(email.length === 0){
       result = false;

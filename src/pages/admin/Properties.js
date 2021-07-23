@@ -12,7 +12,7 @@ import { AuthContext } from '../../context/AuthContext';
 
 const apiurl = process.env.REACT_APP_URL;
 
-function Properties() {
+const Properties = () => {
   const { state, logout, updateContextState } = useContext(AuthContext);
   let token = state.token;
   if (!token) {
@@ -73,7 +73,7 @@ function Properties() {
   const validateInput = () => {
     const char_only_regex = /^[a-zA-Z_()// -]*$/;
     let result = true;
-    let error = '';
+    let error = errorMessage;
     if (property.length == 0) {
       result = false;
       error = 'Please enter value for Property.';
@@ -264,14 +264,14 @@ function Properties() {
         <div className="card card-info">
           <div className="card-body">
             <div className="row">
-              <h4>{btnText} Property</h4>
+              <label htmlFor="propertyName">{btnText} Property</label>
               <div className="input-group mb-3 ">
                 <div className="input-group-prepend">
                   <span className="input-group-text">
                     <i className="fas fa-info-circle" />
                   </span>
                 </div>
-                <input type="text" maxLength="100" ref={textboxRef} className="form-control" placeholder="Property Name" value={property} onChange={(e) => setProperty(e.target.value)} />
+                <input type="text" maxLength="100" ref={textboxRef} id="propertyName" className="form-control" placeholder="Property Name" value={property} onChange={(e) => setProperty(e.target.value)} />
               </div>
               <div className="custom-control custom-switch" style={{ marginLeft: 60 }}>
                 <input type="checkbox" className="custom-control-input" id="switch-mandatory" checked={mandatory} onChange={(e) => setMandatory(e.target.checked)} />

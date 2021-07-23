@@ -15,7 +15,7 @@ import { AuthContext } from '../../context/AuthContext';
 
 const apiurl = process.env.REACT_APP_URL;
 
-function Employee() {
+const Employee = () => {
   const { state, logout, updateContextState } = useContext(AuthContext);
   let token = state.token;
   if (!token) {
@@ -122,7 +122,7 @@ function Employee() {
       setProfileImage(file);
       // console.log('File : ' + file);
       let result = true;
-      let error = '';
+      let error = errorMessage;
       // Validate file
       if (file.size > 1048576) {
         // Don't allow if greater than 1 MB
@@ -165,7 +165,7 @@ function Employee() {
     const num_only_regex = /^[0-9]*$/;
     const email_regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     let result = true;
-    let error = '';
+    let error = errorMessage;
     if (employeeId.length === 0) {
       result = false;
       error = 'Please enter value for Employee Id.';
@@ -220,7 +220,7 @@ function Employee() {
       error = 'Please enter valid Mobile Number. Mobile number can only contain numbers and must be of 10 digits.';
       mobileNumberRef.current.focus();
     }
-    else if (btnText == 'Add') {
+    else if (btnText === 'Add') {
       // Check if Employee Id already exists
       const findItem = data.find((item) => item.employeeId == parseInt(employeeId));
       if(findItem){
@@ -429,7 +429,8 @@ function Employee() {
   const onSearchTextChange = (e) => {
     const searchText = e.target.value.toLowerCase();
     if (searchText.length > 0) {
-      let searchData = dataCopy.filter((item) => item.firstName.toLowerCase().includes(searchText) ||
+      let searchData = dataCopy.filter((item) => item.employeeId == searchText ||
+        item.firstName.toLowerCase().includes(searchText) ||
         item.lastName.toLowerCase().includes(searchText) ||
         item.genderName.toLowerCase().startsWith(searchText) ||
         item.emailId.toLowerCase().includes(searchText) ||
@@ -480,40 +481,40 @@ function Employee() {
                 <div className="card-body">
                   <div className="form-group">
                     {/* <input type="text" id="inputName" className="form-control" /> */}
-                    <h6>Employee Id:</h6>
+                    <label htmlFor="employeeId">Employee Id</label>
                     <div className="input-group mb-3">
                       <div className="input-group-prepend">
                         <span className="input-group-text">
                           <i className="fas fa-id-badge" />
                         </span>
                       </div>
-                      <input type="number" maxLength="10" ref={employeeIdRef} className="form-control" placeholder="Employee Id" disabled={employeeIdDisabled} value={employeeId} onChange={(e) => setEmployeeId(e.target.value)} />
+                      <input type="number" maxLength="10" ref={employeeIdRef} id="employeeId" className="form-control" placeholder="Employee Id" disabled={employeeIdDisabled} value={employeeId} onChange={(e) => setEmployeeId(e.target.value)} />
                     </div>
                   </div>
                   <div className="form-group">
-                    <h6>First Name:</h6>
+                    <label htmlFor="firstName">First Name</label>
                     <div className="input-group mb-3">
                       <div className="input-group-prepend">
                         <span className="input-group-text">
                           <i className="fas fa-user-circle" />
                         </span>
                       </div>
-                      <input type="text" maxLength="50" ref={firstNameRef} className="form-control" placeholder="Employee First Name" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+                      <input type="text" maxLength="50" ref={firstNameRef} id="firstName" className="form-control" placeholder="Employee First Name" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
                     </div>
                   </div>
                   <div className="form-group">
-                    <h6>Last Name:</h6>
+                    <label htmlFor="lastName">Last Name</label>
                     <div className="input-group mb-3">
                       <div className="input-group-prepend">
                         <span className="input-group-text">
                           <i className="fas fa-user-circle" />
                         </span>
                       </div>
-                      <input type="text" maxLength="50" ref={lastNameRef} className="form-control" placeholder="Employee Last Name" value={lastName} onChange={(e) => setLastName(e.target.value)} />
+                      <input type="text" maxLength="50" ref={lastNameRef} id="lastName" className="form-control" placeholder="Employee Last Name" value={lastName} onChange={(e) => setLastName(e.target.value)} />
                     </div>
                   </div>
                   <div className="row">
-                    <h6>Gender:</h6>
+                    <label>Gender</label>
                     {
                       genderData.map((item) => (
                         <div className="col-sm-1" key={item.genderId}>
@@ -540,32 +541,31 @@ function Employee() {
                     }
                   </div>
                   <div className="form-group">
-                    <h6>Email Address:</h6>
+                    <label htmlFor="emailAddress">Email Address</label>
                     <div className="input-group mb-3">
                       <div className="input-group-prepend">
                         <span className="input-group-text">
                           <i className="fas fa-envelope-open-text" />
                         </span>
                       </div>
-                      <input type="email" maxLength="50" ref={emailIdRef} className="form-control" placeholder="Email Address" value={emailId} onChange={(e) => setEmailId(e.target.value)} />
+                      <input type="email" maxLength="50" ref={emailIdRef} id="emailAddress" className="form-control" placeholder="Email Address" value={emailId} onChange={(e) => setEmailId(e.target.value)} />
                     </div>
                   </div>
                   <div className="form-group">
-                    {/* <input type="text" id="inputName" className="form-control" /> */}
-                    <h6>Mobile Number:</h6>
+                    <label htmlFor="mobileNumber">Mobile Number</label>
                     <div className="input-group mb-3">
                       <div className="input-group-prepend">
                         <span className="input-group-text">
                           <i className="fas fa-mobile" />
                         </span>
                       </div>
-                      <input type="number" maxLength="10" ref={mobileNumberRef} className="form-control" placeholder="Employee Mobile Number" value={mobileNumber} onChange={(e) => setMobileNumber(e.target.value)} />
+                      <input type="number" maxLength="10" ref={mobileNumberRef} id="mobileNumber" className="form-control" placeholder="Employee Mobile Number" value={mobileNumber} onChange={(e) => setMobileNumber(e.target.value)} />
                     </div>
                   </div>
                   <div className="row">
                     <div className="col-md-8">
                       <div className="form-group">
-                        <h6>Profile Picture:</h6>
+                        <label htmlFor="profile-picture">Profile Picture</label>
                         <div className="input-group mb-3">
                           <div className="input-group-prepend">
                             <span className="input-group-text">
@@ -585,11 +585,11 @@ function Employee() {
                     </div>
                     <div className="col-md-4">
                       <img src={base64Image != '' ? base64Image : getGender(genderId) === 'Female' ? femaleAvatar : maleAvatar} 
-                        className="img-circle elevation-2" width="100" height="100" alt="No image selected" />
+                        className="img-circle elevation-2" width="100" height="100" alt="No image selected" />&nbsp;&nbsp;&nbsp;
                       {
                         base64Image != '' &&
-                        <button type="button" onClick={removeProfilePicture} title="Remove Profile Picture">
-                          <i className="nav-icon fas fa-trash-alt" />
+                        <button className="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Remove Profile Picture" onClick={removeProfilePicture}>
+                          <i className="fa fa-trash-alt" />
                         </button>
                       }
                     </div>

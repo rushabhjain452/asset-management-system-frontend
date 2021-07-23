@@ -21,7 +21,7 @@ import { AuthContext } from '../../context/AuthContext';
 
 const apiurl = process.env.REACT_APP_URL;
 
-function AssetProperties() {
+const AssetProperties = () => {
   const { state, logout, updateContextState } = useContext(AuthContext);
   let token = state.token;
   if (!token) {
@@ -165,7 +165,7 @@ function AssetProperties() {
 
   const validateInput = (propertyIds) => {
     let result = true;
-    let error = '';
+    let error = errorMessage;
     if (assetType == null) {
       result = false;
       error = 'Please select Asset Type.';
@@ -355,7 +355,7 @@ function AssetProperties() {
               <div className="row">
                 <div className="col-md-10">
                   <div>
-                    <label>Asset Type:</label>
+                    <label>Asset Type</label>
                     <Select 
                       value={assetType}
                       name="assetType"
@@ -370,7 +370,7 @@ function AssetProperties() {
               <div className="row">
                 <div className="col-md-12">
                   <div className="form-group" style={{marginTop: 20}}>
-                    <label>Properties:</label>
+                    <label>Properties</label>
                     <div className="container-fluid">
                       <div className="row">
                         {

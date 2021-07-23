@@ -1,6 +1,6 @@
 import React from 'react';
 
-function AdminDashboardContent() {
+const AdminDashboardContent = () => {
   return (
     <div>
       <div>
@@ -60,7 +60,7 @@ function AdminDashboardContent() {
                   <div className="small-box bg-warning">
                     <div className="inner">
                       <h3>44</h3>
-                      <p>Employee Registrations</p>
+                      <p>Total Employees</p>
                     </div>
                     <div className="icon">
                       <i className="ion ion-person-add" />

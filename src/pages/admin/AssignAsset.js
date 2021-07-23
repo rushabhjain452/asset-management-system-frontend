@@ -3,6 +3,8 @@ import { NavLink } from 'react-router-dom';
 import Footer from '../Footer';
 import Header from '../Header';
 import Menu from './Menu';
+import femaleAvatar from 'admin-lte/dist/img/avatar3.png';
+import maleAvatar from 'admin-lte/dist/img/avatar5.png';
 // import 'admin-lte/plugins/select2/css/select2.min.css';
 // import 'admin-lte/plugins/icheck-bootstrap/icheck-bootstrap.min.css';
 // import 'admin-lte/plugins/bootstrap4-duallistbox/bootstrap-duallistbox.min.css';
@@ -16,13 +18,13 @@ import Select from 'react-select';
 import Loader from '../../components/Loader';
 import { errorMessage } from '../../config';
 import { showToast, showSweetAlert, showConfirmAlert } from '../../helpers/sweetAlert';
-import { getTodayDate, formatDate, convertToDate } from '../../helpers/dateHelper';
+import { getTodayDate, formatDate, convertToDate, calDateDiff } from '../../helpers/dateHelper';
 import { authHeader } from '../../services/authService';
 import { AuthContext } from '../../context/AuthContext';
 
 const apiurl = process.env.REACT_APP_URL;
 
-function AssignAsset() {
+const AssignAsset = () => {
   const { state, logout, updateContextState } = useContext(AuthContext);
   let token = state.token;
   if (!token) {
@@ -32,18 +34,20 @@ function AssignAsset() {
 
   const [employees, setEmployees] = useState([]);
   const [employeesDisabled, setEmployeesDisabled] = useState(false);
-  const [employeeId, setEmployeeId] = useState(0);
   const [employee, setEmployee] = useState(null);
-  // const [properties, setProperties] = useState([]);
+
+  const [assignDate, setAssignDate] = useState(getTodayDate());
+  const [assignDateDisabled, setAssignDateDisabled] = useState(false);
+
+  const [returnDate, setReturnDate] = useState(getTodayDate());
+  const [returnDateDisplay, setReturnDateDisplay] = useState(false);
 
   const [data, setData] = useState([]);
   const [dataCopy, setDataCopy] = useState([]);
 
   const [asset, setAsset] = useState(null);
-
   const [assetId, setAssetId] = useState(0);
-  const [assetType, setAssetType] = useState(null);
-  const [assignDate, setAssignDate] = useState(getTodayDate());
+  const [assignAssetId, setAssignAssetId] = useState(0);
 
   const [btnText, setBtnText] = useState('Assign');
 
@@ -53,17 +57,18 @@ function AssignAsset() {
   const [sortOrder, setSortOrder] = useState(1);  // 1 = ASC and 2 = DESC
 
   const selectRef = useRef(null);
-  const dateRef = useRef(null);
+  const assignDateRef = useRef(null);
+  const returnDateRef = useRef(null);
 
   useEffect(() => {
     fetchData();
     fetchEmployees();
-    // fetchAssetTypes();
   }, []);
 
   const fetchData = () => {
     setLoading(true);
-    axios.get(apiurl + '/assets', { headers: authHeader(token) })
+    // axios.get(apiurl + '/assets/discarded/false', { headers: authHeader(token) })
+    axios.get(apiurl + '/assets/assigned-employee', { headers: authHeader(token) })
       .then((response) => {
         setLoading(false);
         if (response.status === 200) {
@@ -83,41 +88,6 @@ function AssignAsset() {
         }
       });
   };
-
-  // const fetchAssetTypes = () => {
-  //   setLoading(true);
-  //   axios.get(apiurl + '/asset-types/status/true', { headers: authHeader(token) })
-  //     .then((response) => {
-  //       setLoading(false);
-  //       if (response.status === 200) {
-  //         // Sort Data
-  //         const data = response.data;
-  //         data.sort((a, b) => {
-  //           let val1 = a.assetType.toLowerCase();
-  //           let val2 = b.assetType.toLowerCase();
-  //           if (val1 < val2) {
-  //             return -1;
-  //           }
-  //           if (val1 > val2) {
-  //             return 1;
-  //           }
-  //           return 0;
-  //         });
-  //         let newData = data.map((item) => ({ value: item.assetTypeId, label: item.assetType }));
-  //         setAssetTypes(newData);
-  //       }
-  //       else {
-  //         showToast('error', errorMessage);
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       setLoading(false);
-  //       showToast('error', errorMessage);
-  //       if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-  //         logout();
-  //       }
-  //     });
-  // };
 
   const fetchEmployees = () => {
     setLoading(true);
@@ -146,7 +116,7 @@ function AssignAsset() {
 
   const validateInput = () => {
     let result = true;
-    let error = '';
+    let error = errorMessage;
     if (asset === null) {
       result = false;
       error = 'Please select Asset to assign.';
@@ -160,7 +130,27 @@ function AssignAsset() {
     else if (assignDate === null) {
       result = false;
       error = 'Please select Assign Date.';
-      dateRef.current.focus();
+      assignDateRef.current.focus();
+    }
+    // Validate that Assign Date is greated than Purchase Date
+    else if (convertToDate(assignDate) < convertToDate(asset.purchaseDate)) {
+      result = false;
+      error = 'Please select valid Assign Date. Asset cannot be assigned before its Purchase Date.';
+      assignDateRef.current.focus();
+    }
+    else if(btnText === 'Assign' && asset.returnDate && convertToDate(assignDate) < convertToDate(asset.returnDate)) {
+      console.log(convertToDate(assignDate));
+      console.log(convertToDate(asset.returnDate));
+      console.log(convertToDate(assignDate) < convertToDate(asset.returnDate));
+      result = false;
+      error = `Please select valid Assign Date. Assign Date cannot be before previous Return Date ${formatDate(asset.returnDate)}.`;
+      assignDateRef.current.focus();
+    }
+    else if (btnText === 'Return' && convertToDate(returnDate) < convertToDate(assignDate)) {
+      result = false;
+      error = `Please select valid Return Date. Return Date cannot be before Assign Date ${formatDate(assignDate)}.`;
+      // returnDateRef.current.focus();
+      assignDateRef.current.focus();
     }
     // else if (result == true) {
     //   const mandatoryProperties = properties.filter((item) => item.mandatory === true);
@@ -194,45 +184,94 @@ function AssignAsset() {
     return result;
   };
 
-  const deleteAssignedAsset = (assetId, assetType) => {
-    // showConfirmAlert('Delete Confirmation', `Do you really want to delete the Asset with Asset Id '${assetId}' of Asset Type '${assetType}' ?`)
-    //   .then((result) => {
-    //     if (result.isConfirmed) {
-    //       setLoading(true);
-    //       axios.delete(apiurl + '/assets/' + assetId, { headers: authHeader(token) })
-    //         .then((response) => {
-    //           setLoading(false);
-    //           if (response.status === 200) {
-    //             showSweetAlert('success', 'Success', 'Asset deleted successfully.');
-    //             fetchData();
-    //           }
-    //           else {
-    //             showSweetAlert('error', 'Error', 'Failed to delete Asset. Please try again...');
-    //           }
-    //           setAssetType('');
-    //         })
-    //         .catch((error) => {
-    //           setLoading(false);
-    //           showSweetAlert('error', 'Error', 'Failed to delete Asset. Please try again...');
-    //           setAssetType('');
-    //           if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-    //             logout();
-    //           }
-    //         });
-    //     }
-    //   });
+  const deleteAssignAsset = (assignAssetId, assetId, assetType, employeeId, employeeName) => {
+    showConfirmAlert('Delete Confirmation', `Do you really want to unassign the Asset Id '${assetId}' of Asset Type '${assetType}' from employee '${employeeId} - ${employeeName}' ?`)
+      .then((result) => {
+        if (result.isConfirmed) {
+          setLoading(true);
+          axios.delete(apiurl + '/assign-assets/' + assignAssetId, { headers: authHeader(token) })
+            .then((response) => {
+              setLoading(false);
+              if (response.status === 200) {
+                showSweetAlert('success', 'Success', 'Asset unassigned successfully.');
+                fetchData();
+              }
+              else {
+                showSweetAlert('error', 'Error', 'Failed to unassign Asset. Please try again...');
+              }
+              clearControls();
+            })
+            .catch((error) => {
+              setLoading(false);
+              showSweetAlert('error', 'Error', 'Failed to unassign Asset. Please try again...');
+              clearControls();
+              if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+                logout();
+              }
+            });
+        }
+      });
   };
 
-  const displayAssetDetails = (assetId) => {
+  const editAssignDetails = (assignAssetId, assetId) => {
+    setBtnText('Update Assign');
+    setEmployeesDisabled(false);
+    setAssignDateDisabled(false);
+    setReturnDateDisplay(false);
+    setAssignAssetId(assignAssetId);
+    setAssetId(assetId);
+    let findAsset = data.find((item) => item.assignAssetId === assignAssetId);
+    setAsset(findAsset);
+    // Set Employee
+    const findEmployee = employees.find((item) => item.value === findAsset.employeeId);
+    setEmployee(findEmployee);
+    // Set Assign Date
+    setAssignDate(findAsset.assignDate);
+    selectRef.current.focus();
+  };
+
+  const updateAssignAsset = () => {
+    if (validateInput()) {
+      const requestData = {
+        assetId: assetId,
+        employeeId: employee.value,
+        assignDate: assignDate
+      };
+      setLoading(true);
+      axios.put(apiurl + '/assign-assets/' + assignAssetId, requestData, { headers: authHeader(token) })
+        .then((response) => {
+          setLoading(false);
+          if (response.status === 200) {
+            showSweetAlert('success', 'Success', 'Asset assigned updated successfully.');
+            fetchData();
+          }
+          else {
+            showSweetAlert('error', 'Error', 'Failed to update assign Asset. Please try again...');
+          }
+          clearControls();
+        })
+        .catch((error) => {
+          setLoading(false);
+          showSweetAlert('error', 'Error', 'Failed to update assign Asset. Please try again...');
+          if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+            logout();
+          }
+        });
+    }
+  };
+
+  const getAssignDetails = (assetId) => {
     setBtnText('Assign');
+    setEmployeesDisabled(false);
+    setAssignDateDisabled(false);
+    setReturnDateDisplay(false);
     setAssetId(assetId);
     let findAsset = data.find((item) => item.assetId === assetId);
     // const findItem = assetTypes.find((item) => item.value === findAsset.assetTypeId);
-    console.log(findAsset);
+    // console.log(findAsset);
     setAsset(findAsset);
+    setAssignDate(getTodayDate());
     // setAssetType(findItem);
-    // setPurchaseDate(findAsset.purchaseDate);
-    // setProperties(findAsset.assetPropertiesList);
     selectRef.current.focus();
   };
 
@@ -266,10 +305,56 @@ function AssignAsset() {
     }
   };
 
+  const getReturnDetails = (assetId) => {
+    setBtnText('Return');
+    setEmployeesDisabled(true);
+    setAssignDateDisabled(true);
+    setReturnDateDisplay(true);
+    setAssetId(assetId);
+    let findAsset = data.find((item) => item.assetId === assetId);
+    setAsset(findAsset);
+    // Set Employee
+    const findEmployee = employees.find((item) => item.value === findAsset.employeeId);
+    setEmployee(findEmployee);
+    // Set Assign Date
+    setAssignDate(findAsset.assignDate);
+    setReturnDate(getTodayDate());
+    assignDateRef.current.focus();
+    // returnDateRef.current.focus();
+  };
+
+  const returnAsset = () => {
+    if (validateInput()) {
+      setLoading(true);
+      console.log(asset);
+      axios.put(apiurl + '/assign-assets/' + asset.assignAssetId + '/update-return-date/' + returnDate, {}, { headers: authHeader(token) })
+        .then((response) => {
+          setLoading(false);
+          if (response.status === 200) {
+            showSweetAlert('success', 'Success', 'Asset returned successfully.');
+            fetchData();
+          }
+          else {
+            showSweetAlert('error', 'Error', 'Failed to return Asset. Please try again...');
+          }
+          clearControls();
+        })
+        .catch((error) => {
+          setLoading(false);
+          showSweetAlert('error', 'Error', 'Failed to return Asset. Please try again...');
+          if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+            logout();
+          }
+        });
+    }
+  };
+
   const clearControls = () => {
     setAsset(null);
     setEmployee(null);
     setEmployeesDisabled(false);
+    setAssignDateDisabled(false);
+    setReturnDateDisplay(false);
     setAssignDate(getTodayDate());
     setBtnText('Assign');
   };
@@ -282,8 +367,11 @@ function AssignAsset() {
     const searchText = e.target.value.toLowerCase();
     if (searchText.length > 0) {
       let searchData = dataCopy.filter((item) => item.assetId == searchText ||
+        formatDate(item.purchaseDate) === searchText ||
         item.assetType.toLowerCase().includes(searchText) ||
-        item.assetPropertiesList.find(item => item.value.toLowerCase().includes(searchText)) != undefined
+        item.assetPropertiesList.find(item => item.value.toLowerCase().includes(searchText)) != undefined ||
+        item.employeeId == searchText ||
+        (item.firstName + ' ' + item.lastName).toLowerCase().includes(searchText)
       );
       setData(searchData);
     } else {
@@ -293,7 +381,7 @@ function AssignAsset() {
 
   const sort = (column) => {
     let order = sortOrder;
-    if(sortColumn === column){
+    if (sortColumn === column) {
       order = order * -1;
       setSortOrder(order);
     } else {
@@ -363,7 +451,7 @@ function AssignAsset() {
           <div className="container-fluid">
             <div className="row mb-2">
               <div className="col-sm-6">
-                <h1 className="m-0">Assign Asset</h1>
+                <h1 className="m-0">Assign / Return Asset</h1>
               </div>{/* /.col */}
               <div className="col-sm-6">
                 <ol className="breadcrumb float-sm-right">
@@ -384,18 +472,18 @@ function AssignAsset() {
                   <div><label>Asset Id :</label> <span>{asset.assetId}</span></div>
                   <div><label>Asset Type :</label> <span>{asset.assetType}</span></div>
                   <div><label>Purchase Date :</label> <span>{formatDate(asset.purchaseDate)}</span></div>
-                  <hr/>
+                  <hr />
                   <div><h5>Properties :</h5></div>
                 </div>
-                  {
-                    asset.assetPropertiesList.map((item) => (
-                      <>
-                        <div className="col-lg-2 col-md-4 col-sm-6"><label>{item.propertyName} :</label></div>
-                        <div className="col-lg-4 col-md-8 col-sm-6">{item.value}</div>
-                      </>
-                    ))
-                  }
-                <div className="col-md-12"><hr/></div>
+                {
+                  asset.assetPropertiesList.map((item) => (
+                    <>
+                      <div className="col-lg-2 col-md-4 col-sm-6"><label>{item.propertyName} :</label></div>
+                      <div className="col-lg-4 col-md-8 col-sm-6">{item.value}</div>
+                    </>
+                  ))
+                }
+                <div className="col-md-12"><hr /></div>
               </div>)
             }
             <div className="row">
@@ -413,20 +501,32 @@ function AssignAsset() {
                   />
                 </div>
               </div>
-              <div className="col-md-3 col-sm-6">
-                <div className="form-group" style={{ marginTop: 20 }}>
-                  <label htmlFor="purchase-date">Assign Date</label>
-                  <input type="date" maxLength="20" ref={dateRef} className="form-control" id="assign-date" placeholder="Purchase Date" value={assignDate} max={getTodayDate()} onChange={(e) => setAssignDate(e.target.value)} />
-                </div>
-              </div>
             </div>
             <div className="row">
-              {/* {
-                properties.length > 0 &&
-                properties.map((item) => (
-                  <div><b>{item.propertyName} :</b> {item.value}</div>
-                ))
-              } */}
+              <div className="col-md-3 col-sm-6">
+                <div className="form-group" style={{ marginTop: 20 }}>
+                  <label htmlFor="assign-date">Assign Date</label>
+                  <input type="date" maxLength="20" ref={assignDateRef} className="form-control" id="assign-date" placeholder="Purchase Date" disabled={assignDateDisabled} max={getTodayDate()} value={assignDate} onChange={(e) => setAssignDate(e.target.value)} />
+                </div>
+              </div>
+              {
+                returnDateDisplay &&
+                <div className="col-md-3 col-sm-6">
+                  <div className="form-group" style={{ marginTop: 20 }}>
+                    <label htmlFor="return-date">Return Date</label>
+                    <input type="date" maxLength="20" ref={returnDateRef} className="form-control" id="return-date" placeholder="Return Date" value={returnDate} max={getTodayDate()} onChange={(e) => setReturnDate(e.target.value)} />
+                  </div>
+                </div>
+              }
+              {
+                returnDateDisplay && 
+                <div className="col-md-6 col-sm-12">
+                  <div className="form-group" style={{ marginTop: 20 }}>
+                    <label>Period</label>
+                    <div>{calDateDiff(convertToDate(assignDate), convertToDate(returnDate))}</div>
+                  </div>
+                </div>
+              }
             </div>
           </div>
           <div className="card-footer">
@@ -434,7 +534,7 @@ function AssignAsset() {
             <button
               type="button"
               className="btn btn-primary float-right"
-              onClick={btnText === 'Assign' ? assignAsset : ''}>
+              onClick={btnText === 'Assign' ? assignAsset : btnText === 'Return' ? returnAsset : updateAssignAsset}>
               {btnText}
             </button>
           </div>
@@ -471,6 +571,7 @@ function AssignAsset() {
                       <th title="Sort" className="sort-style" onClick={() => sort('AssetType')}>Asset Type <i className="fa fa-sort" /></th>
                       <th title="Sort" className="sort-style" onClick={() => sort('PurchaseDate')}>Purchase Date <br /> (dd-mm-yyyy) <i className="fa fa-sort" /></th>
                       <th>Properties</th>
+                      <th>Assigned Employee</th>
                       <th>Edit</th>
                       <th>Manage</th>
                     </tr>
@@ -491,17 +592,57 @@ function AssignAsset() {
                             }
                           </td>
                           <td>
-                            <button className="btn btn-success btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Edit" onClick={() => console.log()}>
-                              <i className="fa fa-edit"></i>
-                            </button>
+                            {
+                              (item.assignDate && item.returnDate === null) ?
+                                (<div>
+                                  <b>Assigned to</b><br />
+                                  <b>Employee Id : </b>{item.employeeId} <br />
+                                  {item.firstName} {item.lastName} <br />
+                                  on {formatDate(item.assignDate)} <br />
+                                  <img src={item.profilePicture != '' ? item.profilePicture : item.gender === 'Female' ? femaleAvatar : maleAvatar}
+                                    className="img-circle elevation-2" width="100" height="100" />
+                                </div>) :
+                                (<div>
+                                  <b>Not Assigned</b>
+                                  {
+                                    item.returnDate &&
+                                    <div>
+                                      <hr />
+                                      <b>Previously Assigned to</b><br />
+                                      <b>Employee Id : </b>{item.employeeId} <br />
+                                      {item.firstName} {item.lastName} <br />
+                                      from {formatDate(item.assignDate)} to {formatDate(item.returnDate)} <br />
+                                      <img src={item.profilePicture != '' ? item.profilePicture : item.gender === 'Female' ? femaleAvatar : maleAvatar}
+                                        className="img-circle elevation-2" width="100" height="100" />
+                                    </div>
+                                  }
+                                </div>)
+                            }
                           </td>
                           <td>
-                            <button className="btn btn-primary btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Assign Asset" onClick={() => displayAssetDetails(item.assetId)}>
-                              <i className="fa fa-handshake"></i>
-                            </button>
-                            <button className="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Delete" onClick={() => console.log()}>
-                              <i className="fa fa-trash"></i>
-                            </button>
+                            {
+                              (item.assignDate && item.returnDate === null) &&
+                              <button className="btn btn-success btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Edit" onClick={() => editAssignDetails(item.assignAssetId, item.assetId)}>
+                                <i className="fa fa-edit"></i>
+                              </button>
+                            }
+                          </td>
+                          <td>
+                            {
+                              (item.assignDate && item.returnDate === null) ?
+                              (<button className="btn btn-info btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Return Asset" onClick={() => getReturnDetails(item.assetId)}>
+                                <i className="fa fa-download"></i>
+                              </button>) :
+                              (<button className="btn btn-primary btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Assign Asset" onClick={() => getAssignDetails(item.assetId)}>
+                                <i className="fa fa-upload"></i>
+                              </button>)
+                            }
+                            {
+                              (item.assignDate && item.returnDate === null) &&
+                              <button className="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Unassign Asset" onClick={() => deleteAssignAsset(item.assignAssetId, item.assetId, item.assetType, item.employeeId, item.firstName + ' ' + item.lastName)}>
+                                <i className="fa fa-trash"></i>
+                              </button>
+                            }
                           </td>
                         </tr>
                       ))

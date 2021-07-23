@@ -3,7 +3,7 @@ import Header from './Header';
 import Footer from './Footer';
 import UserMenu from './UserMenu';
 
-function ViewAssignAsset() {
+const ViewAssignAsset = () => {
   return (
     <div>
       <Header />

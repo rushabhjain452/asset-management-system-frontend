@@ -3,7 +3,7 @@ import Header from '../Header';
 import Footer from '../Footer';
 import Menu from './Menu';
 
-function ViewBids() {
+const ViewBids = () => {
   return (
     <div>
       <Header />

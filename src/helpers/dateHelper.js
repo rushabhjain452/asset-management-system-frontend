@@ -22,9 +22,25 @@ export const convertToDate = (str) => {
   // 2021-02-08
   const arr = str.split('-');
   const year = parseInt(arr[0]);
-  const mth = parseInt(arr[1]);
+  const mth = parseInt(arr[1]) - 1;
   const day = parseInt(arr[2]);
   return new Date(year, mth, day);
+}
+
+export const calDateDiff = (startDate, endDate) => {
+  let oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+  let diffDays = (endDate.getTime() - startDate.getTime()) / oneDay;
+  console.log(diffDays);
+  if(diffDays < 0){
+    return '0 years 0 months 0 days';
+  }
+  // Convert days to years and months
+  let years = parseInt(diffDays / 365);
+  diffDays = diffDays % 365;
+  let months = parseInt(diffDays / 30);
+  diffDays = diffDays % 30;
+  let days = diffDays;
+  return years + ' years ' + months + ' months ' + days + ' days';
 }
 
 export const convertUTCDateToLocalDate = (date) => {

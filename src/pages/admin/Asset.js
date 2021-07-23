@@ -22,7 +22,7 @@ import { AuthContext } from '../../context/AuthContext';
 
 const apiurl = process.env.REACT_APP_URL;
 
-function Asset() {
+const Asset = () => {
   const { state, logout, updateContextState } = useContext(AuthContext);
   let token = state.token;
   if (!token) {
@@ -180,7 +180,7 @@ function Asset() {
 
   const validateInput = () => {
     let result = true;
-    let error = '';
+    let error = errorMessage;
     if (assetType == null) {
       result = false;
       error = 'Please select Asset Type.';
@@ -320,7 +320,8 @@ function Asset() {
     setAssetType(findItem);
     setPurchaseDate(findAsset.purchaseDate);
     setProperties(findAsset.assetPropertiesList);
-    selectRef.current.focus();
+    // selectRef.current.focus();
+    dateRef.current.focus();
   }
 
   const updateAsset = () => {
@@ -362,11 +363,12 @@ function Asset() {
     // setAssetType(null);
     setAssetTypesDisabled(false);
     setPurchaseDate(getTodayDate());
-    setProperties((data) => {
-      const newData = [...data];
-      newData.forEach((item) => item.value = "");
-      return newData;
-    });
+    // setProperties((data) => {
+    //   const newData = [...data];
+    //   newData.forEach((item) => item.value = "");
+    //   return newData;
+    // });
+    setProperties([]);
     setBtnText('Add');
   };
 
@@ -402,6 +404,7 @@ function Asset() {
     const searchText = e.target.value.toLowerCase();
     if (searchText.length > 0) {
       let searchData = dataCopy.filter((item) => item.assetId == searchText ||
+        formatDate(item.purchaseDate) === searchText ||
         item.assetType.toLowerCase().includes(searchText) ||
         item.assetPropertiesList.find(item => item.value.toLowerCase().includes(searchText)) != undefined
       );
@@ -496,7 +499,7 @@ function Asset() {
         </div>
         <div className="card card-info">
           <div className="card-body">
-            <h4>{btnText} Asset</h4>
+            <label>{btnText} Asset</label>
             <div className="row">
               <div className="col-md-10">
                 <div>

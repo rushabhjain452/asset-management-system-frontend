@@ -172,7 +172,7 @@ const App = () => {
               <PrivateRoute exact path='/admin/assets' component={Asset} />
               <PrivateRoute exact path='/admin/employee' component={Employee} />
               <PrivateRoute exact path='/admin/assettype-properties' component={AssetProperties} />
-              <PrivateRoute exact path='/admin/assign-asset' component={AssignAsset} />
+              <PrivateRoute exact path='/admin/assign-return-asset' component={AssignAsset} />
               <PrivateRoute exact path='/admin/auction' component={Auction} />
               <PrivateRoute exact path='/admin/view-bids' component={ViewBids} />
               <PrivateRoute exact path='/admin/sale-asset' component={SaleAsset} />

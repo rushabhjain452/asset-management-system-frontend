@@ -26,7 +26,7 @@ import 'admin-lte/plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.mi
 // import 'admin-lte/plugins/datatables-buttons/js/buttons.print.min.js';
 // import 'admin-lte/plugins/datatables-buttons/js/buttons.colVis.min.js';
 
-function Auction() {
+const Auction = () => {
   useEffect(() => {
     $(function () {
       //Initialize Select2 Elements

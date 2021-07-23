@@ -8,7 +8,7 @@ import { errorMessage } from '../config';
 import { showToastWithProgress, showSweetAlert } from '../helpers/sweetAlert';
 import { AuthContext } from '../context/AuthContext';
 
-function VerifyOtpAndUpdatePassword() {
+const VerifyOtpAndUpdatePassword = () => {
   const { state } = useContext(AuthContext);
   
   const [otp, setOtp] = useState('');
@@ -24,7 +24,7 @@ function VerifyOtpAndUpdatePassword() {
 
   const validateInput = () => {
     let result = true;
-    let error = '';
+    let error = errorMessage;
     const password_regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@%!])[0-9a-zA-Z@%!]{8,}$/;
     const otp_regex = /^[0-9]{6}$/;
     if(otp.length === 0){

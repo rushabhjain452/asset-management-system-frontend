@@ -4,7 +4,8 @@ import Header from './Header';
 import UserDashboardContent from './UserDashboardContent';
 import UserMenu from './UserMenu';
 
-function UserDashboard() {
+const UserDashboard = () => {
+
   return (
     <div>
       {/* <h1>User Dashboard</h1> */}
@@ -13,7 +14,8 @@ function UserDashboard() {
       <UserDashboardContent />
       <Footer />
     </div>
-  )
+  );
+
 }
 
 export default UserDashboard;

@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import avatar from 'admin-lte/dist/img/avatar5.png';
 
-function UserMenu() {
+const UserMenu = () => {
   return (
     <div>
       <aside className="main-sidebar sidebar-dark-primary elevation-4">

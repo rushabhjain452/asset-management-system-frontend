@@ -3,7 +3,7 @@ import { Redirect, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { logout } from '../services/authService';
 
-function Header() {
+const Header = () => {
 
   const { logout } = useContext(AuthContext);
 

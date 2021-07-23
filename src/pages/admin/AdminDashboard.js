@@ -4,7 +4,7 @@ import Footer from '../Footer';
 import Header from '../Header';
 import Menu from './Menu';
 
-function AdminDashboard() {
+const AdminDashboard = () => {
   return (
     <div className="wrapper">
       <Header />
