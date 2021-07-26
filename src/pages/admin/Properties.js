@@ -29,6 +29,9 @@ const Properties = () => {
 
   const [loading, setLoading] = useState(false);
 
+  const [sortColumn, setSortColumn] = useState('AssetId');
+  const [sortOrder, setSortOrder] = useState(1);  // 1 = ASC and -1 = DESC
+
   const textboxRef = useRef(null);
 
   useEffect(() => {
@@ -240,6 +243,51 @@ const Properties = () => {
     }
   };
 
+  const sort = (column) => {
+    let order = sortOrder;
+    if(sortColumn === column){
+      order = order * -1;
+      setSortOrder(order);
+    } else {
+      order = 1;
+      setSortOrder(1);
+    }
+    setSortColumn(column);
+    switch (column) {
+      case 'propertyName':
+        setData((oldData) => {
+          let newData = [...oldData];
+          newData.sort((a, b) => {
+            let val1 = a.propertyName.toLowerCase();
+            let val2 = b.propertyName.toLowerCase();
+            if (val1 < val2) {
+              return order * -1;
+            }
+            if (val1 > val2) {
+              return order * 1;
+            }
+            return 0;
+          });
+          return newData;
+        });
+        break;
+      case 'mandatory':
+        setData((oldData) => {
+          let newData = [...oldData];
+          newData.sort((a, b) => (a.mandatory - b.mandatory) * order);
+          return newData;
+        });
+        break;
+      case 'status':
+        setData((oldData) => {
+          let newData = [...oldData];
+          newData.sort((a, b) => (a.status - b.status) * order);
+          return newData;
+        });
+        break;
+    }
+  };
+
   return (
     <div>
       <Header />
@@ -316,9 +364,9 @@ const Properties = () => {
                   <thead>
                     <tr>
                       <th>#</th>
-                      <th>Property Name</th>
-                      <th>Mandatory?</th>
-                      <th>Status</th>
+                      <th title="Sort" className="sort-style" onClick={() => sort('propertyName')}>Property Name <i className="fa fa-sort" /></th>
+                      <th title="Sort" className="sort-style" onClick={() => sort('mandatory')}>Mandatory? <i className="fa fa-sort" /></th>
+                      <th title="Sort" className="sort-style" onClick={() => sort('status')}>Status <i className="fa fa-sort" /></th>
                       <th>Edit</th>
                       <th>Delete</th>
                     </tr>

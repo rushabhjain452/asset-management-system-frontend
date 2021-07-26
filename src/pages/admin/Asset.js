@@ -45,7 +45,7 @@ const Asset = () => {
   const [loading, setLoading] = useState(false);
 
   const [sortColumn, setSortColumn] = useState('AssetId');
-  const [sortOrder, setSortOrder] = useState(1);  // 1 = ASC and 2 = DESC
+  const [sortOrder, setSortOrder] = useState(1);  // 1 = ASC and -1 = DESC
 
   const selectRef = useRef(null);
   const dateRef = useRef(null);
@@ -425,14 +425,14 @@ const Asset = () => {
     }
     setSortColumn(column);
     switch (column) {
-      case 'AssetId':
+      case 'assetId':
         setData((oldData) => {
           let newData = [...oldData];
           newData.sort((a, b) => (a.assetId - b.assetId) * order);
           return newData;
         });
         break;
-      case 'AssetType':
+      case 'assetType':
         setData((oldData) => {
           let newData = [...oldData];
           newData.sort((a, b) => {
@@ -449,7 +449,7 @@ const Asset = () => {
           return newData;
         });
         break;
-      case 'PurchaseDate':
+      case 'purchaseDate':
         setData((oldData) => {
           let newData = [...oldData];
           newData.sort((a, b) => {
@@ -466,7 +466,7 @@ const Asset = () => {
           return newData;
         });
         break;
-      case 'Discarded':
+      case 'discarded':
         setData((oldData) => {
           let newData = [...oldData];
           newData.sort((a, b) => (a.discarded - b.discarded) * order);
@@ -474,7 +474,7 @@ const Asset = () => {
         });
         break;
     }
-  }
+  };
 
   return (
     <div className="wrapper">
@@ -486,12 +486,12 @@ const Asset = () => {
           <div className="container-fluid">
             <div className="row mb-2">
               <div className="col-sm-6">
-                <h1 className="m-0">Asset</h1>
+                <h1 className="m-0">Assets</h1>
               </div>{/* /.col */}
               <div className="col-sm-6">
                 <ol className="breadcrumb float-sm-right">
                   <li className="breadcrumb-item"><NavLink exact to="/admin/dashboard">Home</NavLink></li>
-                  <li className="breadcrumb-item active">Asset</li>
+                  <li className="breadcrumb-item active">Assets</li>
                 </ol>
               </div>{/* /.col */}
             </div>{/* /.row */}
@@ -582,11 +582,11 @@ const Asset = () => {
                   <thead>
                     <tr>
                       <th>#</th>
-                      <th title="Sort" className="sort-style" onClick={() => sort('AssetId')}>Asset Id <i className="fa fa-sort" /></th>
-                      <th title="Sort" className="sort-style" onClick={() => sort('AssetType')}>Asset Type <i className="fa fa-sort" /></th>
-                      <th title="Sort" className="sort-style" onClick={() => sort('PurchaseDate')}>Purchase Date <br /> (dd-mm-yyyy) <i className="fa fa-sort" /></th>
+                      <th title="Sort" className="sort-style" onClick={() => sort('assetId')}>Asset Id <i className="fa fa-sort" /></th>
+                      <th title="Sort" className="sort-style" onClick={() => sort('assetType')}>Asset Type <i className="fa fa-sort" /></th>
+                      <th title="Sort" className="sort-style" onClick={() => sort('purchaseDate')}>Purchase Date <br /> (dd-mm-yyyy) <i className="fa fa-sort" /></th>
                       <th>Properties</th>
-                      <th title="Sort" className="sort-style" onClick={() => sort('Discarded')}>Discarded <i className="fa fa-sort" /></th>
+                      <th title="Sort" className="sort-style" onClick={() => sort('discarded')}>Discarded <i className="fa fa-sort" /></th>
                       <th>Edit</th>
                       <th>Delete</th>
                     </tr>

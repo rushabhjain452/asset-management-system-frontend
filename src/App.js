@@ -66,6 +66,7 @@ import Profile from "./pages/Profile";
 import Employee from "./pages/admin/Employee";
 import AssetProperties from "./pages/admin/AssetTypeProperties";
 import AssignAsset from "./pages/admin/AssignAsset";
+import AssignAssetHistory from './pages/admin/AssignAssetHistory';
 import Auction from "./pages/admin/Auction";
 import Bids from "./pages/Bids";
 import ViewBids from "./pages/admin/ViewBids";
@@ -173,6 +174,7 @@ const App = () => {
               <PrivateRoute exact path='/admin/employee' component={Employee} />
               <PrivateRoute exact path='/admin/assettype-properties' component={AssetProperties} />
               <PrivateRoute exact path='/admin/assign-return-asset' component={AssignAsset} />
+              <PrivateRoute exact path='/admin/assign-asset-history/:assetId' component={AssignAssetHistory} />
               <PrivateRoute exact path='/admin/auction' component={Auction} />
               <PrivateRoute exact path='/admin/view-bids' component={ViewBids} />
               <PrivateRoute exact path='/admin/sale-asset' component={SaleAsset} />

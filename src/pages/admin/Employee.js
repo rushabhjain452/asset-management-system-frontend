@@ -44,6 +44,9 @@ const Employee = () => {
 
   const [loading, setLoading] = useState(false);
 
+  const [sortColumn, setSortColumn] = useState('AssetId');
+  const [sortOrder, setSortOrder] = useState(1);  // 1 = ASC and -1 = DESC
+
   const employeeIdRef = useRef(null);
   const firstNameRef = useRef(null);
   const lastNameRef = useRef(null);
@@ -171,7 +174,8 @@ const Employee = () => {
       error = 'Please enter value for Employee Id.';
       employeeIdRef.current.focus();
     }
-    else if (!employeeId.toString().match(num_only_regex)) {
+    // else if (!employeeId.toString().match(num_only_regex)) {
+    else if (isNaN(employeeId)) {
       result = false;
       error = 'Please enter valid Employee Id. Employee Id can only contain numbers.';
       employeeIdRef.current.focus();
@@ -443,6 +447,136 @@ const Employee = () => {
     }
   };
 
+  const sort = (column) => {
+    let order = sortOrder;
+    if (sortColumn === column) {
+      order = order * -1;
+      setSortOrder(order);
+    } else {
+      order = 1;
+      setSortOrder(1);
+    }
+    setSortColumn(column);
+    switch (column) {
+      case 'employeeId':
+        setData((oldData) => {
+          let newData = [...oldData];
+          newData.sort((a, b) => (a.employeeId - b.employeeId) * order);
+          return newData;
+        });
+        break;
+      case 'firstName':
+        setData((oldData) => {
+          let newData = [...oldData];
+          newData.sort((a, b) => {
+            let val1 = a.firstName.toLowerCase();
+            let val2 = b.firstName.toLowerCase();
+            if (val1 < val2) {
+              return order * -1;
+            }
+            if (val1 > val2) {
+              return order * 1;
+            }
+            return 0;
+          });
+          return newData;
+        });
+        break;
+      case 'lastName':
+        setData((oldData) => {
+          let newData = [...oldData];
+          newData.sort((a, b) => {
+            let val1 = a.lastName.toLowerCase();
+            let val2 = b.lastName.toLowerCase();
+            if (val1 < val2) {
+              return order * -1;
+            }
+            if (val1 > val2) {
+              return order * 1;
+            }
+            return 0;
+          });
+          return newData;
+        });
+        break;
+      case 'gender':
+        setData((oldData) => {
+          let newData = [...oldData];
+          newData.sort((a, b) => {
+            let val1 = a.genderName.toLowerCase();
+            let val2 = b.genderName.toLowerCase();
+            if (val1 < val2) {
+              return order * -1;
+            }
+            if (val1 > val2) {
+              return order * 1;
+            }
+            return 0;
+          });
+          return newData;
+        });
+        break;
+      case 'emailId':
+        setData((oldData) => {
+          let newData = [...oldData];
+          newData.sort((a, b) => {
+            let val1 = a.emailId.toLowerCase();
+            let val2 = b.emailId.toLowerCase();
+            if (val1 < val2) {
+              return order * -1;
+            }
+            if (val1 > val2) {
+              return order * 1;
+            }
+            return 0;
+          });
+          return newData;
+        });
+        break;
+      case 'mobileNumber':
+        setData((oldData) => {
+          let newData = [...oldData];
+          newData.sort((a, b) => {
+            let val1 = a.mobileNumber.toLowerCase();
+            let val2 = b.mobileNumber.toLowerCase();
+            if (val1 < val2) {
+              return order * -1;
+            }
+            if (val1 > val2) {
+              return order * 1;
+            }
+            return 0;
+          });
+          return newData;
+        });
+        break;
+      case 'role':
+        setData((oldData) => {
+          let newData = [...oldData];
+          newData.sort((a, b) => {
+            let val1 = a.roleName.toLowerCase();
+            let val2 = b.roleName.toLowerCase();
+            if (val1 < val2) {
+              return order * -1;
+            }
+            if (val1 > val2) {
+              return order * 1;
+            }
+            return 0;
+          });
+          return newData;
+        });
+        break;
+      case 'status':
+        setData((oldData) => {
+          let newData = [...oldData];
+          newData.sort((a, b) => (a.status - b.status) * order);
+          return newData;
+        });
+        break;
+    }
+  };
+
   return (
     <div>
       <Header />
@@ -649,15 +783,15 @@ const Employee = () => {
               <table className="table table-striped projects">
                 <thead>
                   <tr>
-                    <th>Employee Id</th>
+                    <th title="Sort" className="sort-style" onClick={() => sort('employeeId')}>Employee Id <i className="fa fa-sort" /></th>
                     <th>Profile Picture</th>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Gender</th>
-                    <th>Email Id</th>
-                    <th>Mobile Number</th>
-                    <th>Role</th>
-                    <th>Status</th>
+                    <th title="Sort" className="sort-style" onClick={() => sort('firstName')}>First Name <i className="fa fa-sort" /></th>
+                    <th title="Sort" className="sort-style" onClick={() => sort('lastName')}>Last Name <i className="fa fa-sort" /></th>
+                    <th title="Sort" className="sort-style" onClick={() => sort('gender')}>Gender <i className="fa fa-sort" /></th>
+                    <th title="Sort" className="sort-style" onClick={() => sort('emailId')}>Email Id <i className="fa fa-sort" /></th>
+                    <th title="Sort" className="sort-style" onClick={() => sort('mobileNumber')}>Mobile Number <i className="fa fa-sort" /></th>
+                    <th title="Sort" className="sort-style" onClick={() => sort('role')}>Role <i className="fa fa-sort" /></th>
+                    <th title="Sort" className="sort-style" onClick={() => sort('status')}>Status <i className="fa fa-sort" /></th>
                     <th>Edit</th>
                     <th>Delete</th>
                   </tr>

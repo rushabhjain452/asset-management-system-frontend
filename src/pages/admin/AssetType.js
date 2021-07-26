@@ -28,6 +28,9 @@ const AssetType = () => {
 
   const [loading, setLoading] = useState(false);
 
+  const [sortColumn, setSortColumn] = useState('AssetId');
+  const [sortOrder, setSortOrder] = useState(1);  // 1 = ASC and -1 = DESC
+
   const textboxRef = useRef(null);
 
   useEffect(() => {
@@ -233,6 +236,44 @@ const AssetType = () => {
     }
   };
 
+  const sort = (column) => {
+    let order = sortOrder;
+    if(sortColumn === column){
+      order = order * -1;
+      setSortOrder(order);
+    } else {
+      order = 1;
+      setSortOrder(1);
+    }
+    setSortColumn(column);
+    switch (column) {
+      case 'assetType':
+        setData((oldData) => {
+          let newData = [...oldData];
+          newData.sort((a, b) => {
+            let val1 = a.assetType.toLowerCase();
+            let val2 = b.assetType.toLowerCase();
+            if (val1 < val2) {
+              return order * -1;
+            }
+            if (val1 > val2) {
+              return order * 1;
+            }
+            return 0;
+          });
+          return newData;
+        });
+        break;
+      case 'status':
+        setData((oldData) => {
+          let newData = [...oldData];
+          newData.sort((a, b) => (a.status - b.status) * order);
+          return newData;
+        });
+        break;
+    }
+  };
+
   return (
     <div className="wrapper">
       <Header />
@@ -301,8 +342,8 @@ const AssetType = () => {
                   <thead>
                     <tr>
                       <th>#</th>
-                      <th>Asset Type Name</th>
-                      <th>Status</th>
+                      <th title="Sort" className="sort-style" onClick={() => sort('assetType')}>Asset Type Name <i className="fa fa-sort" /></th>
+                      <th title="Sort" className="sort-style" onClick={() => sort('status')}>Status <i className="fa fa-sort" /></th>
                       <th>Edit</th>
                       <th>Delete</th>
                     </tr>

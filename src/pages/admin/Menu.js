@@ -99,9 +99,9 @@ const Menu = () => {
               </NavLink>
             </li>
             {/* <li className="nav-item menu-open">
-              <NavLink exact to="/admin/return-assigned-asset" className="nav-link" activeClassName="active">
+              <NavLink exact to="/admin/assign-asset-history/15" className="nav-link" activeClassName="active">
                 <i className="nav-icon fas fa-laptop-code"></i>
-                <p>Return Assigned Asset</p>
+                <p>Assign Asset History</p>
               </NavLink>
             </li> */}
             <li className="nav-item menu-open">

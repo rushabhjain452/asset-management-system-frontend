@@ -54,7 +54,7 @@ const AssignAsset = () => {
   const [loading, setLoading] = useState(false);
 
   const [sortColumn, setSortColumn] = useState('AssetId');
-  const [sortOrder, setSortOrder] = useState(1);  // 1 = ASC and 2 = DESC
+  const [sortOrder, setSortOrder] = useState(1);  // 1 = ASC and -1 = DESC
 
   const selectRef = useRef(null);
   const assignDateRef = useRef(null);
@@ -390,14 +390,14 @@ const AssignAsset = () => {
     }
     setSortColumn(column);
     switch (column) {
-      case 'AssetId':
+      case 'assetId':
         setData((oldData) => {
           let newData = [...oldData];
           newData.sort((a, b) => (a.assetId - b.assetId) * order);
           return newData;
         });
         break;
-      case 'AssetType':
+      case 'assetType':
         setData((oldData) => {
           let newData = [...oldData];
           newData.sort((a, b) => {
@@ -414,7 +414,7 @@ const AssignAsset = () => {
           return newData;
         });
         break;
-      case 'PurchaseDate':
+      case 'purchaseDate':
         setData((oldData) => {
           let newData = [...oldData];
           newData.sort((a, b) => {
@@ -431,15 +431,8 @@ const AssignAsset = () => {
           return newData;
         });
         break;
-      case 'Discarded':
-        setData((oldData) => {
-          let newData = [...oldData];
-          newData.sort((a, b) => (a.discarded - b.discarded) * order);
-          return newData;
-        });
-        break;
     }
-  }
+  };
 
   return (
     <div className="wrapper">
@@ -567,9 +560,9 @@ const AssignAsset = () => {
                   <thead>
                     <tr>
                       <th>#</th>
-                      <th title="Sort" className="sort-style" onClick={() => sort('AssetId')}>Asset Id <i className="fa fa-sort" /></th>
-                      <th title="Sort" className="sort-style" onClick={() => sort('AssetType')}>Asset Type <i className="fa fa-sort" /></th>
-                      <th title="Sort" className="sort-style" onClick={() => sort('PurchaseDate')}>Purchase Date <br /> (dd-mm-yyyy) <i className="fa fa-sort" /></th>
+                      <th title="Sort" className="sort-style" onClick={() => sort('assetId')}>Asset Id <i className="fa fa-sort" /></th>
+                      <th title="Sort" className="sort-style" onClick={() => sort('assetType')}>Asset Type <i className="fa fa-sort" /></th>
+                      <th title="Sort" className="sort-style" onClick={() => sort('purchaseDate')}>Purchase Date <br /> (dd-mm-yyyy) <i className="fa fa-sort" /></th>
                       <th>Properties</th>
                       <th>Assigned Employee</th>
                       <th>Edit</th>
@@ -595,6 +588,9 @@ const AssignAsset = () => {
                             {
                               (item.assignDate && item.returnDate === null) ?
                                 (<div>
+                                  <NavLink exact to={'assign-asset-history/' + item.assetId} className="btn btn-secondary btn-sm rounded-0 float-right">
+                                    <i className="fa fa-history" title="Assign Asset History"></i>
+                                  </NavLink>
                                   <b>Assigned to</b><br />
                                   <b>Employee Id : </b>{item.employeeId} <br />
                                   {item.firstName} {item.lastName} <br />
@@ -608,6 +604,9 @@ const AssignAsset = () => {
                                     item.returnDate &&
                                     <div>
                                       <hr />
+                                      <NavLink exact to={'assign-asset-history/' + item.assetId} className="btn btn-secondary btn-sm rounded-0 float-right">
+                                        <i className="fa fa-history" title="Assign Asset History"></i>
+                                      </NavLink>
                                       <b>Previously Assigned to</b><br />
                                       <b>Employee Id : </b>{item.employeeId} <br />
                                       {item.firstName} {item.lastName} <br />

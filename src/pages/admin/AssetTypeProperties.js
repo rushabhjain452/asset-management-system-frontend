@@ -40,18 +40,12 @@ const AssetProperties = () => {
 
   const [loading, setLoading] = useState(false);
 
+  const [sortColumn, setSortColumn] = useState('AssetId');
+  const [sortOrder, setSortOrder] = useState(1);  // 1 = ASC and -1 = DESC
+
   const selectRef = useRef(null);
 
   useEffect(() => {
-    // $(function () {
-    //   //Initialize Select2 Elements
-    //   $('.select2').select2()
-
-    //   //Initialize Select2 Elements
-    //   $('.select2bs4').select2({
-    //     theme: 'bootstrap4'
-    //   })
-    // });
     fetchData();
     fetchAssetTypes();
     fetchProperties();
@@ -327,6 +321,37 @@ const AssetProperties = () => {
     }
   };
 
+  const sort = (column) => {
+    let order = sortOrder;
+    if(sortColumn === column){
+      order = order * -1;
+      setSortOrder(order);
+    } else {
+      order = 1;
+      setSortOrder(1);
+    }
+    setSortColumn(column);
+    switch (column) {
+      case 'assetType':
+        setData((oldData) => {
+          let newData = [...oldData];
+          newData.sort((a, b) => {
+            let val1 = a.assetType.toLowerCase();
+            let val2 = b.assetType.toLowerCase();
+            if (val1 < val2) {
+              return order * -1;
+            }
+            if (val1 > val2) {
+              return order * 1;
+            }
+            return 0;
+          });
+          return newData;
+        });
+        break;
+    }
+  };
+
   return (
     <div>
       <Header />
@@ -433,7 +458,7 @@ const AssetProperties = () => {
                   <thead>
                     <tr>
                       <th>#</th>
-                      <th>Asset Type</th>
+                      <th title="Sort" className="sort-style" onClick={() => sort('assetType')}>Asset Type <i className="fa fa-sort" /></th>
                       <th>Properties</th>
                       <th>Edit</th>
                       <th>Delete</th>
