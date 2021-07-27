@@ -472,7 +472,7 @@ const AssignAsset = () => {
                   asset.assetPropertiesList.map((item) => (
                     <>
                       <div className="col-lg-2 col-md-4 col-sm-6"><label>{item.propertyName} :</label></div>
-                      <div className="col-lg-4 col-md-8 col-sm-6">{item.value}</div>
+                      <div className="col-lg-4 col-md-8 col-sm-6">{item.value !== '' ? item.value : '-'}</div>
                     </>
                   ))
                 }
@@ -499,7 +499,7 @@ const AssignAsset = () => {
               <div className="col-md-3 col-sm-6">
                 <div className="form-group" style={{ marginTop: 20 }}>
                   <label htmlFor="assign-date">Assign Date</label>
-                  <input type="date" maxLength="20" ref={assignDateRef} className="form-control" id="assign-date" placeholder="Purchase Date" disabled={assignDateDisabled} max={getTodayDate()} value={assignDate} onChange={(e) => setAssignDate(e.target.value)} />
+                  <input type="date" ref={assignDateRef} className="form-control" id="assign-date" placeholder="Purchase Date" disabled={assignDateDisabled} max={getTodayDate()} value={assignDate} onChange={(e) => setAssignDate(e.target.value)} />
                 </div>
               </div>
               {
@@ -507,7 +507,7 @@ const AssignAsset = () => {
                 <div className="col-md-3 col-sm-6">
                   <div className="form-group" style={{ marginTop: 20 }}>
                     <label htmlFor="return-date">Return Date</label>
-                    <input type="date" maxLength="20" ref={returnDateRef} className="form-control" id="return-date" placeholder="Return Date" value={returnDate} max={getTodayDate()} onChange={(e) => setReturnDate(e.target.value)} />
+                    <input type="date" ref={returnDateRef} className="form-control" id="return-date" placeholder="Return Date" value={returnDate} max={getTodayDate()} onChange={(e) => setReturnDate(e.target.value)} />
                   </div>
                 </div>
               }

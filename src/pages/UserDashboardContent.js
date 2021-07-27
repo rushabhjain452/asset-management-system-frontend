@@ -1,4 +1,10 @@
-import React from 'react'
+import React, { useState, useEffect, useContext } from 'react';
+import { NavLink } from 'react-router-dom';
+import axios from 'axios';
+import { errorMessage } from '../config';
+import { showToast, showSweetAlert, showConfirmAlert } from '../helpers/sweetAlert';
+import { authHeader } from '../services/authService';
+import { AuthContext } from '../context/AuthContext';
 
 const UserDashboardContent = () => {
   return (
@@ -92,9 +98,8 @@ const UserDashboardContent = () => {
           {/* /.content */}
         </div>
       </div>
-
     </div>
-  )
+  );  
 }
 
 export default UserDashboardContent

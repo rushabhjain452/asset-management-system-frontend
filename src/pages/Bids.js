@@ -1,13 +1,37 @@
-import React from 'react'
-import Footer from './Footer'
-import Header from './Header'
-import Menu from './admin/Menu'
+import React, { useState, useEffect, useRef, useContext } from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
+import Footer from './Footer';
+import Header from './Header';
+import Menu from './admin/Menu';
+import UserMenu from './UserMenu';
+import axios from 'axios';
+import Loader from '../components/Loader';
+import { errorMessage } from '../config';
+import { showToast, showSweetAlert, showConfirmAlert } from '../helpers/sweetAlert';
+import { authHeader } from '../services/authService';
+import { AuthContext } from '../context/AuthContext';
+
+const apiurl = process.env.REACT_APP_URL;
 
 const Bids = () => {
+  const { state, logout, updateContextState } = useContext(AuthContext);
+  let token = state.token;
+  let employeeId = state.employeeId;
+  let role = state.role;
+  if (!token) {
+    token = sessionStorage.getItem('token');
+    employeeId = sessionStorage.getItem('employeeId');
+    role = sessionStorage.getItem('role');
+    updateContextState();
+  }
+
+  const [loading, setLoading] = useState(false);
+
   return (
     <div>
       <Header />
-      <Menu />
+      { role === 'Admin' ? <Menu /> : <UserMenu /> }
+      <Loader loading={loading} />
       <div className="content-wrapper">
         {/* Content Header (Page header) */}
         <section className="content-header">
@@ -125,7 +149,7 @@ const Bids = () => {
 
       <Footer />
     </div>
-  )
+  );
 }
 
-export default Bids
+export default Bids;

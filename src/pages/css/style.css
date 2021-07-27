@@ -247,6 +247,8 @@ figure {
     cursor: pointer;
     outline: none;
     border: none;
+    font-size: 18px;
+    font-weight: bold;
 }
 
 .form-submit:hover {

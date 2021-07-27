@@ -1,8 +1,22 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { NavLink } from 'react-router-dom';
-import avatar from 'admin-lte/dist/img/avatar5.png';
+import femaleAvatar from 'admin-lte/dist/img/avatar3.png';
+import maleAvatar from 'admin-lte/dist/img/avatar5.png';
+import { AuthContext } from '../context/AuthContext';
 
 const UserMenu = () => {
+  const { state, updateContextState } = useContext(AuthContext);
+  let username = state.username;
+  let profilePicture = state.profilePicture;
+  let gender = state.gender;
+
+  if (!username) {
+    username = sessionStorage.getItem('username');
+    gender = sessionStorage.getItem('gender');
+    profilePicture = sessionStorage.getItem('profilePicture');
+    updateContextState();
+  }
+
   return (
     <div>
       <aside className="main-sidebar sidebar-dark-primary elevation-4">
@@ -11,27 +25,34 @@ const UserMenu = () => {
           <span className="brand-text font-weight-light">Asset Management</span>
         </a>
         <div className="sidebar">
-        <div className="user-panel mt-3 pb-3 mb-3 d-flex">
-            <div className="image">
-              <img src={avatar} className="img-circle elevation-2" alt="User Image" />
+          <NavLink to="/profile/update" className="d-block" activeClassName="active">
+            <div className="user-panel mt-3 pb-3 mb-3 d-flex">
+              <div className="image">
+                <img src={profilePicture != '' ? profilePicture : gender === 'Female' ? femaleAvatar : maleAvatar} className="img-circle elevation-2" width="100" height="100" />
+              </div>
+              <div className="info">
+                {username}
+              </div>
             </div>
-            <div className="info">
-              {/* <a href="#" className="d-block">{name}</a> */}
-              <NavLink to="/profile" className="d-block">Asset</NavLink>
-            </div>
-          </div>
+          </NavLink>
           <nav className="mt-2">
             <ul className="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-              <li className="nav-item menu-open">
+              {/* <li className="nav-item menu-open">
                 <a href="./index.html" className="nav-link active">
                   <i className="nav-icon fas fa-tachometer-alt" />
                   <p>Dashboard</p>
                 </a>
+              </li> */}
+              <li className="nav-item menu-open">
+                <NavLink exact to="/dashboard" className="nav-link" activeClassName="active">
+                  <i className="nav-icon fas fa-tachometer-alt" />
+                  <p>Dashboard</p>
+                </NavLink>
               </li>
               <li className="nav-item menu-open">
                 {/* <a href="./index.html" className="nav-link active"> */}
                 <NavLink exact to="/view-assign-asset" className="nav-link" activeClassName="active">
-                  <i className=" nav-icon fas fa-gavel"></i>
+                  <i className=" nav-icon fas fa-laptop"></i>
                   <p>View Assign Asset</p>
                 </NavLink>
               </li>
@@ -54,7 +75,7 @@ const UserMenu = () => {
         </div>
       </aside>
     </div>
-  )
+  );
 }
 
 export default UserMenu;

@@ -11,8 +11,10 @@ import { AuthContext } from '../context/AuthContext';
 const Login = () => {
   const { state, login } = useContext(AuthContext);
 
-  const [email, setEmail] = useState("rushabh@bbd.co.za");
-  const [password, setPassword] = useState("Rushabh@12345");
+  // const [email, setEmail] = useState("rushabh@bbd.co.za");
+  // const [password, setPassword] = useState("Rushabh@12345");
+  const [email, setEmail] = useState("piyush@bbd.co.za");
+  const [password, setPassword] = useState("Piyush@12345");
   const [loading, setLoading] = useState(false);
 
   const emailRef = useRef(null);

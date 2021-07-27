@@ -587,6 +587,7 @@ const Asset = () => {
                       <th title="Sort" className="sort-style" onClick={() => sort('purchaseDate')}>Purchase Date <br /> (dd-mm-yyyy) <i className="fa fa-sort" /></th>
                       <th>Properties</th>
                       <th title="Sort" className="sort-style" onClick={() => sort('discarded')}>Discarded <i className="fa fa-sort" /></th>
+                      <th>Auction</th>
                       <th>Edit</th>
                       <th>Delete</th>
                     </tr>
@@ -616,6 +617,14 @@ const Asset = () => {
                                 defaultChecked={item.discarded} />
                               <label className="custom-control-label" htmlFor={'status-' + item.assetId}></label>
                             </div>
+                          </td>
+                          <td>
+                            {
+                              item.discarded &&
+                              <NavLink exact to={'auction/' + item.assetId} className="btn btn-primary btn-sm rounded-0">
+                                <i className="fa fa-gavel" title="Put to Auction"></i>
+                              </NavLink>
+                            }
                           </td>
                           <td>
                             <button className="btn btn-success btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Edit" onClick={() => editAsset(item.assetId)}>

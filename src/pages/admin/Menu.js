@@ -40,7 +40,6 @@ const Menu = () => {
         <nav className="mt-2">
           <ul className="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
             <li className="nav-item menu-open">
-              {/* <a href="./index.html" className="nav-link active"> */}
               <NavLink exact to="/admin/dashboard" className="nav-link" activeClassName="active">
                 <i className="nav-icon fas fa-tachometer-alt" />
                 <p>Dashboard</p>
@@ -105,8 +104,7 @@ const Menu = () => {
               </NavLink>
             </li> */}
             <li className="nav-item menu-open">
-              {/* <a href="./index.html" className="nav-link active"> */}
-              <NavLink exact to="/admin/auction" className="nav-link" activeClassName="active">
+              <NavLink to="/admin/auction/0" className="nav-link" activeClassName="active">
                 <i className="nav-icon fas fa-gavel"></i>
                 <p>Auction</p>
               </NavLink>
@@ -134,13 +132,12 @@ const Menu = () => {
                 </li>
               </ul>
             </li>
-            <li className="nav-item menu-open">
-              {/* <a href="./index.html" className="nav-link active"> */}
+            {/* <li className="nav-item menu-open">
               <NavLink exact to="/admin/sale-asset" className="nav-link" activeClassName="active">
                 <i className="nav-icon fas money-bill-alt"></i>
                 <p>Sale Asset</p>
               </NavLink>
-            </li>
+            </li> */}
           </ul>
         </nav>
       </div>
