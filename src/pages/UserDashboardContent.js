@@ -143,7 +143,9 @@ const UserDashboardContent = (props) => {
                     <div className="icon">
                       <i className="ion ion-stats-bars" />
                     </div>
-                    <a href="#" className="small-box-footer">More info <i className="fas fa-arrow-circle-right" /></a>
+                    <NavLink exact to="/view-asset-purchase" className="small-box-footer">
+                      More Info <i className="fas fa-arrow-circle-right" />
+                    </NavLink>
                   </div>
                 </div>
                 <div className="col-lg-3 col-6">
@@ -155,7 +157,9 @@ const UserDashboardContent = (props) => {
                     <div className="icon">
                       <i className="ion ion-person-add" />
                     </div>
-                    <a href="#" className="small-box-footer">Place Bid <i className="fas fa-arrow-circle-right" /></a>
+                    <NavLink exact to="/auctions" className="small-box-footer">
+                      More Info <i className="fas fa-arrow-circle-right" />
+                    </NavLink>
                   </div>
                 </div>
                 {/* <div className="col-lg-3 col-6">

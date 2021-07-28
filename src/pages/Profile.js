@@ -44,7 +44,6 @@ const Profile = () => {
         setLoading(false);
         if (response.status === 200) {
           setData(response.data);
-          console.log('fetchData');
         }
         else {
           showToast('error', errorMessage);

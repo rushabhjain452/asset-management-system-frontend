@@ -25,6 +25,20 @@ const Auction = () => {
     updateContextState();
   }
 
+  // let { assetId } = useParams();
+  let params = useParams();
+  assetId = params.assetId;
+  // if (assetId) {
+  //   console.log('AssetId found...');
+  //   if(assetId != 0){
+  //     setBtnText('Add');
+  //   }else{
+  //     setAsset(null);
+  //   }
+  // } else {
+  //   setAsset(null);
+  // }
+
   const [asset, setAsset] = useState(null);
   const [assetIdState, setAssetIdState] = useState(0);
 
@@ -62,22 +76,8 @@ const Auction = () => {
   const endDateRef = useRef(null);
   const selectRef = useRef(null);
 
-  // let { assetId } = useParams();
-  let params = useParams();
-  assetId = params.assetId;
-  // if (assetId) {
-  //   console.log('AssetId found...');
-  //   if(assetId != 0){
-  //     setBtnText('Add');
-  //   }else{
-  //     setAsset(null);
-  //   }
-  // } else {
-  //   setAsset(null);
-  // }
-
   useEffect(() => {
-    console.log('assetId : ' + assetId);
+    // console.log('assetId : ' + assetId);
     fetchAssetDetails(assetId);
     fetchData();
   }, []);
@@ -175,7 +175,7 @@ const Auction = () => {
     }
     else if (isNaN(minBidAmount)) {
       result = false;
-      error = 'Please enter valid Minimmum Bid Amount. Min Bid Amount can only contain numbers.';
+      error = 'Please enter valid Minimmum Bid Amount. Minimum Bid Amount can only contain numbers.';
       minBidAmountRef.current.focus();
     }
     else if (startDate === null) {
@@ -302,7 +302,7 @@ const Auction = () => {
     setEndDateDisabled(false);
     // Find Auction by Id and set Values
     let findAuction = data.find((item) => item.auctionId === auctionId);
-    console.log(findAuction);
+    // console.log(findAuction);
     setMinBidAmount(findAuction.minimumBidAmount);
     setStartDate(findAuction.startDate.substring(0, 16));
     setEndDate(findAuction.endDate.substring(0, 16));
@@ -536,10 +536,10 @@ const Auction = () => {
                       </div>
                       {
                         asset.assetPropertiesList.map((item) => (
-                          <>
+                          <React.Fragment key={item.assetPropertiesId}>
                             <div className="col-lg-2 col-md-4 col-sm-6"><label>{item.propertyName} :</label></div>
                             <div className="col-lg-4 col-md-8 col-sm-6">{item.value !== '' ? item.value : '-'}</div>
-                          </>
+                          </React.Fragment>
                         ))
                       }
                       <div className="col-md-12"><hr /></div>

@@ -470,10 +470,10 @@ const AssignAsset = () => {
                 </div>
                 {
                   asset.assetPropertiesList.map((item) => (
-                    <>
+                    <React.Fragment key={item.assetPropertiesId}>
                       <div className="col-lg-2 col-md-4 col-sm-6"><label>{item.propertyName} :</label></div>
                       <div className="col-lg-4 col-md-8 col-sm-6">{item.value !== '' ? item.value : '-'}</div>
-                    </>
+                    </React.Fragment>
                   ))
                 }
                 <div className="col-md-12"><hr /></div>

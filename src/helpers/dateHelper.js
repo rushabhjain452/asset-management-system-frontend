@@ -142,7 +142,11 @@ export const calDateDiff = (startDate, endDate) => {
     diffDays = diffDays % 365;
     let months = parseInt(diffDays / 30);
     diffDays = diffDays % 30;
-    let days = diffDays;
+    let days = Math.round(diffDays);
+    if(years == 0 && months == 0)  
+      return days + ' days';
+    if(years == 0)
+      return months + ' months ' + days + ' days';
     return years + ' years ' + months + ' months ' + days + ' days';
   }
   catch (err) {

@@ -217,7 +217,7 @@ const AssignAssetHistory = () => {
                   <tbody>
                     {
                       data.length > 0 && data.map((item, index) => (
-                        <tr key={item.assetId}>
+                        <tr key={item.assignAssetId}>
                           <td>{index + 1}</td>
                           <td>
                             <img src={item.profilePicture != '' ? item.profilePicture : item.gender === 'Female' ? femaleAvatar : maleAvatar}

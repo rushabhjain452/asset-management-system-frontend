@@ -81,7 +81,7 @@ const Asset = () => {
         if (response.status === 200) {
           setData(response.data);
           setDataCopy(response.data);
-          console.log(response.data);
+          // console.log(response.data);
         }
         else {
           showToast('error', errorMessage);
@@ -289,7 +289,7 @@ const Asset = () => {
     setBtnText('Update');
     setAssetTypesDisabled(true);
     setAssetId(assetId);
-    console.log(assetId);
+    // console.log(assetId);
     // console.log(properties);
     let findAsset = data.find((item) => item.assetId === assetId);
     // console.log(findAsset);
@@ -335,8 +335,8 @@ const Asset = () => {
         purchaseDate: purchaseDate,
         assetPropertiesList: newProperties
       };
-      console.log(assetId);
-      console.log(apiurl + '/assets/' + assetId);
+      // console.log(assetId);
+      // console.log(apiurl + '/assets/' + assetId);
       axios.put(apiurl + '/assets/' + assetId, requestData, { headers: authHeader(token) })
         .then((response) => {
           setLoading(false);

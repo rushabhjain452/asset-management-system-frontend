@@ -107,7 +107,7 @@ const Login = () => {
   //   }
   // }
 
-  console.log(state);
+  // console.log(state);
   if(state.isLoggedIn) {
     // console.log('Role checking : ' + state.role);
     if (state.role === "User") {

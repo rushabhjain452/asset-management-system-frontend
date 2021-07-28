@@ -51,26 +51,26 @@ const UserMenu = () => {
               </li>
               <li className="nav-item menu-open">
                 <NavLink exact to="/view-assign-asset" className="nav-link" activeClassName="active">
-                  <i className=" nav-icon fas fa-laptop"></i>
+                  <i className="nav-icon fas fa-laptop"></i>
                   <p>View Assign Asset</p>
                 </NavLink>
               </li>
               <li className="nav-item menu-open">
                 <NavLink exact to="/view-returned-asset" className="nav-link" activeClassName="active">
-                  <i className=" nav-icon fas fa-laptop"></i>
+                  <i className="nav-icon fas fa-laptop"></i>
                   <p>View Returned Asset</p>
                 </NavLink>
               </li>
               <li className="nav-item menu-open">
                 <NavLink exact to="/view-asset-purchase" className="nav-link" activeClassName="active">
-                  <i className=" nav-icon fas fa-laptop"></i>
+                  <i className="nav-icon fas fa-laptop"></i>
                   <p>View Asset Purchase</p>
                 </NavLink>
               </li>
               <li className="nav-item menu-open">
-                <NavLink exact to="/bids" className="nav-link" activeClassName="active">
-                  <i className=" nav-icon fas fa-gavel"></i>
-                  <p>Bid On Asset</p>
+                <NavLink exact to="/auctions" className="nav-link" activeClassName="active">
+                  <i className="nav-icon fas fa-gavel"></i>
+                  <p>Auctions</p>
                 </NavLink>
               </li>
             </ul>

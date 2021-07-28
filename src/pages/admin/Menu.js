@@ -150,6 +150,12 @@ const Menu = () => {
                 <p>View Returned Asset</p>
               </NavLink>
             </li>
+            <li className="nav-item menu-open">
+              <NavLink exact to="/auctions" className="nav-link" activeClassName="active">
+                <i className="nav-icon fas fa-gavel"></i>
+                <p>Auctions</p>
+              </NavLink>
+            </li>
             {/* <li className="nav-item menu-open">
               <NavLink exact to="/admin/sale-asset" className="nav-link" activeClassName="active">
                 <i className="nav-icon fas money-bill-alt"></i>

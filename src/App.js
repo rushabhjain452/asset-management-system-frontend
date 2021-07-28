@@ -79,6 +79,7 @@ import ViewAssetPurchase from './pages/ViewAssetPurchase';
 // AdminLTE dashboard demo (This is only for demo purposes)
 // import 'admin-lte/dist/js/pages/dashboard.js';
 import { initialAuthState, authReducer, LOGIN, LOGOUT, SET_EMPLOYEE_ID } from './context/reducers';
+import ActiveAuctions from './pages/ActiveAuctions';
 
 const App = () => {
 
@@ -182,7 +183,8 @@ const App = () => {
               <PrivateRoute exact path='/admin/sale-asset' component={SaleAsset} />
               {/* User Pages */}
               <PrivateRoute exact path='/dashboard' component={UserDashboard} />
-              <PrivateRoute exact path='/bids' component={Bids} />
+              <PrivateRoute exact path='/auctions' component={ActiveAuctions} />
+              <PrivateRoute exact path='/bids/:auctionId' component={Bids} />
               <PrivateRoute exact path='/view-assign-asset' component={ViewAssignAsset} />
               <PrivateRoute exact path='/view-returned-asset' component={ViewReturnedAsset} />
               <PrivateRoute exact path='/view-asset-purchase' component={ViewAssetPurchase} />
