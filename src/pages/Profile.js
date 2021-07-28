@@ -73,7 +73,7 @@ const Profile = () => {
               </div>
               <div className="col-sm-6">
                 <ol className="breadcrumb float-sm-right">
-                  <li className="breadcrumb-item"><NavLink exact to="/admin/dashboard">Home</NavLink></li>
+                  <li className="breadcrumb-item"><NavLink exact to={role === 'Admin' ? "/admin/dashboard" : "/dashboard"}>Home</NavLink></li>
                   <li className="breadcrumb-item active">Employee Profile</li>
                 </ol>
               </div>

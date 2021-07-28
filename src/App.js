@@ -5,15 +5,15 @@ import PrivateRoute from './PrivateRoute';
 import Login from './pages/Login';
 import Error from './pages/Error';
 import ErrorBoundary from './components/ErrorBoundary';
-import ForgetPassword from "./pages/ForgetPassword";
-import VerifyOtpAndUpdatePassword from "./pages/VerifyOtpAndUpdatePassword";
+import ForgetPassword from './pages/ForgetPassword';
+import VerifyOtpAndUpdatePassword from './pages/VerifyOtpAndUpdatePassword';
 // Admin Pages
 import AdminDashboard from './pages/admin/AdminDashboard';
 import Gender from "./pages/admin/Gender";
 // User Pages
 import UserDashboard from './pages/UserDashboard';
 // CSS
-import "bootstrap/dist/css/bootstrap.min.css";
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 // AdminLTE - CSS
 // Font Awesome
@@ -58,21 +58,22 @@ import 'admin-lte/plugins/summernote/summernote-bs4.min.js';
 import 'admin-lte/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js';
 // AdminLTE App
 import 'admin-lte/dist/js/adminlte.js';
-import Role from "./pages/admin/Role";
-import AssetType from "./pages/admin/AssetType";
-import Properties from "./pages/admin/Properties";
-import Asset from "./pages/admin/Asset";
-import Profile from "./pages/Profile";
-import Employee from "./pages/admin/Employee";
-import AssetProperties from "./pages/admin/AssetTypeProperties";
-import AssignAsset from "./pages/admin/AssignAsset";
+import Role from './pages/admin/Role';
+import AssetType from './pages/admin/AssetType';
+import Properties from './pages/admin/Properties';
+import Asset from './pages/admin/Asset';
+import Profile from './pages/Profile';
+import Employee from './pages/admin/Employee';
+import AssetProperties from './pages/admin/AssetTypeProperties';
+import AssignAsset from './pages/admin/AssignAsset';
 import AssignAssetHistory from './pages/admin/AssignAssetHistory';
-import Auction from "./pages/admin/Auction";
-import Bids from "./pages/Bids";
-import ViewBids from "./pages/admin/ViewBids";
-import SaleAsset from "./pages/admin/SaleAsset";
-import ViewAssignAsset from "./pages/ViewAssignAsset";
-import ViewAssetSales from "./pages/ViewAssetSales";
+import Auction from './pages/admin/Auction';
+import Bids from './pages/Bids';
+import ViewBids from './pages/admin/ViewBids';
+import SaleAsset from './pages/admin/SaleAsset';
+import ViewAssignAsset from './pages/ViewAssignAsset';
+import ViewReturnedAsset from './pages/ViewReturnedAsset';
+import ViewAssetPurchase from './pages/ViewAssetPurchase';
 // AdminLTE for demo purposes
 // import 'admin-lte/dist/js/demo.js';
 // AdminLTE dashboard demo (This is only for demo purposes)
@@ -183,7 +184,8 @@ const App = () => {
               <PrivateRoute exact path='/dashboard' component={UserDashboard} />
               <PrivateRoute exact path='/bids' component={Bids} />
               <PrivateRoute exact path='/view-assign-asset' component={ViewAssignAsset} />
-              <PrivateRoute exact path='/view-asset-sales' component={ViewAssetSales} />
+              <PrivateRoute exact path='/view-returned-asset' component={ViewReturnedAsset} />
+              <PrivateRoute exact path='/view-asset-purchase' component={ViewAssetPurchase} />
               {/* <Route component={Error} /> */}
               {/* <Redirect to="/error" /> */}
             </>

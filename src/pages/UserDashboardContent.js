@@ -6,7 +6,93 @@ import { showToast, showSweetAlert, showConfirmAlert } from '../helpers/sweetAle
 import { authHeader } from '../services/authService';
 import { AuthContext } from '../context/AuthContext';
 
-const UserDashboardContent = () => {
+const apiurl = process.env.REACT_APP_URL;
+
+const UserDashboardContent = (props) => {
+  const { state, logout, updateContextState } = useContext(AuthContext);
+  let token = state.token;
+  let employeeId = state.employeeId;
+  if (!token) {
+    token = sessionStorage.getItem('token');
+    employeeId = sessionStorage.getItem('employeeId');
+    updateContextState();
+  }
+
+  const [totalAssignedAssets, setTotalAssignedAssets] = useState(0);
+  const [totalPurchasedAssets, setTotalPurchasedAssets] = useState(0);
+  const [activeAuctionData, setActiveAuctionData] = useState([]);
+
+  useEffect(() => {
+    fetchTotalAssignedAssets();
+    fetchTotalPurchasedAssets();
+    fetchActiveAuctions();
+  }, []);
+
+  const fetchTotalAssignedAssets = () => {
+    props.setLoading(true);
+    axios.get(apiurl + '/assign-assets/total-assigned-assets/' + employeeId, { headers: authHeader(token) })
+      .then((response) => {
+        // props.setLoading(false);
+        if (response.status === 200) {
+          setTotalAssignedAssets(response.data.data);
+        }
+        else {
+          showToast('error', errorMessage);
+        }
+      })
+      .catch((error) => {
+        // props.setLoading(false);
+        showToast('error', errorMessage);
+        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+          logout();
+        }
+      });
+  }
+
+  const fetchTotalPurchasedAssets = () => {
+    // props.setLoading(true);
+    // axios.get(apiurl + '/assets/total-assets', { headers: authHeader(token) })
+    //   .then((response) => {
+    //     props.setLoading(false);
+    //     if (response.status === 200) {
+    //       console.log(response.data);
+    //       setTotalAssets(response.data.data);
+    //     }
+    //     else {
+    //       showToast('error', errorMessage);
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     props.setLoading(false);
+    //     showToast('error', errorMessage);
+    //     if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+    //       logout();
+    //     }
+    //   });
+  }
+
+  const fetchActiveAuctions = () => {
+    // props.setLoading(true);
+    axios.get(apiurl + '/auctions/active-auctions', { headers: authHeader(token) })
+      .then((response) => {
+        props.setLoading(false);
+        if (response.status === 200) {
+          console.log(response.data);
+          setActiveAuctionData(response.data);
+        }
+        else {
+          showToast('error', errorMessage);
+        }
+      })
+      .catch((error) => {
+        props.setLoading(false);
+        showToast('error', errorMessage);
+        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+          logout();
+        }
+      });
+  }
+
   return (
     <div>
       <div>
@@ -37,22 +123,22 @@ const UserDashboardContent = () => {
                   {/* small box */}
                   <div className="small-box bg-info">
                     <div className="inner">
-                      <h3>150</h3>
-                      <p>New Orders</p>
+                      <h3>{totalAssignedAssets}</h3>
+                      <p>Total Assigned Assets</p>
                     </div>
                     <div className="icon">
                       <i className="ion ion-bag" />
                     </div>
-                    <a href="#" className="small-box-footer">More info <i className="fas fa-arrow-circle-right" /></a>
+                    <NavLink exact to="/view-assign-asset" className="small-box-footer">
+                      More Info <i className="fas fa-arrow-circle-right" />
+                    </NavLink>
                   </div>
                 </div>
-                {/* ./col */}
                 <div className="col-lg-3 col-6">
-                  {/* small box */}
                   <div className="small-box bg-success">
                     <div className="inner">
-                      <h3>53<sup style={{ fontSize: 20 }}>%</sup></h3>
-                      <p>Bounce Rate</p>
+                      <h3>{totalPurchasedAssets}</h3>
+                      <p>Total Purchased Assets</p>
                     </div>
                     <div className="icon">
                       <i className="ion ion-stats-bars" />
@@ -60,23 +146,19 @@ const UserDashboardContent = () => {
                     <a href="#" className="small-box-footer">More info <i className="fas fa-arrow-circle-right" /></a>
                   </div>
                 </div>
-                {/* ./col */}
                 <div className="col-lg-3 col-6">
-                  {/* small box */}
                   <div className="small-box bg-warning">
                     <div className="inner">
-                      <h3>44</h3>
-                      <p>Employee Registrations</p>
+                      <h3>{activeAuctionData.length}</h3>
+                      <p>Active Auctions</p>
                     </div>
                     <div className="icon">
                       <i className="ion ion-person-add" />
                     </div>
-                    <a href="#" className="small-box-footer">More info <i className="fas fa-arrow-circle-right" /></a>
+                    <a href="#" className="small-box-footer">Place Bid <i className="fas fa-arrow-circle-right" /></a>
                   </div>
                 </div>
-                {/* ./col */}
-                <div className="col-lg-3 col-6">
-                  {/* small box */}
+                {/* <div className="col-lg-3 col-6">
                   <div className="small-box bg-danger">
                     <div className="inner">
                       <h3>65</h3>
@@ -87,8 +169,7 @@ const UserDashboardContent = () => {
                     </div>
                     <a href="#" className="small-box-footer">More info <i className="fas fa-arrow-circle-right" /></a>
                   </div>
-                </div>
-                {/* ./col */}
+                </div> */}
               </div>
               {/* /.row */}
               {/* Main row */}

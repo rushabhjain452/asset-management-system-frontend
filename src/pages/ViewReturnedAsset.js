@@ -15,7 +15,7 @@ import { AuthContext } from '../context/AuthContext';
 
 const apiurl = process.env.REACT_APP_URL;
 
-const ViewAssignAsset = () => {
+const ViewReturnedAsset = () => {
   const { state, logout, updateContextState } = useContext(AuthContext);
   let token = state.token;
   let role = state.role;
@@ -41,7 +41,7 @@ const ViewAssignAsset = () => {
 
   const fetchData = () => {
     setLoading(true);
-    axios.get(apiurl + '/assign-assets/assets-with-properties/employee/' + employeeId, { headers: authHeader(token) })
+    axios.get(apiurl + '/assign-assets/returned-assets-with-properties/employee/' + employeeId, { headers: authHeader(token) })
       .then((response) => {
         setLoading(false);
         if (response.status === 200) {
@@ -80,7 +80,8 @@ const ViewAssignAsset = () => {
       let searchData = dataCopy.filter((item) => item.assetId == searchText ||
         item.assetType.toLowerCase().includes(searchText) ||
         item.assetPropertiesList.find(item => item.value.toLowerCase().includes(searchText)) != undefined ||
-        formatDate(item.assignDate) === searchText
+        formatDate(item.assignDate) === searchText ||
+        formatDate(item.returnDate) === searchText
       );
       setData(searchData);
     } else {
@@ -140,6 +141,23 @@ const ViewAssignAsset = () => {
           return newData;
         });
         break;
+      case 'returnDate':
+        setData((oldData) => {
+          let newData = [...oldData];
+          newData.sort((a, b) => {
+            let val1 = convertToDate(a.returnDate);
+            let val2 = convertToDate(b.returnDate);
+            if (val1 < val2) {
+              return order * -1;
+            }
+            if (val1 > val2) {
+              return order * 1;
+            }
+            return 0;
+          });
+          return newData;
+        });
+        break;
     }
   };
 
@@ -154,12 +172,12 @@ const ViewAssignAsset = () => {
           <div className="container-fluid">
             <div className="row mb-2">
               <div className="col-sm-6">
-                <h1>Assign Assets</h1>
+                <h1>Returned Assets</h1>
               </div>
               <div className="col-sm-6">
                 <ol className="breadcrumb float-sm-right">
                   <li className="breadcrumb-item"><NavLink exact to={role === 'Admin' ? "/admin/dashboard" : "/dashboard"}>Home</NavLink></li>
-                  <li className="breadcrumb-item active">Assign Assets</li>
+                  <li className="breadcrumb-item active">Returned Assets</li>
                 </ol>
               </div>
             </div>
@@ -196,6 +214,7 @@ const ViewAssignAsset = () => {
                     <th title="Sort" className="sort-style" onClick={() => sort('assetType')}>Asset Type <i className="fa fa-sort" /></th>
                     <th>Properties</th>
                     <th title="Sort" className="sort-style" onClick={() => sort('assignDate')}>Assign Date <i className="fa fa-sort" /></th>
+                    <th title="Sort" className="sort-style" onClick={() => sort('returnDate')}>Return Date <i className="fa fa-sort" /></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -213,6 +232,7 @@ const ViewAssignAsset = () => {
                           }
                         </td>
                         <td>{formatDate(item.assignDate)}</td>
+                        <td>{formatDate(item.returnDate)}</td>
                       </tr>
                     ))
                   }
@@ -230,4 +250,4 @@ const ViewAssignAsset = () => {
   )
 }
 
-export default ViewAssignAsset;
+export default ViewReturnedAsset;

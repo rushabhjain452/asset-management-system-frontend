@@ -1,9 +1,10 @@
-import React from 'react'
+import React from 'react';
 import Header from './Header';
 import Footer from './Footer';
 import UserMenu from './UserMenu';
 
-const ViewAssetSales = () => {
+const ViewAssetPurchase = () => {
+
   return (
     <div>
       <Header />
@@ -190,4 +191,4 @@ const ViewAssetSales = () => {
   )
 }
 
-export default ViewAssetSales
+export default ViewAssetPurchase;

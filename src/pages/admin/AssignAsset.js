@@ -74,7 +74,7 @@ const AssignAsset = () => {
         if (response.status === 200) {
           setData(response.data);
           setDataCopy(response.data);
-          console.log(response.data);
+          // console.log(response.data);
         }
         else {
           showToast('error', errorMessage);
