@@ -1,148 +1,279 @@
-import React, { useEffect } from 'react'
-import Footer from '../Footer'
-import Header from '../Header'
-import Menu from './Menu'
-import $ from 'jquery';
-import 'admin-lte/plugins/select2/css/select2.min.css';
-import 'admin-lte/plugins/icheck-bootstrap/icheck-bootstrap.min.css';
-import 'admin-lte/plugins/bootstrap4-duallistbox/bootstrap-duallistbox.min.css';
-import 'admin-lte/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css';
-import 'admin-lte/plugins/dropzone/min/dropzone.min.css';
-import 'admin-lte/plugins/select2/js/select2.full.min.js';
-import 'admin-lte/plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js';
-// import 'admin-lte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css';
-// import 'admin-lte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css';
-// import 'admin-lte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css';
-// import 'admin-lte/plugins/datatables/jquery.dataTables.min.js';
-// import 'admin-lte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js';
-// import 'admin-lte/plugins/datatables-responsive/js/dataTables.responsive.min.js';
-// import 'admin-lte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js';
-// import 'admin-lte/plugins/datatables-buttons/js/dataTables.buttons.min.js';
-// import 'admin-lte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js';
-// import 'admin-lte/plugins/jszip/jszip.min.js';
-// import 'admin-lte/plugins/pdfmake/pdfmake.min.js';
-// import 'admin-lte/plugins/pdfmake/vfs_fonts.js';
-// import 'admin-lte/plugins/datatables-buttons/js/buttons.html5.min.js';
-// import 'admin-lte/plugins/datatables-buttons/js/buttons.print.min.js';
-// import 'admin-lte/plugins/datatables-buttons/js/buttons.colVis.min.js';
+import React, { useState, useEffect, useContext } from 'react';
+import { NavLink } from 'react-router-dom';
+import Header from '../Header';
+import Footer from '../Footer';
+import Menu from './Menu';
+import axios from 'axios';
+import femaleAvatar from 'admin-lte/dist/img/avatar3.png';
+import maleAvatar from 'admin-lte/dist/img/avatar5.png';
+
+import Loader from '../../components/Loader';
+import { errorMessage } from '../../config';
+import { showToast } from '../../helpers/sweetAlert';
+import { formatDate, convertToDate, convertTimestampToDate,formatTimestamp } from '../../helpers/dateHelper';
+import { authHeader } from '../../services/authService';
+import { AuthContext } from '../../context/AuthContext';
+
+const apiurl = process.env.REACT_APP_URL;
 
 const SaleAsset = () => {
-  // useEffect(() => {
-  //   $(function () {
-  //     //Initialize Select2 Elements
-  //     $('.select2').select2()
+  const { state, logout, updateContextState } = useContext(AuthContext);
+  let token = state.token;
+  if (!token) {
+    token = sessionStorage.getItem('token');
+    updateContextState();
+  }
 
-  //     //Initialize Select2 Elements
-  //     $('.select2bs4').select2({
-  //       theme: 'bootstrap4'
-  //     })
-  //   })
-  // }, [])
+  const [data, setData] = useState([]);
+  const [dataCopy, setDataCopy] = useState([]);
+
+  const [loading, setLoading] = useState(false);
+
+  const [sortColumn, setSortColumn] = useState('AssetId');
+  const [sortOrder, setSortOrder] = useState(1);  // 1 = ASC and -1 = DESC
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = () => {
+    setLoading(true);
+    axios.get(apiurl + '/auctions/sale-auction', { headers: authHeader(token) })
+      .then((response) => {
+        setLoading(false);
+        if (response.status === 200) {
+          // Sort Data
+          const data = response.data;
+          data.sort((a, b) => {
+            let val1 = convertTimestampToDate(a.saleDate);
+            let val2 = convertTimestampToDate(b.saleDate);
+            if (val1 < val2) {
+              return -1;
+            }
+            if (val1 > val2) {
+              return 1;
+            }
+            return 0;
+          });
+          setData(data);
+          setDataCopy(data);
+        }
+        else {
+          showToast('error', errorMessage);
+        }
+      })
+      .catch((error) => {
+        setLoading(false);
+        showToast('error', errorMessage);
+        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+          logout();
+        }
+      });
+  };
+
+  const onSearchTextChange = (e) => {
+    const searchText = e.target.value.toLowerCase();
+    if (searchText.length > 0) {
+      let searchData = dataCopy.filter((item) => item.assetId == searchText ||
+        item.assetType.toLowerCase().includes(searchText) ||
+        item.assetPropertiesList.find(item => item.value.toLowerCase().includes(searchText)) != undefined ||
+        item.minimumBidAmount == searchText ||
+        item.bidAmount == searchText ||
+        formatDate(item.saleDate) === searchText ||
+        item.employeeId == searchText ||
+        (item.firstName + ' ' + item.lastName).toLowerCase().includes(searchText)
+      );
+      setData(searchData);
+    } else {
+      setData(dataCopy);
+    }
+  };
+
+  const sort = (column) => {
+    let order = sortOrder;
+    if (sortColumn === column) {
+      order = order * -1;
+      setSortOrder(order);
+    } else {
+      order = 1;
+      setSortOrder(1);
+    }
+    setSortColumn(column);
+    switch (column) {
+      case 'assetId':
+        setData((oldData) => {
+          let newData = [...oldData];
+          newData.sort((a, b) => (a.assetId - b.assetId) * order);
+          return newData;
+        });
+        break;
+      case 'assetType':
+        setData((oldData) => {
+          let newData = [...oldData];
+          newData.sort((a, b) => {
+            let val1 = a.assetType.toLowerCase();
+            let val2 = b.assetType.toLowerCase();
+            if (val1 < val2) {
+              return order * -1;
+            }
+            if (val1 > val2) {
+              return order * 1;
+            }
+            return 0;
+          });
+          return newData;
+        });
+        break;
+      case 'saleDate':
+        setData((oldData) => {
+          let newData = [...oldData];
+          newData.sort((a, b) => {
+            let val1 = convertTimestampToDate(a.saleDate);
+            let val2 = convertTimestampToDate(b.saleDate);
+            if (val1 < val2) {
+              return order * -1;
+            }
+            if (val1 > val2) {
+              return order * 1;
+            }
+            return 0;
+          });
+          return newData;
+        });
+        break;
+      case 'minimumBidAmount':
+        setData((oldData) => {
+          let newData = [...oldData];
+          newData.sort((a, b) => (a.minimumBidAmount - b.minimumBidAmount) * order);
+          return newData;
+        });
+        break;
+      case 'bidAmount':
+        setData((oldData) => {
+          let newData = [...oldData];
+          newData.sort((a, b) => (a.bidAmount - b.bidAmount) * order);
+          return newData;
+        });
+        break;
+      case 'employeeId':
+        setData((oldData) => {
+          let newData = [...oldData];
+          newData.sort((a, b) => (a.employeeId - b.employeeId) * order);
+          return newData;
+        });
+        break;
+      case 'name':
+        setData((oldData) => {
+          let newData = [...oldData];
+          newData.sort((a, b) => {
+            let val1 = (a.firstName + ' ' + a.lastName).toLowerCase();
+            let val2 = (b.firstName + ' ' + b.lastName).toLowerCase();
+            if (val1 < val2) {
+              return order * -1;
+            }
+            if (val1 > val2) {
+              return order * 1;
+            }
+            return 0;
+          });
+          return newData;
+        });
+        break;
+    }
+  };
+
   return (
-    <div>
+    <div className="wrapper">
       <Header />
       <Menu />
+      <Loader loading={loading} />
       <div className="content-wrapper">
-        <div className="content-header">
+        <section className="content-header">
           <div className="container-fluid">
             <div className="row mb-2">
               <div className="col-sm-6">
-                <h1 className="m-0">Sale Asset</h1>
-              </div>{/* /.col */}
+                <h1>Sold Assets</h1>
+              </div>
               <div className="col-sm-6">
                 <ol className="breadcrumb float-sm-right">
-                  <li className="breadcrumb-item"><a href="#">Home</a></li>
-                  <li className="breadcrumb-item active">Sale Asset</li>
+                  <li className="breadcrumb-item"><NavLink exact to="/admin/dashboard">Home</NavLink></li>
+                  <li className="breadcrumb-item active">Sold Assets</li>
                 </ol>
-              </div>{/* /.col */}
-            </div>{/* /.row */}
-          </div>{/* /.container-fluid */}
-        </div>
-        <div className="card card-info">
-          <div className="card-body">
-            <h4>Sale Asset </h4>
-            {/* <label>Minimal (.select2-danger)</label> */}
-            <div className="row">
-              <div className="col-md-10">
-                <div className="form-group">
-                  <h6>Employee Name:</h6>
-                  <select className="form-control select2">
-                    <option selected="selected">Alabama</option>
-                    <option>Alaska</option>
-                    <option>California</option>
-                    <option>Delaware</option>
-                    <option>Tennessee</option>
-                    <option>Texas</option>
-                    <option>Washington</option>
-                  </select>
-                </div>
               </div>
             </div>
-          </div>
-          <div className="card-footer">
-            <button type="submit" className="btn btn-primary float-right">Sale</button>
-            <button type="submit" className="btn btn-default float-right">Cancel</button>
-          </div>
-        </div>
-        {/* /.row */}
-        <div className="row">
-          <div className="col-12">
-            <div className="card">
-              <div className="card-header">
-                <h3 className="card-title">List of Asset</h3>
-                <div className="card-tools">
-                  <div className="input-group input-group-sm">
-                    <input type="text" name="table_search" className="form-control float-right" placeholder="Search" />
-
-                    <div className="input-group-append">
-                      <button type="submit" className="btn btn-default">
-                        <i className="fas fa-search"></i>
-                      </button>
-                    </div>
+          </div>{/* /.container-fluid */}
+        </section>
+        {/* Main content */}
+        <section className="content">
+          {/* Default box */}
+          <div className="card">
+            <div className="card-header">
+              <div className="card-tools">
+                <div className="input-group input-group-sm">
+                  <input
+                    type="text"
+                    name="table_search"
+                    maxLength="20"
+                    className="form-control float-right"
+                    placeholder="Search"
+                    onChange={onSearchTextChange} />
+                  <div className="input-group-append">
+                    <span className="input-group-text" id="basic-addon2">
+                      <i className="fas fa-search"></i>
+                    </span>
                   </div>
                 </div>
               </div>
-              <div className="card-body">
-                <table id="example1" className="table table-bordered table-striped">
-                  <thead>
-                    <tr>
-                      <th>Rendering engine</th>
-                      <th>Browser</th>
-                      <th>Platform(s)</th>
-                      <th>Engine version</th>
-                      <th>CSS grade</th>
-                      <th>Edit</th>
-                      <th>Delete</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>Other browsers</td>
-                      <td>All others</td>
-                      <td>-</td>
-                      <td>-</td>
-                      <td>U</td>
-                      <td>
-                        <ul className="list-inline m-0">
-                          <li className="list-inline-item">
-                            <button className="btn btn-success btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Edit"><i className="fa fa-edit"></i></button>
-                          </li>
-                        </ul>
-                      </td>
-                      <td>
-                        <ul className="list-inline m-0">
-                          <li className="list-inline-item">
-                            <button className="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Delete"><i className="fa fa-trash"></i></button>
-                          </li>
-                        </ul>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
             </div>
+            <div className="card-body p-0">
+              <table className="table table-bordered table-striped">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th title="Sort" className="sort-style" onClick={() => sort('saleDate')}>Sale Date <br /> (dd-mm-yyyy) <i className="fa fa-sort" /></th>
+                    <th title="Sort" className="sort-style" onClick={() => sort('assetId')}>Asset Id <i className="fa fa-sort" /></th>
+                    <th title="Sort" className="sort-style" onClick={() => sort('assetType')}>Asset Type <i className="fa fa-sort" /></th>
+                    <th>Properties</th>
+                    <th title="Sort" className="sort-style" onClick={() => sort('minimumBidAmount')}>Minimum <br/>Bid Amount <i className="fa fa-sort" /></th>
+                    <th title="Sort" className="sort-style" onClick={() => sort('bidAmount')}>Sale Amount <i className="fa fa-sort" /></th>
+                    <th title="Sort" className="sort-style" onClick={() => sort('employeeId')}>Employee Id <i className="fa fa-sort" /></th>
+                    <th title="Sort" className="sort-style" onClick={() => sort('name')}>Name <i className="fa fa-sort" /></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {
+                    data.length > 0 && data.map((item, index) => (
+                      <tr key={item.auctionId}>
+                        <td>{index + 1}</td>
+                        <td>{formatDate(item.saleDate)}</td>
+                        <td>{item.assetId}</td>
+                        <td>{item.assetType}</td>
+                        <td>
+                          {
+                            item.assetPropertiesList.map((property) => (
+                              <div key={property.assetPropertiesId}><b>{property.propertyName}</b> : {property.value}</div>
+                            ))
+                          }
+                        </td>
+                        <td>{item.minimumBidAmount}</td>
+                        <td>{item.bidAmount}</td>
+                        <td>{item.employeeId}</td>
+                        <td>
+                          {item.firstName} {item.lastName} <br />
+                          <img src={item.profilePicture != '' ? item.profilePicture : item.gender === 'Female' ? femaleAvatar : maleAvatar}
+                            className="img-circle elevation-2" width="100" height="100" />
+                        </td>
+                      </tr>
+                    ))
+                  }
+                </tbody>
+              </table>
+            </div>
+            {/* /.card-body */}
           </div>
-        </div>
+          {/* /.card */}
+        </section>
+        {/* /.content */}
       </div>
       <Footer />
     </div>

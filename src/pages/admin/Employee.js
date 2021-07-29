@@ -801,7 +801,7 @@ const Employee = () => {
                     data.length > 0 && data.map((item, index) => (
                       <tr key={item.employeeId}>
                         <td>{item.employeeId}</td>
-                        <td><img src={item.profilePicture != '' ? item.profilePicture : item.genderName === 'Female' ? femaleAvatar : maleAvatar} className="img-circle elevation-2" width="100" height="100" /></td>
+                        <td><img src={item.profilePicture != '' ? item.profilePicture : item.genderName === 'Female' ? femaleAvatar : maleAvatar} className="img-circle elevation-2" width="50" height="50" /></td>
                         <td>{item.firstName}</td>
                         <td>{item.lastName}</td>
                         <td>{item.genderName}</td>

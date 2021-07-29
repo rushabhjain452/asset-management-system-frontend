@@ -110,6 +110,12 @@ const Menu = () => {
               </NavLink>
             </li>
             <li className="nav-item menu-open">
+              <NavLink exact to="/admin/sale-asset" className="nav-link" activeClassName="active">
+                <i className="nav-icon fas fa-money-bill-alt"></i>
+                <p>Sold Assets</p>
+              </NavLink>
+            </li>
+            {/* <li className="nav-item menu-open">
               <a href="#" className="nav-link">
                 <i className="nav-icon fas fa-user-tie"></i>
                 <p>
@@ -131,7 +137,7 @@ const Menu = () => {
                   </NavLink>
                 </li>
               </ul>
-            </li>
+            </li> */}
             {/* <li className="nav-item menu-open">
               <NavLink exact to="" className="nav-link" activeClassName="active">
                 <i className=" nav-icon fas fa-laptop"></i>
@@ -151,17 +157,17 @@ const Menu = () => {
               </NavLink>
             </li>
             <li className="nav-item menu-open">
+              <NavLink exact to="/view-asset-purchase" className="nav-link" activeClassName="active">
+                <i className="nav-icon fas fa-laptop"></i>
+                <p>View Asset Purchase</p>
+              </NavLink>
+            </li>
+            <li className="nav-item menu-open">
               <NavLink exact to="/auctions" className="nav-link" activeClassName="active">
                 <i className="nav-icon fas fa-gavel"></i>
                 <p>Active Auctions</p>
               </NavLink>
             </li>
-            {/* <li className="nav-item menu-open">
-              <NavLink exact to="/admin/sale-asset" className="nav-link" activeClassName="active">
-                <i className="nav-icon fas money-bill-alt"></i>
-                <p>Sale Asset</p>
-              </NavLink>
-            </li> */}
           </ul>
         </nav>
       </div>

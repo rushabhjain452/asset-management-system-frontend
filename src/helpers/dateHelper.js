@@ -45,6 +45,8 @@ export const formatDate = (mysqlDate) => {
   try {
     if (mysqlDate) {
       // 2021-02-08
+      // 2021-07-27T16:00:00.000+00:00
+      mysqlDate = mysqlDate.substring(0, 10);
       const arr = mysqlDate.split('-');
       return arr.reverse().join('-');
     }

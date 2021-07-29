@@ -1,26 +1,180 @@
-import React from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { NavLink } from 'react-router-dom';
 import Header from './Header';
 import Footer from './Footer';
 import UserMenu from './UserMenu';
+import Menu from './admin/Menu';
+import axios from 'axios';
 
-const ViewAssetPurchase = () => {
+import Loader from '../components/Loader';
+import { errorMessage } from '../config';
+import { showToast } from '../helpers/sweetAlert';
+import { formatDate, convertToDate, convertTimestampToDate, formatTimestamp } from '../helpers/dateHelper';
+import { authHeader } from '../services/authService';
+import { AuthContext } from '../context/AuthContext';
+
+const apiurl = process.env.REACT_APP_URL;
+
+const ViewAssignPurchase = () => {
+  const { state, logout, updateContextState } = useContext(AuthContext);
+  let token = state.token;
+  let role = state.role;
+  let employeeId = state.employeeId;
+  if (!token) {
+    token = sessionStorage.getItem('token');
+    role = sessionStorage.getItem('role');
+    employeeId = sessionStorage.getItem('employeeId');
+    updateContextState();
+  }
+
+  const [data, setData] = useState([]);
+  const [dataCopy, setDataCopy] = useState([]);
+
+  const [loading, setLoading] = useState(false);
+
+  const [sortColumn, setSortColumn] = useState('AssetId');
+  const [sortOrder, setSortOrder] = useState(1);  // 1 = ASC and -1 = DESC
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = () => {
+    setLoading(true);
+    axios.get(apiurl + '/auctions/sale-auction/employee/' + employeeId, { headers: authHeader(token) })
+      .then((response) => {
+        setLoading(false);
+        if (response.status === 200) {
+          // Sort Data
+          const data = response.data;
+          data.sort((a, b) => {
+            let val1 = convertTimestampToDate(a.saleDate);
+            let val2 = convertTimestampToDate(b.saleDate);
+            if (val1 < val2) {
+              return -1;
+            }
+            if (val1 > val2) {
+              return 1;
+            }
+            return 0;
+          });
+          setData(data);
+          setDataCopy(data);
+        }
+        else {
+          showToast('error', errorMessage);
+        }
+      })
+      .catch((error) => {
+        setLoading(false);
+        showToast('error', errorMessage);
+        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+          logout();
+        }
+      });
+  };
+
+  const onSearchTextChange = (e) => {
+    const searchText = e.target.value.toLowerCase();
+    if (searchText.length > 0) {
+      let searchData = dataCopy.filter((item) => item.assetId == searchText ||
+        item.assetType.toLowerCase().includes(searchText) ||
+        item.assetPropertiesList.find(item => item.value.toLowerCase().includes(searchText)) != undefined ||
+        item.minimumBidAmount == searchText ||
+        item.bidAmount == searchText ||
+        formatDate(item.saleDate) === searchText
+      );
+      setData(searchData);
+    } else {
+      setData(dataCopy);
+    }
+  };
+
+  const sort = (column) => {
+    let order = sortOrder;
+    if (sortColumn === column) {
+      order = order * -1;
+      setSortOrder(order);
+    } else {
+      order = 1;
+      setSortOrder(1);
+    }
+    setSortColumn(column);
+    switch (column) {
+      case 'assetId':
+        setData((oldData) => {
+          let newData = [...oldData];
+          newData.sort((a, b) => (a.assetId - b.assetId) * order);
+          return newData;
+        });
+        break;
+      case 'assetType':
+        setData((oldData) => {
+          let newData = [...oldData];
+          newData.sort((a, b) => {
+            let val1 = a.assetType.toLowerCase();
+            let val2 = b.assetType.toLowerCase();
+            if (val1 < val2) {
+              return order * -1;
+            }
+            if (val1 > val2) {
+              return order * 1;
+            }
+            return 0;
+          });
+          return newData;
+        });
+        break;
+      case 'saleDate':
+        setData((oldData) => {
+          let newData = [...oldData];
+          newData.sort((a, b) => {
+            let val1 = convertTimestampToDate(a.saleDate);
+            let val2 = convertTimestampToDate(b.saleDate);
+            if (val1 < val2) {
+              return order * -1;
+            }
+            if (val1 > val2) {
+              return order * 1;
+            }
+            return 0;
+          });
+          return newData;
+        });
+        break;
+      case 'minimumBidAmount':
+        setData((oldData) => {
+          let newData = [...oldData];
+          newData.sort((a, b) => (a.minimumBidAmount - b.minimumBidAmount) * order);
+          return newData;
+        });
+        break;
+      case 'bidAmount':
+        setData((oldData) => {
+          let newData = [...oldData];
+          newData.sort((a, b) => (a.bidAmount - b.bidAmount) * order);
+          return newData;
+        });
+        break;
+    }
+  };
 
   return (
-    <div>
+    <div className="wrapper">
       <Header />
-      <UserMenu />
+      { role === 'Admin' ? <Menu /> : <UserMenu /> }
+      <Loader loading={loading} />
       <div className="content-wrapper">
-        {/* Content Header (Page header) */}
         <section className="content-header">
           <div className="container-fluid">
             <div className="row mb-2">
               <div className="col-sm-6">
-                <h1>Sale Asset</h1>
+                <h1>Purchased Assets</h1>
               </div>
               <div className="col-sm-6">
                 <ol className="breadcrumb float-sm-right">
-                  <li className="breadcrumb-item"><a href="#">Home</a></li>
-                  <li className="breadcrumb-item active">Sale Asset</li>
+                  <li className="breadcrumb-item"><NavLink exact to={role === 'Admin' ? "/admin/dashboard" : "/dashboard"}>Home</NavLink></li>
+                  <li className="breadcrumb-item active">Purchased Assets</li>
                 </ol>
               </div>
             </div>
@@ -31,152 +185,56 @@ const ViewAssetPurchase = () => {
           {/* Default box */}
           <div className="card">
             <div className="card-header">
-              <h3 className="card-title">Sale Asset</h3>
               <div className="card-tools">
-                <button type="button" className="btn btn-tool" data-card-widget="collapse" title="Collapse">
-                  <i className="fas fa-minus" />
-                </button>
-                <button type="button" className="btn btn-tool" data-card-widget="remove" title="Remove">
-                  <i className="fas fa-times" />
-                </button>
+                <div className="input-group input-group-sm">
+                  <input
+                    type="text"
+                    name="table_search"
+                    maxLength="20"
+                    className="form-control float-right"
+                    placeholder="Search"
+                    onChange={onSearchTextChange} />
+                  <div className="input-group-append">
+                    <span className="input-group-text" id="basic-addon2">
+                      <i className="fas fa-search"></i>
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
             <div className="card-body p-0">
-              <table className="table table-striped projects">
+              <table className="table table-bordered table-striped">
                 <thead>
                   <tr>
-                    <th style={{ width: '1%' }}>
-                      #
-              </th>
-                    <th style={{ width: '20%' }}>
-                      Project Name
-              </th>
-                    <th style={{ width: '30%' }}>
-                      Team Members
-              </th>
-                    <th>
-                      Project Progress
-              </th>
-                    <th style={{ width: '8%' }} className="text-center">
-                      Status
-              </th>
-                    <th style={{ width: '20%' }}>
-                    </th>
+                    <th>#</th>
+                    <th title="Sort" className="sort-style" onClick={() => sort('saleDate')}>Purchase Date <br /> (dd-mm-yyyy) <i className="fa fa-sort" /></th>
+                    <th title="Sort" className="sort-style" onClick={() => sort('assetId')}>Asset Id <i className="fa fa-sort" /></th>
+                    <th title="Sort" className="sort-style" onClick={() => sort('assetType')}>Asset Type <i className="fa fa-sort" /></th>
+                    <th>Properties</th>
+                    <th title="Sort" className="sort-style" onClick={() => sort('minimumBidAmount')}>Minimum <br/>Bid Amount <i className="fa fa-sort" /></th>
+                    <th title="Sort" className="sort-style" onClick={() => sort('bidAmount')}>Sale Amount <i className="fa fa-sort" /></th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>
-                      #
-              </td>
-                    <td>
-                      <a>
-                        ABC
-                </a>
-                      <br />
-                      <small>
-                        Created 01.01.2019
-                </small>
-                    </td>
-                    <td>
-                      <ul className="list-inline">
-                        <li className="list-inline-item">
-                          <img alt="Avatar" className="table-avatar" src="../../dist/img/avatar.png" />
-                        </li>
-                        <li className="list-inline-item">
-                          <img alt="Avatar" className="table-avatar" src="../../dist/img/avatar2.png" />
-                        </li>
-                        <li className="list-inline-item">
-                          <img alt="Avatar" className="table-avatar" src="../../dist/img/avatar3.png" />
-                        </li>
-                        <li className="list-inline-item">
-                          <img alt="Avatar" className="table-avatar" src="../../dist/img/avatar4.png" />
-                        </li>
-                      </ul>
-                    </td>
-                    <td className="project_progress">
-                      <div className="progress progress-sm">
-                        <div className="progress-bar bg-green" role="progressbar" aria-valuenow={57} aria-valuemin={0} aria-valuemax={100} style={{ width: '57%' }}>
-                        </div>
-                      </div>
-                      <small>
-                        57% Complete
-                </small>
-                    </td>
-                    <td className="project-state">
-                      <span className="badge badge-success">Success</span>
-                    </td>
-                    <td className="project-actions text-right">
-                      <a className="btn btn-primary btn-sm" href="#">
-                        <i className="fas fa-folder">
-                        </i>
-                  View
-                </a>
-                      <a className="btn btn-info btn-sm" href="#">
-                        <i className="fas fa-pencil-alt">
-                        </i>
-                  Edit
-                </a>
-                      <a className="btn btn-danger btn-sm" href="#">
-                        <i className="fas fa-trash">
-                        </i>
-                  Delete
-                </a>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      #
-              </td>
-                    <td>
-                      <a>
-                        XYZ
-                </a>
-                      <br />
-                      <small>
-                        Created 01.01.2019
-                </small>
-                    </td>
-                    <td>
-                      <ul className="list-inline">
-                        <li className="list-inline-item">
-                          <img alt="Avatar" className="table-avatar" src="../../dist/img/avatar.png" />
-                        </li>
-                        <li className="list-inline-item">
-                          <img alt="Avatar" className="table-avatar" src="../../dist/img/avatar2.png" />
-                        </li>
-                      </ul>
-                    </td>
-                    <td className="project_progress">
-                      <div className="progress progress-sm">
-                        <div className="progress-bar bg-green" role="progressbar" aria-valuenow={47} aria-valuemin={0} aria-valuemax={100} style={{ width: '47%' }}>
-                        </div>
-                      </div>
-                      <small>
-                        47% Complete
-                </small>
-                    </td>
-                    <td className="project-state">
-                      <span className="badge badge-success">Success</span>
-                    </td>
-                    <td className="project-actions text-right">
-                      <a className="btn btn-primary btn-sm" href="#">
-                        <i className="fas fa-folder">
-                        </i>
-                  View
-                </a>
-                      <a className="btn btn-info btn-sm" href="#">
-                        <i className="fas fa-pencil-alt">
-                        </i>
-                  Edit
-                </a>
-                      <a className="btn btn-danger btn-sm" href="#">
-                        <i className="fas fa-trash">
-                        </i>
-                  Delete
-                </a>
-                    </td>
-                  </tr>
+                  {
+                    data.length > 0 && data.map((item, index) => (
+                      <tr key={item.auctionId}>
+                        <td>{index + 1}</td>
+                        <td>{formatDate(item.saleDate)}</td>
+                        <td>{item.assetId}</td>
+                        <td>{item.assetType}</td>
+                        <td>
+                          {
+                            item.assetPropertiesList.map((property) => (
+                              <div key={property.assetPropertiesId}><b>{property.propertyName}</b> : {property.value}</div>
+                            ))
+                          }
+                        </td>
+                        <td>{item.minimumBidAmount}</td>
+                        <td>{item.bidAmount}</td>
+                      </tr>
+                    ))
+                  }
                 </tbody>
               </table>
             </div>
@@ -191,4 +249,4 @@ const ViewAssetPurchase = () => {
   )
 }
 
-export default ViewAssetPurchase;
+export default ViewAssignPurchase;
