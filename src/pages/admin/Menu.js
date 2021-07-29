@@ -153,7 +153,7 @@ const Menu = () => {
             <li className="nav-item menu-open">
               <NavLink exact to="/auctions" className="nav-link" activeClassName="active">
                 <i className="nav-icon fas fa-gavel"></i>
-                <p>Auctions</p>
+                <p>Active Auctions</p>
               </NavLink>
             </li>
             {/* <li className="nav-item menu-open">

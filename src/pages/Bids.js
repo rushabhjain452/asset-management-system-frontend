@@ -1,14 +1,17 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
-import { NavLink, useParams } from 'react-router-dom';
+import { NavLink, Redirect, useParams } from 'react-router-dom';
 import Footer from './Footer';
 import Header from './Header';
 import Menu from './admin/Menu';
 import UserMenu from './UserMenu';
+import femaleAvatar from 'admin-lte/dist/img/avatar3.png';
+import maleAvatar from 'admin-lte/dist/img/avatar5.png';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 import Loader from '../components/Loader';
 import { errorMessage } from '../config';
 import { showToast, showSweetAlert, showConfirmAlert } from '../helpers/sweetAlert';
-import { formatDate, formatTimestamp, convertToDate, convertTimestampToDate, calDateDiff } from '../helpers/dateHelper';
+import { formatDate, formatTimestamp, getCurrentTimestamp, convertToDate, convertTimestampToDate, calDateDiff } from '../helpers/dateHelper';
 import { authHeader } from '../services/authService';
 import { AuthContext } from '../context/AuthContext';
 
@@ -17,11 +20,11 @@ const apiurl = process.env.REACT_APP_URL;
 const Bids = () => {
   const { state, logout, updateContextState } = useContext(AuthContext);
   let token = state.token;
-  let employeeId = state.employeeId;
+  let employeeId = parseInt(state.employeeId);
   let role = state.role;
   if (!token) {
     token = sessionStorage.getItem('token');
-    employeeId = sessionStorage.getItem('employeeId');
+    employeeId = parseInt(sessionStorage.getItem('employeeId'));
     role = sessionStorage.getItem('role');
     updateContextState();
   }
@@ -45,6 +48,11 @@ const Bids = () => {
 
   const [btnText, setBtnText] = useState('Add');
 
+  const [saleDisplay, setSaleDisplay] = useState(false);
+  const [saleDate, setSaleDate] = useState(getCurrentTimestamp());
+  const [saleBid, setSaleBid] = useState(null);
+  const [saleStatus, setSaleStatus] = useState(false);
+
   const [loading, setLoading] = useState(false);
 
   const [sortColumn, setSortColumn] = useState('AssetId');
@@ -56,42 +64,33 @@ const Bids = () => {
     // console.log('AuctionId in useEffect : ' + auctionId);
     fetchAuctionData();
     // fetchAssetData();
+    fetchUserBidData();
     fetchData();
   }, []);
 
   const fetchData = () => {
-    // setLoading(true);
-    // axios.get(apiurl + '/auctions/active-auctions', { headers: authHeader(token) })
-    //   .then((response) => {
-    //     setLoading(false);
-    //     if (response.status === 200) {
-    //       // Sort Data
-    //       const data = response.data;
-    //       data.sort((a, b) => {
-    //         let val1 = convertTimestampToDate(a.endDate);
-    //         let val2 = convertTimestampToDate(b.endDate);
-    //         if (val1 < val2) {
-    //           return -1;
-    //         }
-    //         if (val1 > val2) {
-    //           return 1;
-    //         }
-    //         return 0;
-    //       });
-    //       setData(data);
-    //       setDataCopy(data);
-    //     }
-    //     else {
-    //       showToast('error', errorMessage);
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     setLoading(false);
-    //     showToast('error', errorMessage);
-    //     if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-    //       logout();
-    //     }
-    //   });
+    setLoading(true);
+    axios.get(apiurl + '/bids/auction/' + auctionId, { headers: authHeader(token) })
+      .then((response) => {
+        setLoading(false);
+        if (response.status === 200) {
+          // Sort Data
+          const data = response.data;
+          data.sort((a, b) => a.bidAmount - b.bidAmount);
+          setData(data);
+          setDataCopy(data);
+        }
+        else {
+          showToast('error', errorMessage);
+        }
+      })
+      .catch((error) => {
+        setLoading(false);
+        showToast('error', errorMessage);
+        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+          logout();
+        }
+      });
   };
 
   const fetchAuctionData = () => {
@@ -132,6 +131,33 @@ const Bids = () => {
       .catch((error) => {
         setLoading(false);
         showToast('error', errorMessage);
+        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+          logout();
+        }
+      });
+  };
+
+  const fetchUserBidData = () => {
+    setLoading(true);
+    axios.get(apiurl + '/bids/auction/' + auctionId + '/employee/' + employeeId, { headers: authHeader(token) })
+      .then((response) => {
+        setLoading(false);
+        if (response.status === 200) {
+          setBidId(response.data.bidId);
+          setBidAmount(response.data.bidAmount);
+          setBtnText('Update');
+        }
+        else {
+          showToast('error', errorMessage);
+          setBidAmount('');
+          setBtnText('Add');
+        }
+      })
+      .catch((error) => {
+        setLoading(false);
+        // showToast('error', errorMessage);
+        setBidAmount('');
+        setBtnText('Add');
         if (error.response && (error.response.status === 401 || error.response.status === 403)) {
           logout();
         }
@@ -183,12 +209,12 @@ const Bids = () => {
           setLoading(false);
           if (response.status === 201) {
             showSweetAlert('success', 'Success', 'Bid added successfully.');
+            fetchUserBidData();
             fetchData();
           }
           else {
             showSweetAlert('error', 'Error', 'Failed to add Bid. Please try again...');
           }
-          clearControls();
         })
         .catch((error) => {
           setLoading(false);
@@ -200,115 +226,106 @@ const Bids = () => {
     }
   };
 
-  const deleteBid = (auctionId, assetId, assetType) => {
-    // showConfirmAlert('Delete Confirmation', `Do you really want to delete the Auction for Asset Id '${assetId}' of Asset Type '${assetType}' ?`)
-    //   .then((result) => {
-    //     if (result.isConfirmed) {
-    //       setLoading(true);
-    //       axios.delete(apiurl + '/auctions/' + auctionId, { headers: authHeader(token) })
-    //         .then((response) => {
-    //           setLoading(false);
-    //           if (response.status === 200) {
-    //             showSweetAlert('success', 'Success', 'Auction deleted successfully.');
-    //             fetchData();
-    //           }
-    //           else {
-    //             showSweetAlert('error', 'Error', 'Failed to delete Auction. Please try again...');
-    //           }
-    //           clearControls();
-    //         })
-    //         .catch((error) => {
-    //           setLoading(false);
-    //           showSweetAlert('error', 'Error', 'Failed to delete Auction. Please try again...');
-    //           clearControls();
-    //           if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-    //             logout();
-    //           }
-    //         });
-    //     }
-    //   });
-  };
-
-  const editBid = (auctionId, assetId) => {
-    // setBtnText('Update');
-    // setSaleDisplay(false);
-    // setAuctionId(auctionId);
-    // assetId = assetId;
-    // setAssetIdState(assetId);
-    // fetchAssetDetails(assetId);
-    // setMinBidAmountDisabled(false);
-    // setStartDateDisabled(false);
-    // setEndDateDisabled(false);
-    // // Find Auction by Id and set Values
-    // let findAuction = data.find((item) => item.auctionId === auctionId);
-    // // console.log(findAuction);
-    // setMinBidAmount(findAuction.minimumBidAmount);
-    // setStartDate(findAuction.startDate.substring(0, 16));
-    // setEndDate(findAuction.endDate.substring(0, 16));
-    // // if(findAuction.saleDate){
-    // //   setSaleDisplay(true);
-    // //   setSaleDate(findAuction.saleDate);
-    // // }else{
-    // //   setSaleDisplay(false);
-    // // }
-    // try{
-    //   minBidAmountRef.current.focus();
-    // }
-    // catch(err){}
+  const deleteBid = (bidId, assetType) => {
+    showConfirmAlert('Delete Confirmation', `Do you really want to delete the Bid for Auction of '${assetType}' ?`)
+      .then((result) => {
+        if (result.isConfirmed) {
+          setLoading(true);
+          axios.delete(apiurl + '/bids/' + bidId, { headers: authHeader(token) })
+            .then((response) => {
+              setLoading(false);
+              if (response.status === 200) {
+                showSweetAlert('success', 'Success', 'Bid deleted successfully.');
+                fetchUserBidData();
+                fetchData();
+              }
+              else {
+                showSweetAlert('error', 'Error', 'Failed to delete Bid. Please try again...');
+              }
+            })
+            .catch((error) => {
+              setLoading(false);
+              showSweetAlert('error', 'Error', 'Failed to delete Bid. Please try again...');
+              if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+                logout();
+              }
+            });
+        }
+      });
   };
 
   const updateBid = () => {
     if (validateInput()) {
-      // setLoading(true);
-      // const requestData = {
-      //   assetId: assetIdState,
-      //   minimumBidAmount: minBidAmount,
-      //   startDate: startDate,
-      //   endDate: endDate
-      // };
-      // axios.put(apiurl + '/auctions/' + auctionId, requestData, { headers: authHeader(token) })
-      //   .then((response) => {
-      //     setLoading(false);
-      //     if (response.status === 200) {
-      //       showSweetAlert('success', 'Success', 'Auction updated successfully.');
-      //       fetchData();
-      //     }
-      //     else {
-      //       showSweetAlert('error', 'Error', 'Failed to update Auction. Please try again...');
-      //     }
-      //     clearControls();
-      //     setBtnText('Add');
-      //   })
-      //   .catch((error) => {
-      //     setLoading(false);
-      //     showSweetAlert('error', 'Error', 'Failed to update Auction. Please try again...');
-      //     if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-      //       logout();
-      //     }
-      //   });
+      setLoading(true);
+      axios.put(apiurl + '/bids/' + bidId + '/update-bid-amount/' + bidAmount, {}, { headers: authHeader(token) })
+        .then((response) => {
+          setLoading(false);
+          if (response.status === 200) {
+            showSweetAlert('success', 'Success', 'Bid updated successfully.');
+            fetchUserBidData();
+            fetchData();
+          }
+          else {
+            showSweetAlert('error', 'Error', 'Failed to update Bid. Please try again...');
+          }
+          setBtnText('Add');
+        })
+        .catch((error) => {
+          setLoading(false);
+          showSweetAlert('error', 'Error', 'Failed to update Bid. Please try again...');
+          if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+            logout();
+          }
+        });
     }
   };
 
-  const clearControls = () => {
-    setBtnText('Add');
-    // setBidAmount(0);
-    setBidAmount('');
-  };
+  const saleAsset = (item) => {
+    setSaleBid(item);
+    setSaleDisplay(true);
+  }
 
-  const onCancel = () => {
-    clearControls();
+  const cancelSale = () => {
+    setSaleBid(null);
+    setSaleDisplay(false);
+  }
+
+  const saleAssetDetails = () => {
+    setLoading(true);
+    const requestData = {
+      saleBidId: saleBid.bidId,
+      saleDate: saleDate
+    };
+    axios.put(apiurl + '/auctions/' + auctionId + '/update-sale-asset', requestData, { headers: authHeader(token) })
+      .then((response) => {
+        setLoading(false);
+        if (response.status === 200) {
+          showSweetAlert('success', 'Success', 'Asset Sale successfully.');
+          // fetchUserBidData();
+          // fetchData();
+          setSaleStatus(true);
+        }
+        else {
+          showSweetAlert('error', 'Error', 'Failed to sale Asset. Please try again...');
+        }
+        // setBtnText('Add');
+      })
+      .catch((error) => {
+        setLoading(false);
+        showSweetAlert('error', 'Error', 'Failed to sale Asset. Please try again...');
+        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+          logout();
+        }
+      });
   };
 
   const onSearchTextChange = (e) => {
     const searchText = e.target.value.toLowerCase();
     if (searchText.length > 0) {
-      let searchData = dataCopy.filter((item) => item.assetId == searchText ||
-        item.assetType.toLowerCase().includes(searchText) ||
-        formatDate(item.purchaseDate) === searchText ||
-        item.minimumBidAmount == searchText ||
-        formatTimestamp(item.startDate).includes(searchText) ||
-        formatTimestamp(item.endDate).includes(searchText) ||
-        formatTimestamp(item.saleDate).includes(searchText)
+      let searchData = dataCopy.filter((item) => item.employeeId == searchText ||
+        item.firstName.toLowerCase().includes(searchText) ||
+        item.lastName.toLowerCase().includes(searchText) ||
+        item.bidAmount == searchText
       );
       setData(searchData);
     } else {
@@ -327,19 +344,19 @@ const Bids = () => {
     }
     setSortColumn(column);
     switch (column) {
-      case 'assetId':
+      case 'employeeId':
         setData((oldData) => {
           let newData = [...oldData];
-          newData.sort((a, b) => (a.assetId - b.assetId) * order);
+          newData.sort((a, b) => (a.employeeId - b.employeeId) * order);
           return newData;
         });
         break;
-      case 'assetType':
+      case 'firstName':
         setData((oldData) => {
           let newData = [...oldData];
           newData.sort((a, b) => {
-            let val1 = a.assetType.toLowerCase();
-            let val2 = b.assetType.toLowerCase();
+            let val1 = a.firstName.toLowerCase();
+            let val2 = b.firstName.toLowerCase();
             if (val1 < val2) {
               return order * -1;
             }
@@ -351,12 +368,12 @@ const Bids = () => {
           return newData;
         });
         break;
-      case 'purchaseDate':
+      case 'lastName':
         setData((oldData) => {
           let newData = [...oldData];
           newData.sort((a, b) => {
-            let val1 = convertToDate(a.purchaseDate);
-            let val2 = convertToDate(b.purchaseDate);
+            let val1 = a.lastName.toLowerCase();
+            let val2 = b.lastName.toLowerCase();
             if (val1 < val2) {
               return order * -1;
             }
@@ -368,66 +385,19 @@ const Bids = () => {
           return newData;
         });
         break;
-      case 'minimumBidAmount':
+      case 'bidAmount':
         setData((oldData) => {
           let newData = [...oldData];
-          newData.sort((a, b) => (a.minimumBidAmount - b.minimumBidAmount) * order);
-          return newData;
-        });
-        break;
-      case 'startDate':
-        setData((oldData) => {
-          let newData = [...oldData];
-          newData.sort((a, b) => {
-            let val1 = convertTimestampToDate(a.startDate);
-            let val2 = convertTimestampToDate(b.startDate);
-            if (val1 < val2) {
-              return order * -1;
-            }
-            if (val1 > val2) {
-              return order * 1;
-            }
-            return 0;
-          });
-          return newData;
-        });
-        break;
-      case 'endDate':
-        setData((oldData) => {
-          let newData = [...oldData];
-          newData.sort((a, b) => {
-            let val1 = convertTimestampToDate(a.endDate);
-            let val2 = convertTimestampToDate(b.endDate);
-            if (val1 < val2) {
-              return order * -1;
-            }
-            if (val1 > val2) {
-              return order * 1;
-            }
-            return 0;
-          });
-          return newData;
-        });
-        break;
-      case 'saleDate':
-        setData((oldData) => {
-          let newData = [...oldData];
-          newData.sort((a, b) => {
-            let val1 = convertTimestampToDate(a.saleDate);
-            let val2 = convertTimestampToDate(b.saleDate);
-            if (val1 < val2) {
-              return order * -1;
-            }
-            if (val1 > val2) {
-              return order * 1;
-            }
-            return 0;
-          });
+          newData.sort((a, b) => (a.bidAmount - b.bidAmount) * order);
           return newData;
         });
         break;
     }
   };
+
+  if(saleStatus){
+    return <Redirect to="/" />;
+  }
 
   return (
     <div>
@@ -478,6 +448,51 @@ const Bids = () => {
                       ))
                     }
                   </div>
+                  {
+                    saleDisplay &&
+                    <>
+                      <hr/>
+                      <div className="row">
+                        <div className="col-md-12">
+                          <h4>Sale Details</h4>
+                        </div>
+                      </div>
+                      <div className="row">
+                        <div className="col-md-2">
+                          <label>Employee Id : </label>
+                        </div>
+                        <div className="col-md-10">
+                          <div>
+                            {saleBid.employeeId}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="row">
+                        <div className="col-md-2">
+                          <label>Name : </label>
+                        </div>
+                        <div className="col-md-10">
+                          <div>
+                            {saleBid.firstName} {saleBid.lastName}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="row">
+                        <div className="col-md-2">
+                          <label>Sale Date : </label>
+                        </div>
+                        <div className="col-md-10">
+                          <input type="datetime-local" placeholder="Asset Sale Date" max={getCurrentTimestamp()} value={saleDate} onChange={(e) => setSaleDate(e.target.value)} />
+                        </div>
+                      </div>
+                      <div className="row">
+                        <div className="col-md-10 offset-md-2 mt-2">
+                          <button type="button" className="btn btn-primary" onClick={saleAssetDetails}>Confirm Sale</button>
+                          <button type="button" className="btn btn-secondary" onClick={cancelSale}>Cancel</button>
+                        </div>
+                      </div>
+                    </>
+                  }
                 </div>
                 {/* Right Card */}
                 <div className="col-12 col-md-12 col-lg-4 order-1 order-md-2">
@@ -496,16 +511,92 @@ const Bids = () => {
                     <input type="number" ref={textboxRef} maxLength="20" className="form-control" placeholder="Bid Amount" value={bidAmount} onChange={(e) => setBidAmount(e.target.value)} />
                   </div>
                   <div className="text-center mt-5 mb-3">
-                    <button type="button" className="btn btn-secondary float-right" onClick={onCancel}>Cancel</button>
                     <button
                       type="button"
-                      className="btn btn-primary float-right"
+                      className="btn btn-primary btn-block"
                       onClick={btnText === 'Add' ? addBid : updateBid}>
                       {btnText} Bid
                     </button>
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+          {/* Display Data in Table */}
+          <div className="card">
+            <div className="card-header">
+              <div className="card-tools">
+                <div className="input-group input-group-sm">
+                  <input
+                    type="text"
+                    name="table_search"
+                    maxLength="20"
+                    className="form-control float-right"
+                    placeholder="Search"
+                    onChange={onSearchTextChange} />
+                  <div className="input-group-append">
+                    <span className="input-group-text" id="basic-addon2">
+                      <i className="fas fa-search"></i>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="card-body p-0">
+              <table className="table table-bordered table-striped">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th title="Sort" className="sort-style" onClick={() => sort('employeeId')}>Employee Id <i className="fa fa-sort" /></th>
+                    <th>Profile Picture</th>
+                    <th title="Sort" className="sort-style" onClick={() => sort('firstName')}>First Name <i className="fa fa-sort" /></th>
+                    <th title="Sort" className="sort-style" onClick={() => sort('lastName')}>Last Name <i className="fa fa-sort" /></th>
+                    <th title="Sort" className="sort-style" onClick={() => sort('bidAmount')}>Bid Amount<i className="fa fa-sort" /></th>
+                    <th>Delete <br/>My Bid</th>
+                    {
+                      role === 'Admin' &&
+                      <th>Sale</th>
+                    }
+                  </tr>
+                </thead>
+                <tbody>
+                  {
+                    data.length ==0 &&
+                    <td colspan={role === 'Admin' ? 8 : 7}>
+                      <h3 className="text-center">No bids placed for this Auction. Be the first once to place bid.</h3>
+                    </td>
+                  }
+                  {
+                    data.length > 0 && data.map((item, index) => (
+                      <tr key={item.bidId}>
+                        <td>{index + 1}</td>
+                        <td>{item.employeeId}</td>
+                        <td><img src={item.profilePicture != '' ? item.profilePicture : item.gender === 'Female' ? femaleAvatar : maleAvatar} className="img-circle elevation-2" width="100" height="100" /></td>
+                        <td>{item.firstName}</td>
+                        <td>{item.lastName}</td>
+                        <td>{item.bidAmount}</td>
+                        <td>
+                          {
+                            item.employeeId === employeeId ?
+                              <button className="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Delete my Bid" onClick={() => deleteBid(item.bidId, item.assetType)}>
+                                <i className="fa fa-trash"></i>
+                              </button> :
+                            <div>-</div>
+                          }
+                        </td>
+                        {
+                          role === 'Admin' &&
+                          <td>
+                            <button className="btn btn-primary btn-sm rounded-0 float-right" type="button" data-toggle="tooltip" data-placement="top" title="Sale Asset" onClick={() => saleAsset(item)}>
+                              <i className="fa fa-stamp"></i>
+                            </button>
+                          </td>
+                        }
+                      </tr>
+                    ))
+                  }
+                </tbody>
+              </table>
             </div>
           </div>
         </section>

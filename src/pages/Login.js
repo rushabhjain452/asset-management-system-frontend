@@ -13,8 +13,13 @@ const Login = () => {
 
   // const [email, setEmail] = useState("rushabh@bbd.co.za");
   // const [password, setPassword] = useState("Rushabh@12345");
-  const [email, setEmail] = useState("piyush@bbd.co.za");
-  const [password, setPassword] = useState("Piyush@12345");
+
+  // const [email, setEmail] = useState("piyush@bbd.co.za");
+  // const [password, setPassword] = useState("Piyush@12345");
+
+  const [email, setEmail] = useState("kamal123@bbd.co.za");
+  const [password, setPassword] = useState("WelcomeKS@10102");
+
   const [loading, setLoading] = useState(false);
 
   const emailRef = useRef(null);
@@ -90,7 +95,8 @@ const Login = () => {
           //   icon: 'error',
           //   confirmButtonColor: '#3085d6'
           // });
-          showSweetAlert('error', 'Error', msg);
+          // showSweetAlert('warning', 'Error', msg);
+          showSweetAlert('warning', 'Warning', msg);
         });
     }
   };
