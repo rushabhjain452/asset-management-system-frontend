@@ -77,14 +77,14 @@ const Employee = () => {
 
   const getGender = (id) => {
     id = parseInt(id);
-    if(genderData.length > 0){
+    if (genderData.length > 0) {
       const filterData = genderData.filter((item) => item.genderId === id);
-      if(filterData.length > 0){
+      if (filterData.length > 0) {
         return filterData[0].name;
-      }else{
+      } else {
         return '';
       }
-    }else{
+    } else {
       return '';
     }
   }
@@ -227,7 +227,7 @@ const Employee = () => {
     else if (btnText === 'Add') {
       // Check if Employee Id already exists
       const findItem = data.find((item) => item.employeeId == parseInt(employeeId));
-      if(findItem){
+      if (findItem) {
         result = false;
         error = 'Given Employee Id already exists for another employee.';
         employeeIdRef.current.focus();
@@ -270,10 +270,10 @@ const Employee = () => {
       formData.append('mobileNumber', mobileNumber);
       if (profilePicture != '') {
         formData.append('profilePicture', profileImage);
-      }else{
+      } else {
         formData.append('profilePicture', null);
       }
-      axios.post(apiurl + '/employees/register', formData, { headers: {...authHeader(token), 'Content-Type': 'multipart/form-data' } })
+      axios.post(apiurl + '/employees/register', formData, { headers: { ...authHeader(token), 'Content-Type': 'multipart/form-data' } })
         .then((response) => {
           setLoading(false);
           if (response.status === 201) {
@@ -326,7 +326,7 @@ const Employee = () => {
 
   const editEmployee = (id) => {
     const filterData = data.filter((item) => item.employeeId === id);
-    if(filterData.length > 0){
+    if (filterData.length > 0) {
       let obj = filterData[0];
       setBtnText('Update');
       setEmployeeId(obj.employeeId);
@@ -340,7 +340,7 @@ const Employee = () => {
       setBase64Image(obj.profilePicture);
       setEmployeeIdDisabled(true);
       firstNameRef.current.focus();
-    } 
+    }
   };
 
   const updateEmployee = () => {
@@ -353,18 +353,18 @@ const Employee = () => {
       formData.append('emailId', emailId);
       formData.append('mobileNumber', mobileNumber);
       let url = apiurl + '/employees/';
-      if(isProfilePictureChanged){
+      if (isProfilePictureChanged) {
         url += 'employee-with-profile/' + employeeId;
         if (profilePicture != '') {
           formData.append('profilePicture', profileImage);
-        }else{
+        } else {
           formData.append('profilePicture', null);
         }
-      }else{
+      } else {
         url += employeeId;
       }
       // console.log(url);
-      axios.put(url, formData, { headers: {...authHeader(token), 'Content-Type': 'multipart/form-data' } })
+      axios.put(url, formData, { headers: { ...authHeader(token), 'Content-Type': 'multipart/form-data' } })
         .then((response) => {
           setLoading(false);
           if (response.status === 200) {
@@ -718,7 +718,7 @@ const Employee = () => {
                       </div>
                     </div>
                     <div className="col-md-4">
-                      <img src={base64Image != '' ? base64Image : getGender(genderId) === 'Female' ? femaleAvatar : maleAvatar} 
+                      <img src={base64Image != '' ? base64Image : getGender(genderId) === 'Female' ? femaleAvatar : maleAvatar}
                         className="img-circle elevation-2" width="100" height="100" alt="No image selected" />&nbsp;&nbsp;&nbsp;
                       {
                         base64Image != '' &&
@@ -734,15 +734,15 @@ const Employee = () => {
               {/* /.card */}
             </div>
           </div>
-            <div className="card-footer">
-              <button type="button" className="btn btn-secondary float-right" onClick={onCancel}>Cancel</button>
-              <button
-                type="button"
-                className="btn btn-primary float-right"
-                onClick={btnText === 'Add' ? addEmployee : updateEmployee}>
-                {btnText}
-              </button>
-            </div>
+          <div className="card-footer">
+            <button type="button" className="btn btn-secondary float-right" onClick={onCancel}>Cancel</button>
+            <button
+              type="button"
+              className="btn btn-primary float-right"
+              onClick={btnText === 'Add' ? addEmployee : updateEmployee}>
+              {btnText}
+            </button>
+          </div>
         </section>
         {/* /.content */}
       </div>
@@ -757,6 +757,10 @@ const Employee = () => {
               <div className="col-sm-6">
                 <div className="card-tools">
                   <div className="input-group input-group-sm">
+                  <div className="form-check col-sm-2">
+                    <input type="checkbox" className="form-check-input" id="exampleCheck1" />
+                    <label className="form-check-label" htmlFor="exampleCheck1">Check</label>
+                  </div>
                     <input
                       type="text"
                       name="table_search"
