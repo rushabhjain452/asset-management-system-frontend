@@ -65,8 +65,8 @@ const AssignAssetHistory = () => {
   const onSearchTextChange = (e) => {
     const searchText = e.target.value.toLowerCase();
     if (searchText.length > 0) {
-      let searchData = dataCopy.filter((item) => item.employeeId == searchText ||
-        (item.firstName + ' ' + item.lastName).toLowerCase().includes(searchText) || 
+      const searchData = dataCopy.filter((item) => item.employeeId == searchText ||
+        (item.firstName + ' ' + item.lastName).toLowerCase().includes(searchText) ||
         formatDate(item.assignDate) === searchText ||
         formatDate(item.returnDate) === searchText
       );
@@ -176,7 +176,7 @@ const AssignAssetHistory = () => {
             <div><label>Asset Type :</label> <span>{data[0] && data[0].assetType}</span></div>
           </div>
           <div className="card-footer">
-            <button type="button" className="btn btn-secondary" onClick={ () => history.goBack() }>Go Back to Assign Asset</button>
+            <button type="button" className="btn btn-secondary" onClick={() => history.goBack()}>Go Back to Assign Asset</button>
           </div>
         </div>
         {/* /.row */}
@@ -184,21 +184,16 @@ const AssignAssetHistory = () => {
           <div className="col-12">
             <div className="card">
               <div className="card-header">
-                <h3 className="card-title">Assign Asset History</h3>
-                <div className="card-tools">
-                  <div className="input-group input-group-sm">
+                <h3 className="card-title text-bold mt-2">Assign Asset History</h3>
+                <div className="float-right search-width d-flex flex-md-row">
+                  <div className="input-group">
                     <input
-                      type="text"
+                      type="search"
                       name="table_search"
                       maxLength="20"
-                      className="form-control float-right"
+                      className="form-control"
                       placeholder="Search"
                       onChange={onSearchTextChange} />
-                    <div className="input-group-append">
-                      <span className="input-group-text" id="basic-addon2">
-                        <i className="fas fa-search"></i>
-                      </span>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -220,8 +215,10 @@ const AssignAssetHistory = () => {
                         <tr key={item.assignAssetId}>
                           <td>{index + 1}</td>
                           <td>
-                            <img src={item.profilePicture != '' ? item.profilePicture : item.gender === 'Female' ? femaleAvatar : maleAvatar}
-                              className="img-circle elevation-2" width="100" height="100" />
+                            <div className="d-flex justify-content-center">
+                              <img src={item.profilePicture != '' ? item.profilePicture : item.gender === 'Female' ? femaleAvatar : maleAvatar}
+                                className="img-circle elevation-2" width="50" height="50" />
+                            </div>
                           </td>
                           <td>{item.employeeId}</td>
                           <td>{item.firstName + ' ' + item.lastName}</td>
@@ -232,6 +229,15 @@ const AssignAssetHistory = () => {
                     }
                   </tbody>
                 </table>
+                {
+                  data.length > 0 &&
+                  <div className="d-flex justify-content-center mt-3">
+                    <button type="button" className="btn btn-primary btn-lg" onClick={() => window.print()}>
+                      <i className="fas fa-print"></i>
+                      <span> Print</span>
+                    </button>
+                  </div>
+                }
               </div>
             </div>
           </div>

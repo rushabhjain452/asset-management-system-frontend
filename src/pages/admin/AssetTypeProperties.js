@@ -93,7 +93,7 @@ const AssetProperties = () => {
             }
             return 0;
           });
-          let newData = data.map((item) => ({value: item.assetTypeId, label: item.assetType}));
+          let newData = data.map((item) => ({ value: item.assetTypeId, label: item.assetType }));
           setAssetTypes(newData);
         }
         else {
@@ -165,13 +165,13 @@ const AssetProperties = () => {
       error = 'Please select Asset Type.';
       selectRef.current.focus();
     }
-    else if(propertyIds.length < 1) {
+    else if (propertyIds.length < 1) {
       result = false;
       error = 'Please select at least one property.';
     }
     else if (btnText == 'Add') {
       const findItem = data.find((item) => item.assetTypeId == assetType.value);
-      if(findItem){
+      if (findItem) {
         result = false;
         error = 'Properties already exists for selected Asset Type.';
         selectRef.current.focus();
@@ -186,7 +186,7 @@ const AssetProperties = () => {
 
   const addAssetTypeProperties = () => {
     let propertyIds = [];
-    properties.forEach((item) => item.checked ? propertyIds.push({propertyId: item.propertyId}) : '');
+    properties.forEach((item) => item.checked ? propertyIds.push({ propertyId: item.propertyId }) : '');
     // console.log(assetType);
     if (validateInput(propertyIds)) {
       setLoading(true);
@@ -255,7 +255,7 @@ const AssetProperties = () => {
     setProperties(prevProperties => {
       let newProperties = [...prevProperties];
       newProperties.forEach((item) => {
-        if(propertyIds.includes(item.propertyId))
+        if (propertyIds.includes(item.propertyId))
           item.checked = true;
         else
           item.checked = false;
@@ -267,7 +267,7 @@ const AssetProperties = () => {
 
   const updateAssetTypeProperties = () => {
     let propertyIds = [];
-    properties.forEach((item) => item.checked ? propertyIds.push({propertyId: item.propertyId}) : '');
+    properties.forEach((item) => item.checked ? propertyIds.push({ propertyId: item.propertyId }) : '');
     if (validateInput(propertyIds)) {
       setLoading(true);
       const requestData = {
@@ -312,7 +312,7 @@ const AssetProperties = () => {
   const onSearchTextChange = (e) => {
     const searchText = e.target.value.toLowerCase();
     if (searchText.length > 0) {
-      let searchData = dataCopy.filter((item) => item.assetType.toLowerCase().includes(searchText) ||
+      const searchData = dataCopy.filter((item) => item.assetType.toLowerCase().includes(searchText) ||
         item.propertyList.find(item => item.propertyName.toLowerCase().includes(searchText)) != undefined
       );
       setData(searchData);
@@ -323,7 +323,7 @@ const AssetProperties = () => {
 
   const sort = (column) => {
     let order = sortOrder;
-    if(sortColumn === column){
+    if (sortColumn === column) {
       order = order * -1;
       setSortOrder(order);
     } else {
@@ -381,7 +381,7 @@ const AssetProperties = () => {
                 <div className="col-md-10">
                   <div>
                     <label>Asset Type</label>
-                    <Select 
+                    <Select
                       value={assetType}
                       name="assetType"
                       placeholder="Select Asset Type"
@@ -394,7 +394,7 @@ const AssetProperties = () => {
               </div>
               <div className="row">
                 <div className="col-md-12">
-                  <div className="form-group" style={{marginTop: 20}}>
+                  <div className="form-group" style={{ marginTop: 20 }}>
                     <label>Properties</label>
                     <div className="container-fluid">
                       <div className="row">
@@ -435,21 +435,16 @@ const AssetProperties = () => {
           <div className="col-12">
             <div className="card">
               <div className="card-header">
-                <h3 className="card-title">List of Asset Properties</h3>
-                <div className="card-tools">
-                  <div className="input-group input-group-sm">
+                <h3 className="card-title text-bold mt-2">List of Asset with Properties (No of Assets with Properties : {data.length})</h3>
+                <div className="float-right search-width d-flex flex-md-row">
+                  <div className="input-group">
                     <input
-                      type="text"
+                      type="search"
                       name="table_search"
                       maxLength="20"
-                      className="form-control float-right"
+                      className="form-control"
                       placeholder="Search"
                       onChange={onSearchTextChange} />
-                    <div className="input-group-append">
-                      <span className="input-group-text" id="basic-addon2">
-                        <i className="fas fa-search"></i>
-                      </span>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -494,6 +489,15 @@ const AssetProperties = () => {
                     }
                   </tbody>
                 </table>
+                {
+                  data.length > 0 &&
+                  <div className="d-flex justify-content-center mt-4">
+                    <button type="button" className="btn btn-primary btn-lg" onClick={() => window.print()}>
+                      <i className="fas fa-print"></i>
+                      <span> Print</span>
+                    </button>
+                  </div>
+                }
               </div>
             </div>
           </div>

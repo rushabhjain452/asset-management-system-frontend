@@ -41,6 +41,8 @@ const Employee = () => {
   const [employeeIdDisabled, setEmployeeIdDisabled] = useState(false);
 
   const [btnText, setBtnText] = useState('Add');
+  const [searchText, setSearchText] = useState('');
+  const [checked, setChecked] = useState(true);
 
   const [loading, setLoading] = useState(false);
 
@@ -98,8 +100,9 @@ const Employee = () => {
           // Sort Data
           const data = response.data;
           data.sort((a, b) => a.employeeId - b.employeeId);
-          setData(data);
           setDataCopy(data);
+          const filterData = data.filter((item) => item.status == checked);
+          setData(filterData);
         }
         else {
           showToast('error', errorMessage);
@@ -295,35 +298,6 @@ const Employee = () => {
     }
   };
 
-  const deleteEmployee = (id, name) => {
-    showConfirmAlert('Delete Confirmation', `Do you really want to delete the employee '${name}' ?`)
-      .then((result) => {
-        if (result.isConfirmed) {
-          setLoading(true);
-          axios.delete(apiurl + '/employees/' + id, { headers: authHeader(token) })
-            .then((response) => {
-              setLoading(false);
-              if (response.status === 200) {
-                showSweetAlert('success', 'Success', 'Employee deleted successfully.');
-                fetchData();
-              }
-              else {
-                showSweetAlert('error', 'Error', 'Failed to delete Employee. Please try again...');
-              }
-              clearControls();
-            })
-            .catch((error) => {
-              setLoading(false);
-              showSweetAlert('error', 'Error', 'Failed to delete Employee. Please try again...');
-              clearControls();
-              if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-                logout();
-              }
-            });
-        }
-      });
-  };
-
   const editEmployee = (id) => {
     const filterData = data.filter((item) => item.employeeId === id);
     if (filterData.length > 0) {
@@ -405,47 +379,72 @@ const Employee = () => {
     clearControls();
   };
 
-  const statusChange = (e, employeeId) => {
+  const statusChange = (e, employeeId, firstName, lastName) => {
     const status = e.target.checked;
-    setLoading(true);
-    axios.put(apiurl + '/employees/' + employeeId + '/update-status/' + status, {}, { headers: authHeader(token) })
-      .then((response) => {
-        setLoading(false);
-        if (response.status === 200) {
-          showToast('success', 'Status of Employee updated successfully.');
-          fetchData();
-        }
-        else {
-          showSweetAlert('error', 'Error', 'Failed to update status of Employee. Please try again...');
-          fetchData();
-        }
-      })
-      .catch((error) => {
-        setLoading(false);
-        showSweetAlert('error', 'Error', 'Failed to update status of Employee. Please try again...');
-        fetchData();
-        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-          logout();
+    showConfirmAlert('Status Update', `Do you really want to ${status ? 'activate' : 'deactivate'} employee '${employeeId} - ${firstName} ${lastName}' ?`)
+      .then((result) => {
+        if (result.isConfirmed) {
+          setLoading(true);
+          axios.put(apiurl + '/employees/' + employeeId + '/update-status/' + status, {}, { headers: authHeader(token) })
+            .then((response) => {
+              setLoading(false);
+              if (response.status === 200) {
+                showToast('success', 'Status of Employee updated successfully.');
+                fetchData();
+              }
+              else {
+                showSweetAlert('error', 'Error', 'Failed to update status of Employee. Please try again...');
+                fetchData();
+              }
+            })
+            .catch((error) => {
+              setLoading(false);
+              showSweetAlert('error', 'Error', 'Failed to update status of Employee. Please try again...');
+              fetchData();
+              if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+                logout();
+              }
+            });
         }
       });
   };
 
-  const onSearchTextChange = (e) => {
-    const searchText = e.target.value.toLowerCase();
+  const search = (text, checked) => {
+    const searchText = text.toLowerCase();
     if (searchText.length > 0) {
-      let searchData = dataCopy.filter((item) => item.employeeId == searchText ||
-        item.firstName.toLowerCase().includes(searchText) ||
-        item.lastName.toLowerCase().includes(searchText) ||
-        item.genderName.toLowerCase().startsWith(searchText) ||
-        item.emailId.toLowerCase().includes(searchText) ||
-        item.mobileNumber.toLowerCase().includes(searchText) ||
-        item.roleName.toLowerCase().includes(searchText)
+      const searchData = dataCopy.filter((item) => item.status === checked &&
+        (item.employeeId == searchText ||
+          item.firstName.toLowerCase().includes(searchText) ||
+          item.lastName.toLowerCase().includes(searchText) ||
+          item.genderName.toLowerCase().startsWith(searchText) ||
+          item.emailId.toLowerCase().includes(searchText) ||
+          item.mobileNumber.toLowerCase().includes(searchText) ||
+          item.roleName.toLowerCase().includes(searchText))
       );
       setData(searchData);
     } else {
-      setData(dataCopy);
+      const searchData = dataCopy.filter((item) => item.status == checked);
+      setData(searchData);
     }
+  }
+
+  const onSearchTextChange = (e) => {
+    const text = e.target.value;
+    setSearchText(text);
+    search(text, checked);
   };
+
+  const handleStatusCheck = (e) => {
+    // console.log('status changed');
+    const checked = e.target.checked;
+    setChecked(checked);
+    search(searchText, checked);
+    // if (checked) {
+    //   // Show Active Employees
+    // } else {
+    //   // Show Inactive employees
+    // }
+  }
 
   const sort = (column) => {
     let order = sortOrder;
@@ -604,14 +603,6 @@ const Employee = () => {
           <div className="row">
             <div className="col-md-12">
               <div className="card card-primary">
-                {/* <div className="card-header">
-                  <h3 className="card-title">Employee Registration</h3>
-                  <div className="card-tools">
-                    <button type="button" className="btn btn-tool" data-card-widget="collapse" title="Collapse">
-                      <i className="fas fa-minus" />
-                    </button>
-                  </div>
-                </div> */}
                 <div className="card-body">
                   <div className="form-group">
                     {/* <input type="text" id="inputName" className="form-control" /> */}
@@ -719,7 +710,7 @@ const Employee = () => {
                     </div>
                     <div className="col-md-4">
                       <img src={base64Image != '' ? base64Image : getGender(genderId) === 'Female' ? femaleAvatar : maleAvatar}
-                        className="img-circle elevation-2" width="100" height="100" alt="No image selected" />&nbsp;&nbsp;&nbsp;
+                        className="img-circle elevation-2" width="80" height="80" alt="No image selected" />&nbsp;&nbsp;&nbsp;
                       {
                         base64Image != '' &&
                         <button className="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Remove Profile Picture" onClick={removeProfilePicture}>
@@ -747,44 +738,30 @@ const Employee = () => {
         {/* /.content */}
       </div>
       <div className="content-wrapper">
-        {/* Content Header (Page header) */}
-        <section className="content-header">
-          <div className="container-fluid">
-            <div className="row mb-2">
-              <div className="col-sm-6">
-                <h1>List Of Employees</h1>
-              </div>
-              <div className="col-sm-6">
-                <div className="card-tools">
-                  <div className="input-group input-group-sm">
-                  <div className="form-check col-sm-2">
-                    <input type="checkbox" className="form-check-input" id="exampleCheck1" />
-                    <label className="form-check-label" htmlFor="exampleCheck1">Check</label>
-                  </div>
-                    <input
-                      type="text"
-                      name="table_search"
-                      maxLength="20"
-                      className="form-control float-right"
-                      placeholder="Search"
-                      onChange={onSearchTextChange} />
-                    <div className="input-group-append">
-                      <span className="input-group-text" id="basic-addon2">
-                        <i className="fas fa-search"></i>
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>{/* /.container-fluid */}
-        </section>
         {/* Main content */}
         <section className="content">
           {/* Default box */}
           <div className="card">
+            <div className="card-header">
+              <h3 className="card-title text-bold mt-2">List Of Employees (No of employees : {data.length})</h3>
+              <div className="float-right search-width d-flex flex-md-row">
+                <div className="form-check mr-4 mt-2">
+                  <input type="checkbox" className="form-check-input" id="status-checked" value="Status" checked={checked} onChange={handleStatusCheck} />
+                  <label className="form-check-label" htmlFor="status-checked">Active</label>
+                </div>
+                <div className="input-group">
+                  <input
+                    type="search"
+                    name="table_search"
+                    maxLength="20"
+                    className="form-control float-right"
+                    placeholder="Search"
+                    onChange={onSearchTextChange} />
+                </div>
+              </div>
+            </div>
             <div className="card-body p-0">
-              <table className="table table-striped projects">
+              <table className="table table-striped table-bordered">
                 <thead>
                   <tr>
                     <th title="Sort" className="sort-style" onClick={() => sort('employeeId')}>Employee Id <i className="fa fa-sort" /></th>
@@ -797,7 +774,7 @@ const Employee = () => {
                     <th title="Sort" className="sort-style" onClick={() => sort('role')}>Role <i className="fa fa-sort" /></th>
                     <th title="Sort" className="sort-style" onClick={() => sort('status')}>Status <i className="fa fa-sort" /></th>
                     <th>Edit</th>
-                    <th>Delete</th>
+                    {checked && <th>Assign<br />Asset</th>}
                   </tr>
                 </thead>
                 <tbody>
@@ -818,8 +795,8 @@ const Employee = () => {
                               type="checkbox"
                               className="custom-control-input"
                               id={'status-' + item.employeeId}
-                              onChange={(e) => statusChange(e, item.employeeId)}
-                              defaultChecked={item.status} />
+                              onChange={(e) => statusChange(e, item.employeeId, item.firstName, item.lastName)}
+                              checked={item.status} />
                             <label className="custom-control-label" htmlFor={'status-' + item.employeeId}></label>
                           </div>
                         </td>
@@ -828,16 +805,45 @@ const Employee = () => {
                             <i className="fa fa-edit"></i>
                           </button>
                         </td>
-                        <td>
-                          <button className="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Delete" onClick={() => deleteEmployee(item.employeeId, item.firstName + ' ' + item.lastName)}>
-                            <i className="fa fa-trash"></i>
-                          </button>
-                        </td>
+                        {
+                          item.status &&
+                          <td>
+                            <NavLink className="btn btn-primary btn-sm rounded-0"
+                              exact to={{
+                                pathname: "/admin/assign-return-asset",
+                                state: {
+                                  action: 'view',
+                                  employeeId: item.employeeId
+                                }
+                              }} >
+                              <i className="fa fa-eye" title="View Assigned Assets"></i>
+                            </NavLink>
+                            <NavLink className="btn btn-primary btn-sm rounded-0 float-right"
+                              exact to={{
+                                pathname: "/admin/assign-return-asset",
+                                state: {
+                                  action: 'assign',
+                                  employeeId: item.employeeId
+                                }
+                              }} >
+                              <i className="fa fa-upload" title="Assign Asset"></i>
+                            </NavLink>
+                          </td>
+                        }
                       </tr>
                     ))
                   }
                 </tbody>
               </table>
+              {
+                data.length > 0 &&
+                <div className="d-flex justify-content-center mt-3 mb-3">
+                  <button type="button" className="btn btn-primary btn-lg" onClick={() => window.print()}>
+                    <i className="fas fa-print"></i>
+                    <span> Print</span>
+                  </button>
+                </div>
+              }
             </div>
             {/* /.card-body */}
           </div>

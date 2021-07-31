@@ -10,7 +10,7 @@ import maleAvatar from 'admin-lte/dist/img/avatar5.png';
 import Loader from '../../components/Loader';
 import { errorMessage } from '../../config';
 import { showToast } from '../../helpers/sweetAlert';
-import { formatDate, convertToDate, convertTimestampToDate,formatTimestamp } from '../../helpers/dateHelper';
+import { formatDate, convertToDate, convertTimestampToDate, formatTimestamp } from '../../helpers/dateHelper';
 import { authHeader } from '../../services/authService';
 import { AuthContext } from '../../context/AuthContext';
 
@@ -74,7 +74,7 @@ const SaleAsset = () => {
   const onSearchTextChange = (e) => {
     const searchText = e.target.value.toLowerCase();
     if (searchText.length > 0) {
-      let searchData = dataCopy.filter((item) => item.assetId == searchText ||
+      const searchData = dataCopy.filter((item) => item.assetId == searchText ||
         item.assetType.toLowerCase().includes(searchText) ||
         item.assetPropertiesList.find(item => item.value.toLowerCase().includes(searchText)) != undefined ||
         item.minimumBidAmount == searchText ||
@@ -208,20 +208,16 @@ const SaleAsset = () => {
           {/* Default box */}
           <div className="card">
             <div className="card-header">
-              <div className="card-tools">
-                <div className="input-group input-group-sm">
+              <h3 className="card-title text-bold mt-2">List of Sold Assets (No of Sold Assets : {data.length})</h3>
+              <div className="float-right search-width d-flex flex-md-row">
+                <div className="input-group">
                   <input
-                    type="text"
+                    type="search"
                     name="table_search"
                     maxLength="20"
-                    className="form-control float-right"
+                    className="form-control"
                     placeholder="Search"
                     onChange={onSearchTextChange} />
-                  <div className="input-group-append">
-                    <span className="input-group-text" id="basic-addon2">
-                      <i className="fas fa-search"></i>
-                    </span>
-                  </div>
                 </div>
               </div>
             </div>
@@ -234,7 +230,7 @@ const SaleAsset = () => {
                     <th title="Sort" className="sort-style" onClick={() => sort('assetId')}>Asset Id <i className="fa fa-sort" /></th>
                     <th title="Sort" className="sort-style" onClick={() => sort('assetType')}>Asset Type <i className="fa fa-sort" /></th>
                     <th>Properties</th>
-                    <th title="Sort" className="sort-style" onClick={() => sort('minimumBidAmount')}>Minimum <br/>Bid Amount <i className="fa fa-sort" /></th>
+                    <th title="Sort" className="sort-style" onClick={() => sort('minimumBidAmount')}>Minimum <br />Bid Amount <i className="fa fa-sort" /></th>
                     <th title="Sort" className="sort-style" onClick={() => sort('bidAmount')}>Sale Amount <i className="fa fa-sort" /></th>
                     <th title="Sort" className="sort-style" onClick={() => sort('employeeId')}>Employee Id <i className="fa fa-sort" /></th>
                     <th title="Sort" className="sort-style" onClick={() => sort('name')}>Name <i className="fa fa-sort" /></th>
@@ -260,14 +256,25 @@ const SaleAsset = () => {
                         <td>{item.employeeId}</td>
                         <td>
                           {item.firstName} {item.lastName} <br />
-                          <img src={item.profilePicture != '' ? item.profilePicture : item.gender === 'Female' ? femaleAvatar : maleAvatar}
-                            className="img-circle elevation-2" width="100" height="100" />
+                          <div className="d-flex justify-content-center">
+                            <img src={item.profilePicture != '' ? item.profilePicture : item.gender === 'Female' ? femaleAvatar : maleAvatar}
+                              className="img-circle elevation-2" width="50" height="50" />
+                          </div>
                         </td>
                       </tr>
                     ))
                   }
                 </tbody>
               </table>
+              {
+                data.length > 0 &&
+                <div className="d-flex justify-content-center mt-3 mb-3">
+                  <button type="button" className="btn btn-primary btn-lg" onClick={() => window.print()}>
+                    <i className="fas fa-print"></i>
+                    <span> Print</span>
+                  </button>
+                </div>
+              }
             </div>
             {/* /.card-body */}
           </div>

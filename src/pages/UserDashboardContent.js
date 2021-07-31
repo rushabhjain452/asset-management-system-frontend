@@ -50,25 +50,24 @@ const UserDashboardContent = (props) => {
   }
 
   const fetchTotalPurchasedAssets = () => {
-    // props.setLoading(true);
-    // axios.get(apiurl + '/assets/total-assets', { headers: authHeader(token) })
-    //   .then((response) => {
-    //     props.setLoading(false);
-    //     if (response.status === 200) {
-    //       console.log(response.data);
-    //       setTotalAssets(response.data.data);
-    //     }
-    //     else {
-    //       showToast('error', errorMessage);
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     props.setLoading(false);
-    //     showToast('error', errorMessage);
-    //     if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-    //       logout();
-    //     }
-    //   });
+    // setLoading(true);
+    axios.get(apiurl + '/auctions/sale-auction/employee/' + employeeId, { headers: authHeader(token) })
+      .then((response) => {
+        // setLoading(false);
+        if (response.status === 200) {
+          setTotalPurchasedAssets(response.data.length);
+        }
+        else {
+          showToast('error', errorMessage);
+        }
+      })
+      .catch((error) => {
+        // setLoading(false);
+        showToast('error', errorMessage);
+        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+          logout();
+        }
+      });
   }
 
   const fetchActiveAuctions = () => {

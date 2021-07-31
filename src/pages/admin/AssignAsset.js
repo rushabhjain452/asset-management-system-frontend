@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import Footer from '../Footer';
 import Header from '../Header';
 import Menu from './Menu';
@@ -32,9 +32,14 @@ const AssignAsset = () => {
     updateContextState();
   }
 
+  const location = useLocation();
+  // console.log('location :');
+  // console.log(location);
+
   const [employees, setEmployees] = useState([]);
   const [employeesDisabled, setEmployeesDisabled] = useState(false);
   const [employee, setEmployee] = useState(null);
+  // const [employeeId, setEmployeeId] = useState(0);
 
   const [assignDate, setAssignDate] = useState(getTodayDate());
   const [assignDateDisabled, setAssignDateDisabled] = useState(false);
@@ -50,6 +55,8 @@ const AssignAsset = () => {
   const [assignAssetId, setAssignAssetId] = useState(0);
 
   const [btnText, setBtnText] = useState('Assign');
+  const [searchText, setSearchText] = useState('');
+  const [checked, setChecked] = useState(true);
 
   const [loading, setLoading] = useState(false);
 
@@ -62,19 +69,31 @@ const AssignAsset = () => {
 
   useEffect(() => {
     fetchData();
-    fetchEmployees();
+    // fetchEmployees();
+    // if (location.state) {
+
+    //   if (state.action === 'view') {
+
+    //   }
+    //   else if (state.action === 'assign') {
+
+    //   }
+    // }
   }, []);
 
   const fetchData = () => {
+    // console.log('fetchData');
     setLoading(true);
     // axios.get(apiurl + '/assets/discarded/false', { headers: authHeader(token) })
     axios.get(apiurl + '/assets/assigned-employee', { headers: authHeader(token) })
       .then((response) => {
         setLoading(false);
         if (response.status === 200) {
-          setData(response.data);
-          setDataCopy(response.data);
-          // console.log(response.data);
+          const data = response.data;
+          setDataCopy(data);
+          // const filterData = data.filter((item) => item.assignDate && item.returnDate === null);
+          // setData(filterData);
+          fetchEmployees(data);
         }
         else {
           showToast('error', errorMessage);
@@ -89,7 +108,8 @@ const AssignAsset = () => {
       });
   };
 
-  const fetchEmployees = () => {
+  const fetchEmployees = (assetData) => {
+    console.log(assetData);
     setLoading(true);
     axios.get(apiurl + '/employees/status/true', { headers: authHeader(token) })
       .then((response) => {
@@ -100,6 +120,34 @@ const AssignAsset = () => {
           data.sort((a, b) => a.employeeId - b.employeeId);
           let newData = data.map((item) => ({ value: item.employeeId, label: item.employeeId + ' - ' + item.firstName + ' ' + item.lastName }));
           setEmployees(newData);
+          setEmployee(null);
+          // Check state if user coming from employee page
+          if (location.state) {
+            const empId = location.state.employeeId;
+            if (location.state.action === 'view') {
+              setChecked(true);
+              setSearchText(empId.toString());
+              // search(empId, true);
+              const filterData = assetData.filter((item) => item.assignDate && item.returnDate === null);
+              const filterData2 = filterData.filter((item) => item.employeeId === empId);
+              setData(filterData2);
+            }
+            else if (location.state.action === 'assign') {
+              setChecked(false);
+              // setSearchText('');
+              setSearchText(empId.toString());
+              // search('', false);
+              const filterData = assetData.filter((item) => (item.assignDate && item.returnDate) || (!item.assignDate && !item.returnDate));
+              setData(filterData);
+              // Set Employee selected in Dropdown
+              const findEmployee = newData.find((item) => item.value === empId);
+              setEmployee(findEmployee);
+            }
+          } 
+          else {
+            const filterData = assetData.filter((item) => item.assignDate && item.returnDate === null);
+            setData(filterData);
+          }
         }
         else {
           showToast('error', errorMessage);
@@ -108,6 +156,8 @@ const AssignAsset = () => {
       .catch((error) => {
         setLoading(false);
         showToast('error', errorMessage);
+        console.log(error);
+        console.log(error.response);
         if (error.response && (error.response.status === 401 || error.response.status === 403)) {
           logout();
         }
@@ -138,7 +188,7 @@ const AssignAsset = () => {
       error = 'Please select valid Assign Date. Asset cannot be assigned before its Purchase Date.';
       assignDateRef.current.focus();
     }
-    else if(btnText === 'Assign' && asset.returnDate && convertToDate(assignDate) < convertToDate(asset.returnDate)) {
+    else if (btnText === 'Assign' && asset.returnDate && convertToDate(assignDate) < convertToDate(asset.returnDate)) {
       console.log(convertToDate(assignDate));
       console.log(convertToDate(asset.returnDate));
       console.log(convertToDate(assignDate) < convertToDate(asset.returnDate));
@@ -288,6 +338,7 @@ const AssignAsset = () => {
           setLoading(false);
           if (response.status === 201) {
             showSweetAlert('success', 'Success', 'Asset assigned successfully.');
+            // setChecked(true);
             fetchData();
           }
           else {
@@ -363,21 +414,49 @@ const AssignAsset = () => {
     clearControls();
   };
 
-  const onSearchTextChange = (e) => {
-    const searchText = e.target.value.toLowerCase();
+  const search = (text, checked) => {
+    console.log('dataCopy : ');
+    console.log(dataCopy);
+    const searchText = text.toLowerCase();
     if (searchText.length > 0) {
-      let searchData = dataCopy.filter((item) => item.assetId == searchText ||
+      const searchData = dataCopy.filter((item) => {
+        if (checked) {
+          return item.assignDate && item.returnDate === null;
+        } else {
+          return (item.assignDate && item.returnDate) || (!item.assignDate && !item.returnDate);
+        }
+      });
+      const searchData2 = searchData.filter((item) => item.assetId == searchText ||
         formatDate(item.purchaseDate) === searchText ||
         item.assetType.toLowerCase().includes(searchText) ||
         item.assetPropertiesList.find(item => item.value.toLowerCase().includes(searchText)) != undefined ||
         item.employeeId == searchText ||
         (item.firstName + ' ' + item.lastName).toLowerCase().includes(searchText)
       );
-      setData(searchData);
+      setData(searchData2);
     } else {
-      setData(dataCopy);
+      const searchData = dataCopy.filter((item) => {
+        if (checked) {
+          return item.assignDate && item.returnDate === null;
+        } else {
+          return (item.assignDate && item.returnDate) || (!item.assignDate && !item.returnDate);
+        }
+      });
+      setData(searchData);
     }
+  }
+
+  const onSearchTextChange = (e) => {
+    const text = e.target.value;
+    setSearchText(text);
+    search(text, checked);
   };
+
+  const handleStatusCheck = (e) => {
+    const checked = e.target.checked;
+    setChecked(checked);
+    search(searchText, checked);
+  }
 
   const sort = (column) => {
     let order = sortOrder;
@@ -512,7 +591,7 @@ const AssignAsset = () => {
                 </div>
               }
               {
-                returnDateDisplay && 
+                returnDateDisplay &&
                 <div className="col-md-6 col-sm-12">
                   <div className="form-group" style={{ marginTop: 20 }}>
                     <label>Period</label>
@@ -537,21 +616,21 @@ const AssignAsset = () => {
           <div className="col-12">
             <div className="card">
               <div className="card-header">
-                <h3 className="card-title">List of Assets</h3>
-                <div className="card-tools">
-                  <div className="input-group input-group-sm">
+                <h3 className="card-title text-bold mt-2">List of Assign/Return Assets (No of Assets : {data.length})</h3>
+                <div className="float-right search-width d-flex flex-md-row">
+                  <div className="form-check mr-4 mt-2">
+                    <input type="checkbox" className="form-check-input" id="status-checked" value="Status" checked={checked} onChange={handleStatusCheck} />
+                    <label className="form-check-label" htmlFor="status-checked">Assigned</label>
+                  </div>
+                  <div className="input-group">
                     <input
-                      type="text"
+                      type="search"
                       name="table_search"
                       maxLength="20"
-                      className="form-control float-right"
+                      className="form-control"
                       placeholder="Search"
+                      value={searchText}
                       onChange={onSearchTextChange} />
-                    <div className="input-group-append">
-                      <span className="input-group-text" id="basic-addon2">
-                        <i className="fas fa-search"></i>
-                      </span>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -565,7 +644,7 @@ const AssignAsset = () => {
                       <th title="Sort" className="sort-style" onClick={() => sort('purchaseDate')}>Purchase Date <br /> (dd-mm-yyyy) <i className="fa fa-sort" /></th>
                       <th>Properties</th>
                       <th>Assigned Employee</th>
-                      <th>Edit</th>
+                      { checked && <th>Edit</th> }
                       <th>Manage</th>
                     </tr>
                   </thead>
@@ -595,8 +674,10 @@ const AssignAsset = () => {
                                   <b>Employee Id : </b>{item.employeeId} <br />
                                   {item.firstName} {item.lastName} <br />
                                   on {formatDate(item.assignDate)} <br />
-                                  <img src={item.profilePicture != '' ? item.profilePicture : item.gender === 'Female' ? femaleAvatar : maleAvatar}
-                                    className="img-circle elevation-2" width="100" height="100" />
+                                  <div className="d-flex justify-content-center">
+                                    <img src={item.profilePicture != '' ? item.profilePicture : item.gender === 'Female' ? femaleAvatar : maleAvatar}
+                                      className="img-circle elevation-2" width="50" height="50" />
+                                  </div>
                                 </div>) :
                                 (<div>
                                   <b>Not Assigned</b>
@@ -611,30 +692,32 @@ const AssignAsset = () => {
                                       <b>Employee Id : </b>{item.employeeId} <br />
                                       {item.firstName} {item.lastName} <br />
                                       from {formatDate(item.assignDate)} to {formatDate(item.returnDate)} <br />
-                                      <img src={item.profilePicture != '' ? item.profilePicture : item.gender === 'Female' ? femaleAvatar : maleAvatar}
-                                        className="img-circle elevation-2" width="100" height="100" />
+                                      <div className="d-flex justify-content-center">
+                                        <img src={item.profilePicture != '' ? item.profilePicture : item.gender === 'Female' ? femaleAvatar : maleAvatar}
+                                          className="img-circle elevation-2" width="50" height="50" />
+                                      </div>
                                     </div>
                                   }
                                 </div>)
                             }
                           </td>
-                          <td>
-                            {
-                              (item.assignDate && item.returnDate === null) &&
+                          {
+                            (item.assignDate && item.returnDate === null) &&
+                            <td>
                               <button className="btn btn-success btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Edit" onClick={() => editAssignDetails(item.assignAssetId, item.assetId)}>
                                 <i className="fa fa-edit"></i>
                               </button>
-                            }
-                          </td>
+                            </td>
+                          }
                           <td>
                             {
                               (item.assignDate && item.returnDate === null) ?
-                              (<button className="btn btn-info btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Return Asset" onClick={() => getReturnDetails(item.assetId)}>
-                                <i className="fa fa-download"></i>
-                              </button>) :
-                              (<button className="btn btn-primary btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Assign Asset" onClick={() => getAssignDetails(item.assetId)}>
-                                <i className="fa fa-upload"></i>
-                              </button>)
+                                (<button className="btn btn-info btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Return Asset" onClick={() => getReturnDetails(item.assetId)}>
+                                  <i className="fa fa-download"></i>
+                                </button>) :
+                                (<button className="btn btn-primary btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Assign Asset" onClick={() => getAssignDetails(item.assetId)}>
+                                  <i className="fa fa-upload"></i>
+                                </button>)
                             }
                             {
                               (item.assignDate && item.returnDate === null) &&
@@ -648,6 +731,15 @@ const AssignAsset = () => {
                     }
                   </tbody>
                 </table>
+                {
+                  data.length > 0 &&
+                  <div className="d-flex justify-content-center mt-3">
+                    <button type="button" className="btn btn-primary btn-lg" onClick={() => window.print()}>
+                      <i className="fas fa-print"></i>
+                      <span> Print</span>
+                    </button>
+                  </div>
+                }
               </div>
             </div>
           </div>

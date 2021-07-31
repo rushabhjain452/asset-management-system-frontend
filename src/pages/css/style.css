@@ -550,6 +550,10 @@ label.valid:after {
     margin-top: 10px;
 }
 
+.search-width {
+    width: 600px;
+}
+
 @media screen and (max-width: 1200px) {
     .my-container {
         width: calc( 100% - 30px);

@@ -25,6 +25,8 @@ const Role = () => {
   const [role, setRole] = useState('');
   const [roleId, setRoleId] = useState(0);
   const [btnText, setBtnText] = useState('Add');
+  const [searchText, setSearchText] = useState('');
+  const [checked, setChecked] = useState(true);
 
   const [loading, setLoading] = useState(false);
 
@@ -86,7 +88,7 @@ const Role = () => {
     else if (btnText == 'Add') {
       // Check if already exists
       const findItem = data.find((item) => item.name.toLowerCase() == role.toLowerCase());
-      if(findItem){
+      if (findItem) {
         result = false;
         error = 'Role already exists with given name.';
         textboxRef.current.focus();
@@ -200,7 +202,7 @@ const Role = () => {
   const onSearchTextChange = (e) => {
     const searchText = e.target.value.toLowerCase();
     if (searchText.length > 0) {
-      let searchData = dataCopy.filter((item) => item.name.toLowerCase().includes(searchText));
+      const searchData = dataCopy.filter((item) => item.name.toLowerCase().includes(searchText));
       setData(searchData);
     } else {
       setData(dataCopy);
@@ -254,21 +256,16 @@ const Role = () => {
           <div className="col-12">
             <div className="card">
               <div className="card-header">
-                <h3 className="card-title">List of Role</h3>
-                <div className="card-tools">
-                  <div className="input-group input-group-sm">
+                <h3 className="card-title text-bold mt-2">List of Role</h3>
+                <div className="float-right search-width d-flex flex-md-row">
+                  <div className="input-group">
                     <input
-                      type="text"
+                      type="search"
                       name="table_search"
                       maxLength="20"
-                      className="form-control float-right"
+                      className="form-control"
                       placeholder="Search"
                       onChange={onSearchTextChange} />
-                    <div className="input-group-append">
-                      <span className="input-group-text" id="basic-addon2">
-                        <i className="fas fa-search"></i>
-                      </span>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -303,6 +300,15 @@ const Role = () => {
                     }
                   </tbody>
                 </table>
+                {
+                  data.length > 0 &&
+                  <div className="d-flex justify-content-center mt-3 mb-3">
+                    <button type="button" className="btn btn-primary btn-lg" onClick={() => window.print()}>
+                      <i className="fas fa-print"></i>
+                      <span> Print</span>
+                    </button>
+                  </div>
+                }
               </div>
             </div>
           </div>

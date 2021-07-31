@@ -65,6 +65,8 @@ const Auction = () => {
   const [saleDate, setSaleDate] = useState(getCurrentTimestamp());
 
   const [btnText, setBtnText] = useState('Add');
+  const [searchText, setSearchText] = useState('');
+  const [checked, setChecked] = useState(true);
 
   const [loading, setLoading] = useState(false);
 
@@ -91,8 +93,9 @@ const Auction = () => {
           // Sort Data
           const data = response.data;
           data.sort((a, b) => a.assetId - b.assetId);
-          setData(data);
           setDataCopy(data);
+          const filterData = data.filter((item) => item.status == checked);
+          setData(filterData);
         }
         else {
           showToast('error', errorMessage);
@@ -109,7 +112,7 @@ const Auction = () => {
 
   const fetchAssetDetails = (assetId) => {
     if (assetId) {
-      if(assetId != 0){
+      if (assetId != 0) {
         setLoading(true);
         axios.get(apiurl + '/assets/' + assetId, { headers: authHeader(token) })
           .then((response) => {
@@ -128,7 +131,7 @@ const Auction = () => {
               logout();
             }
           });
-      }else{
+      } else {
         setAsset(null);
       }
     } else {
@@ -204,7 +207,7 @@ const Auction = () => {
     else if (btnText == 'Add') {
       // Check if already exists
       const findItem = data.find((item) => item.assetId == assetId);
-      if(findItem){
+      if (findItem) {
         result = false;
         error = 'Auction already exists for AssetId : ' + assetId + '.';
         startDateRef.current.focus();
@@ -261,34 +264,34 @@ const Auction = () => {
     }
   };
 
-  const deleteAuction = (auctionId, assetId, assetType) => {
-    showConfirmAlert('Delete Confirmation', `Do you really want to delete the Auction for Asset Id '${assetId}' of Asset Type '${assetType}' ?`)
-      .then((result) => {
-        if (result.isConfirmed) {
-          setLoading(true);
-          axios.delete(apiurl + '/auctions/' + auctionId, { headers: authHeader(token) })
-            .then((response) => {
-              setLoading(false);
-              if (response.status === 200) {
-                showSweetAlert('success', 'Success', 'Auction deleted successfully.');
-                fetchData();
-              }
-              else {
-                showSweetAlert('error', 'Error', 'Failed to delete Auction. Please try again...');
-              }
-              clearControls();
-            })
-            .catch((error) => {
-              setLoading(false);
-              showSweetAlert('error', 'Error', 'Failed to delete Auction. Please try again...');
-              clearControls();
-              if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-                logout();
-              }
-            });
-        }
-      });
-  };
+  // const deleteAuction = (auctionId, assetId, assetType) => {
+  //   showConfirmAlert('Delete Confirmation', `Do you really want to delete the Auction for Asset Id '${assetId}' of Asset Type '${assetType}' ?`)
+  //     .then((result) => {
+  //       if (result.isConfirmed) {
+  //         setLoading(true);
+  //         axios.delete(apiurl + '/auctions/' + auctionId, { headers: authHeader(token) })
+  //           .then((response) => {
+  //             setLoading(false);
+  //             if (response.status === 200) {
+  //               showSweetAlert('success', 'Success', 'Auction deleted successfully.');
+  //               fetchData();
+  //             }
+  //             else {
+  //               showSweetAlert('error', 'Error', 'Failed to delete Auction. Please try again...');
+  //             }
+  //             clearControls();
+  //           })
+  //           .catch((error) => {
+  //             setLoading(false);
+  //             showSweetAlert('error', 'Error', 'Failed to delete Auction. Please try again...');
+  //             clearControls();
+  //             if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+  //               logout();
+  //             }
+  //           });
+  //       }
+  //     });
+  // };
 
   const editAuction = (auctionId, assetId) => {
     setBtnText('Update');
@@ -312,10 +315,10 @@ const Auction = () => {
     // }else{
     //   setSaleDisplay(false);
     // }
-    try{
+    try {
       minBidAmountRef.current.focus();
     }
-    catch(err){}
+    catch (err) { }
   };
 
   const updateAuction = () => {
@@ -368,22 +371,66 @@ const Auction = () => {
     clearControls();
   };
 
-  const onSearchTextChange = (e) => {
-    const searchText = e.target.value.toLowerCase();
+  const statusChange = (e, auctionId, assetId, assetType) => {
+    const status = e.target.checked;
+    showConfirmAlert('Status Update', `Do you really want to ${status ? 'activate' : 'deactivate'} the Auction for Asset Id '${assetId}' of Asset Type '${assetType} ?`)
+      .then((result) => {
+        if (result.isConfirmed) {
+          setLoading(true);
+          axios.put(apiurl + '/auctions/' + auctionId + '/update-status/' + status, {}, { headers: authHeader(token) })
+            .then((response) => {
+              setLoading(false);
+              if (response.status === 200) {
+                showToast('success', 'Status of Auction updated successfully.');
+                fetchData();
+              }
+              else {
+                showSweetAlert('error', 'Error', 'Failed to update status of Auction. Please try again...');
+                fetchData();
+              }
+            })
+            .catch((error) => {
+              setLoading(false);
+              showSweetAlert('error', 'Error', 'Failed to update status of Auction. Please try again...');
+              fetchData();
+              if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+                logout();
+              }
+            });
+        }
+      });
+  };
+
+  const search = (text, checked) => {
+    const searchText = text.toLowerCase();
     if (searchText.length > 0) {
-      let searchData = dataCopy.filter((item) => item.assetId == searchText ||
+      const searchData = dataCopy.filter((item) => item.status === checked &&
+        (item.assetId == searchText ||
         item.assetType.toLowerCase().includes(searchText) ||
         formatDate(item.purchaseDate) === searchText ||
         item.minimumBidAmount == searchText ||
         formatTimestamp(item.startDate).includes(searchText) ||
         formatTimestamp(item.endDate).includes(searchText) ||
-        formatTimestamp(item.saleDate).includes(searchText)
+        formatTimestamp(item.saleDate).includes(searchText))
       );
       setData(searchData);
     } else {
-      setData(dataCopy);
+      const searchData = dataCopy.filter((item) => item.status == checked);
+      setData(searchData);
     }
+  }
+
+  const onSearchTextChange = (e) => {
+    const text = e.target.value;
+    setSearchText(text);
+    search(text, checked);
   };
+
+  const handleStatusCheck = (e) => {
+    const checked = e.target.checked;
+    setChecked(checked);
+    search(searchText, checked);
+  }
 
   const sort = (column) => {
     let order = sortOrder;
@@ -492,6 +539,13 @@ const Auction = () => {
             }
             return 0;
           });
+          return newData;
+        });
+        break;
+      case 'status':
+        setData((oldData) => {
+          let newData = [...oldData];
+          newData.sort((a, b) => (a.status - b.status) * order);
           return newData;
         });
         break;
@@ -636,21 +690,20 @@ const Auction = () => {
           <div className="col-12">
             <div className="card">
               <div className="card-header">
-                <h3 className="card-title">List of Auctions</h3>
-                <div className="card-tools">
-                  <div className="input-group input-group-sm">
+                <h3 className="card-title text-bold mt-2">List of Auctions (No of Auctions : {data.length})</h3>
+                <div className="float-right search-width d-flex flex-md-row">
+                  <div className="form-check mr-4 mt-2">
+                    <input type="checkbox" className="form-check-input" id="status-checked" value="Status" checked={checked} onChange={handleStatusCheck} />
+                    <label className="form-check-label" htmlFor="status-checked">Active</label>
+                  </div>
+                  <div className="input-group">
                     <input
-                      type="text"
+                      type="search"
                       name="table_search"
                       maxLength="20"
-                      className="form-control float-right"
+                      className="form-control"
                       placeholder="Search"
                       onChange={onSearchTextChange} />
-                    <div className="input-group-append">
-                      <span className="input-group-text" id="basic-addon2">
-                        <i className="fas fa-search"></i>
-                      </span>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -662,12 +715,13 @@ const Auction = () => {
                       <th title="Sort" className="sort-style" onClick={() => sort('assetId')}>Asset Id <i className="fa fa-sort" /></th>
                       <th title="Sort" className="sort-style" onClick={() => sort('assetType')}>Asset Type <i className="fa fa-sort" /></th>
                       <th title="Sort" className="sort-style" onClick={() => sort('purchaseDate')}>Purchase Date <br /> (dd-mm-yyyy) <i className="fa fa-sort" /></th>
-                      <th title="Sort" className="sort-style" onClick={() => sort('minimumBidAmount')}>Minimum <br/>Bid Amount <i className="fa fa-sort" /></th>
-                      <th title="Sort" className="sort-style" onClick={() => sort('startDate')}>Auction <br/>Start Date <i className="fa fa-sort" /></th>
-                      <th title="Sort" className="sort-style" onClick={() => sort('endDate')}>Auction <br/>End Date <i className="fa fa-sort" /></th>
+                      <th title="Sort" className="sort-style" onClick={() => sort('minimumBidAmount')}>Minimum <br />Bid Amount <i className="fa fa-sort" /></th>
+                      <th title="Sort" className="sort-style" onClick={() => sort('startDate')}>Auction <br />Start Date <i className="fa fa-sort" /></th>
+                      <th title="Sort" className="sort-style" onClick={() => sort('endDate')}>Auction <br />End Date <i className="fa fa-sort" /></th>
                       <th title="Sort" className="sort-style" onClick={() => sort('saleDate')}>Sale Date <i className="fa fa-sort" /></th>
+                      <th title="Sort" className="sort-style" onClick={() => sort('status')}>Status <i className="fa fa-sort" /></th>
                       <th>Edit</th>
-                      <th>Delete</th>
+                      <th>View Bids</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -681,33 +735,59 @@ const Auction = () => {
                           <td>{item.minimumBidAmount}</td>
                           <td>{formatTimestamp(item.startDate)}</td>
                           <td>{formatTimestamp(item.endDate)}</td>
-                          <th>
+                          <td>
                             {
                               item.saleDate ?
-                              formatTimestamp(item.saleDate) :
-                              <div>
-                                <b>Not sold</b>
-                                {/* <button className="btn btn-primary btn-sm rounded-0 float-right" type="button" data-toggle="tooltip" data-placement="top" title="Sale Asset" onClick={() => console.log(item.auctionId)}>
+                                formatTimestamp(item.saleDate) :
+                                <div>
+                                  <b>Not sold</b>
+                                  {
+                                    item.status &&
+                                    <NavLink exact to={'/admin/view-bids/' + item.auctionId} className="btn btn-primary btn-sm rounded-0 float-right">
+                                      <i className="fa fa-stamp" title="Sale Asset"></i>
+                                    </NavLink>
+                                  }
+                                  {/* <button className="btn btn-primary btn-sm rounded-0 float-right" type="button" data-toggle="tooltip" data-placement="top" title="Sale Asset" onClick={() => console.log(item.auctionId)}>
                                   <i className="fa fa-stamp"></i>
                                 </button> */}
-                              </div>
+                                </div>
                             }
-                          </th>
+                          </td>
+                          <td>
+                            <div className="custom-control custom-switch">
+                              <input
+                                type="checkbox"
+                                className="custom-control-input"
+                                id={'status-' + item.auctionId}
+                                onChange={(e) => statusChange(e, item.auctionId, item.assetId, item.assetType)}
+                                checked={item.status} />
+                              <label className="custom-control-label" htmlFor={'status-' + item.auctionId}></label>
+                            </div>
+                          </td>
                           <td>
                             <button className="btn btn-success btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Edit" onClick={() => editAuction(item.auctionId, item.assetId)}>
                               <i className="fa fa-edit"></i>
                             </button>
                           </td>
-                          <td>
-                            <button className="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Delete" onClick={() => deleteAuction(item.auctionId, item.assetId, item.assetType)}>
-                              <i className="fa fa-trash"></i>
-                            </button>
-                          </td>
+                          <th>
+                            <NavLink exact to={'/admin/view-bids/' + item.auctionId} className="btn btn-primary btn-sm rounded-0">
+                              <i className="fa fa-arrow-circle-right" title="Go to Bids Page"></i>
+                            </NavLink>
+                          </th>
                         </tr>
                       ))
                     }
                   </tbody>
                 </table>
+                {
+                  data.length > 0 &&
+                  <div className="d-flex justify-content-center mt-3">
+                    <button type="button" className="btn btn-primary btn-lg" onClick={() => window.print()}>
+                      <i className="fas fa-print"></i>
+                      <span> Print</span>
+                    </button>
+                  </div>
+                }
               </div>
             </div>
           </div>

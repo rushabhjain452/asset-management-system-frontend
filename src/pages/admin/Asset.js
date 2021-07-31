@@ -12,6 +12,7 @@ import Menu from './Menu';
 // import 'admin-lte/plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js';
 import axios from 'axios';
 import Select from 'react-select';
+import { useLastLocation } from 'react-router-last-location';
 
 import Loader from '../../components/Loader';
 import { errorMessage } from '../../config';
@@ -30,6 +31,8 @@ const Asset = () => {
     updateContextState();
   }
 
+  const lastLocation = useLastLocation();
+
   const [assetTypes, setAssetTypes] = useState([]);
   const [assetTypesDisabled, setAssetTypesDisabled] = useState(false);
   const [properties, setProperties] = useState([]);
@@ -40,7 +43,11 @@ const Asset = () => {
   const [assetType, setAssetType] = useState(null);
   const [purchaseDate, setPurchaseDate] = useState(getTodayDate());
 
+  const [auctionAssetIds, setAuctionAssetIds] = useState([]);
+
   const [btnText, setBtnText] = useState('Add');
+  const [searchText, setSearchText] = useState('');
+  const [checked, setChecked] = useState(false);
 
   const [loading, setLoading] = useState(false);
 
@@ -59,9 +66,16 @@ const Asset = () => {
   }
 
   useEffect(() => {
+    // console.log('useEffect : ');
+    // console.log(lastLocation);
+    // if(lastLocation.pathname.startsWith('/admin/auction/')){
+    //   setChecked(true);
+    //   search('', true);
+    // }
     // setPurchaseDate(getTodayDate());
     fetchData();
     fetchAssetTypes();
+    fetchAuctionData();
   }, []);
 
   const addToRefs = (element) => {
@@ -79,9 +93,17 @@ const Asset = () => {
       .then((response) => {
         setLoading(false);
         if (response.status === 200) {
-          setData(response.data);
+          const data = response.data;
           setDataCopy(response.data);
-          // console.log(response.data);
+          // Check if user is coming from 'Auction'
+          let filterData;
+          if (lastLocation.pathname.startsWith('/admin/auction/')) {
+            setChecked(true);
+            filterData = data.filter((item) => item.discarded == true);
+          }else{
+            filterData = data.filter((item) => item.discarded == false);
+          }
+          setData(filterData);
         }
         else {
           showToast('error', errorMessage);
@@ -117,6 +139,29 @@ const Asset = () => {
           });
           let newData = data.map((item) => ({ value: item.assetTypeId, label: item.assetType }));
           setAssetTypes(newData);
+        }
+        else {
+          showToast('error', errorMessage);
+        }
+      })
+      .catch((error) => {
+        setLoading(false);
+        showToast('error', errorMessage);
+        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+          logout();
+        }
+      });
+  };
+
+  const fetchAuctionData = () => {
+    setLoading(true);
+    axios.get(apiurl + '/auctions', { headers: authHeader(token) })
+      .then((response) => {
+        setLoading(false);
+        if (response.status === 200) {
+          const data = response.data;
+          const assetIds = data.map((item) => item.assetId);
+          setAuctionAssetIds(assetIds);
         }
         else {
           showToast('error', errorMessage);
@@ -256,34 +301,34 @@ const Asset = () => {
     }
   };
 
-  const deleteAsset = (assetId, assetType) => {
-    showConfirmAlert('Delete Confirmation', `Do you really want to delete the Asset with Asset Id '${assetId}' of Asset Type '${assetType}' ?`)
-      .then((result) => {
-        if (result.isConfirmed) {
-          setLoading(true);
-          axios.delete(apiurl + '/assets/' + assetId, { headers: authHeader(token) })
-            .then((response) => {
-              setLoading(false);
-              if (response.status === 200) {
-                showSweetAlert('success', 'Success', 'Asset deleted successfully.');
-                fetchData();
-              }
-              else {
-                showSweetAlert('error', 'Error', 'Failed to delete Asset. Please try again...');
-              }
-              setAssetType('');
-            })
-            .catch((error) => {
-              setLoading(false);
-              showSweetAlert('error', 'Error', 'Failed to delete Asset. Please try again...');
-              setAssetType('');
-              if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-                logout();
-              }
-            });
-        }
-      });
-  };
+  // const deleteAsset = (assetId, assetType) => {
+  //   showConfirmAlert('Delete Confirmation', `Do you really want to delete the Asset with Asset Id '${assetId}' of Asset Type '${assetType}' ?`)
+  //     .then((result) => {
+  //       if (result.isConfirmed) {
+  //         setLoading(true);
+  //         axios.delete(apiurl + '/assets/' + assetId, { headers: authHeader(token) })
+  //           .then((response) => {
+  //             setLoading(false);
+  //             if (response.status === 200) {
+  //               showSweetAlert('success', 'Success', 'Asset deleted successfully.');
+  //               fetchData();
+  //             }
+  //             else {
+  //               showSweetAlert('error', 'Error', 'Failed to delete Asset. Please try again...');
+  //             }
+  //             setAssetType('');
+  //           })
+  //           .catch((error) => {
+  //             setLoading(false);
+  //             showSweetAlert('error', 'Error', 'Failed to delete Asset. Please try again...');
+  //             setAssetType('');
+  //             if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+  //               logout();
+  //             }
+  //           });
+  //       }
+  //     });
+  // };
 
   const editAsset = (assetId) => {
     setBtnText('Update');
@@ -318,7 +363,8 @@ const Asset = () => {
     let findAsset = data.find((item) => item.assetId === assetId);
     const findItem = assetTypes.find((item) => item.value === findAsset.assetTypeId);
     setAssetType(findItem);
-    setPurchaseDate(findAsset.purchaseDate);
+    // setPurchaseDate(findAsset.purchaseDate);
+    setPurchaseDate(getTodayDate());
     setProperties(findAsset.assetPropertiesList);
     // selectRef.current.focus();
     dateRef.current.focus();
@@ -376,47 +422,68 @@ const Asset = () => {
     clearControls();
   };
 
-  const updateDiscarded = (status, assetId) => {
-    setLoading(true);
-    axios.put(apiurl + '/assets/' + assetId + '/update-discarded/' + status, {}, { headers: authHeader(token) })
-      .then((response) => {
-        setLoading(false);
-        if (response.status === 200) {
-          showToast('success', 'Discarded of Asset updated successfully.');
-          fetchData();
-        }
-        else {
-          showSweetAlert('error', 'Error', 'Failed to update Asset of Property. Please try again...');
-          fetchData();
-        }
-      })
-      .catch((error) => {
-        setLoading(false);
-        showSweetAlert('error', 'Error', 'Failed to update Asset of Property. Please try again...');
-        fetchData();
-        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-          logout();
+  const updateDiscarded = (status, assetId, assetType) => {
+    showConfirmAlert('Discard Update Confirmation', `Do you really want to ${status ? 'discard' : 'undiscard'} ${assetType} with Asset Id '${assetId}' ?`)
+      .then((result) => {
+        if (result.isConfirmed) {
+          setLoading(true);
+          axios.put(apiurl + '/assets/' + assetId + '/update-discarded/' + status, {}, { headers: authHeader(token) })
+            .then((response) => {
+              setLoading(false);
+              if (response.status === 200) {
+                showToast('success', 'Discarded of Asset updated successfully.');
+                fetchData();
+              }
+              else {
+                showSweetAlert('error', 'Error', 'Failed to update Asset of Property. Please try again...');
+                fetchData();
+              }
+            })
+            .catch((error) => {
+              setLoading(false);
+              showSweetAlert('error', 'Error', 'Failed to update Asset of Property. Please try again...');
+              fetchData();
+              if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+                logout();
+              }
+            });
         }
       });
   };
 
-  const onSearchTextChange = (e) => {
-    const searchText = e.target.value.toLowerCase();
+  const search = (text, checked) => {
+    console.log('search called : ' + checked);
+    const searchText = text.toLowerCase();
     if (searchText.length > 0) {
-      let searchData = dataCopy.filter((item) => item.assetId == searchText ||
-        formatDate(item.purchaseDate) === searchText ||
-        item.assetType.toLowerCase().includes(searchText) ||
-        item.assetPropertiesList.find(item => item.value.toLowerCase().includes(searchText)) != undefined
+      const searchData = dataCopy.filter((item) => item.discarded === checked &&
+        (item.assetId == searchText ||
+          formatDate(item.purchaseDate) === searchText ||
+          item.assetType.toLowerCase().includes(searchText) ||
+          item.assetPropertiesList.find(item => item.value.toLowerCase().includes(searchText)) != undefined)
       );
       setData(searchData);
     } else {
-      setData(dataCopy);
+      const searchData = dataCopy.filter((item) => item.discarded == checked);
+      console.log(searchData);
+      setData(searchData);
     }
+  }
+
+  const onSearchTextChange = (e) => {
+    const text = e.target.value;
+    setSearchText(text);
+    search(text, checked);
   };
+
+  const handleDiscardCheck = (e) => {
+    const checked = e.target.checked;
+    setChecked(checked);
+    search(searchText, checked);
+  }
 
   const sort = (column) => {
     let order = sortOrder;
-    if(sortColumn === column){
+    if (sortColumn === column) {
       order = order * -1;
       setSortOrder(order);
     } else {
@@ -559,21 +626,20 @@ const Asset = () => {
           <div className="col-12">
             <div className="card">
               <div className="card-header">
-                <h3 className="card-title">List of Assets</h3>
-                <div className="card-tools">
-                  <div className="input-group input-group-sm">
+                <h3 className="card-title text-bold mt-2">List of Assets (No of Assets : {data.length})</h3>
+                <div className="float-right search-width d-flex flex-md-row">
+                  <div className="form-check mr-4 mt-2">
+                    <input type="checkbox" className="form-check-input" id="status-checked" value="Status" checked={checked} onChange={handleDiscardCheck} />
+                    <label className="form-check-label" htmlFor="status-checked">Discarded</label>
+                  </div>
+                  <div className="input-group">
                     <input
-                      type="text"
+                      type="search"
                       name="table_search"
                       maxLength="20"
-                      className="form-control float-right"
+                      className="form-control"
                       placeholder="Search"
                       onChange={onSearchTextChange} />
-                    <div className="input-group-append">
-                      <span className="input-group-text" id="basic-addon2">
-                        <i className="fas fa-search"></i>
-                      </span>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -587,9 +653,9 @@ const Asset = () => {
                       <th title="Sort" className="sort-style" onClick={() => sort('purchaseDate')}>Purchase Date <br /> (dd-mm-yyyy) <i className="fa fa-sort" /></th>
                       <th>Properties</th>
                       <th title="Sort" className="sort-style" onClick={() => sort('discarded')}>Discarded <i className="fa fa-sort" /></th>
-                      <th>Auction</th>
+                      {checked && <th>Auction</th>}
                       <th>Edit</th>
-                      <th>Delete</th>
+                      <th>Duplicate</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -613,30 +679,31 @@ const Asset = () => {
                                 type="checkbox"
                                 className="custom-control-input"
                                 id={'status-' + item.assetId}
-                                onChange={(e) => updateDiscarded(e.target.checked, item.assetId)}
-                                defaultChecked={item.discarded} />
+                                onChange={(e) => updateDiscarded(e.target.checked, item.assetId, item.assetType)}
+                                checked={item.discarded} />
                               <label className="custom-control-label" htmlFor={'status-' + item.assetId}></label>
                             </div>
                           </td>
-                          <td>
-                            {
-                              item.discarded &&
-                              <NavLink exact to={'auction/' + item.assetId} className="btn btn-primary btn-sm rounded-0">
-                                <i className="fa fa-gavel" title="Put to Auction"></i>
-                              </NavLink>
-                            }
-                          </td>
+                          {
+                            item.discarded && checked &&
+                            <td>
+                              {
+                                auctionAssetIds.includes(item.assetId) ?
+                                  <b>Already in <br />Auction</b> :
+                                  <NavLink exact to={'auction/' + item.assetId} className="btn btn-primary btn-sm rounded-0">
+                                    <i className="fa fa-gavel" title="Put to Auction"></i>
+                                  </NavLink>
+                              }
+                            </td>
+                          }
                           <td>
                             <button className="btn btn-success btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Edit" onClick={() => editAsset(item.assetId)}>
                               <i className="fa fa-edit"></i>
                             </button>
-                            <button className="btn btn-success btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Copy Properties for another Asset" onClick={() => copyAssetProperties(item.assetId)}>
-                              <i className="fa fa-copy"></i>
-                            </button>
                           </td>
                           <td>
-                            <button className="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Delete" onClick={() => deleteAsset(item.assetId, item.assetType)}>
-                              <i className="fa fa-trash"></i>
+                            <button className="btn btn-primary btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Copy Properties for another Asset" onClick={() => copyAssetProperties(item.assetId)}>
+                              <i className="fa fa-copy"></i>
                             </button>
                           </td>
                         </tr>
@@ -644,6 +711,15 @@ const Asset = () => {
                     }
                   </tbody>
                 </table>
+                {
+                  data.length > 0 &&
+                  <div className="d-flex justify-content-center mt-4">
+                    <button type="button" className="btn btn-primary btn-lg" onClick={() => window.print()}>
+                      <i className="fas fa-print"></i>
+                      <span> Print</span>
+                    </button>
+                  </div>
+                }
               </div>
             </div>
           </div>

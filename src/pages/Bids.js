@@ -7,8 +7,8 @@ import UserMenu from './UserMenu';
 import femaleAvatar from 'admin-lte/dist/img/avatar3.png';
 import maleAvatar from 'admin-lte/dist/img/avatar5.png';
 import axios from 'axios';
-import Swal from 'sweetalert2';
 import Loader from '../components/Loader';
+
 import { errorMessage } from '../config';
 import { showToast, showSweetAlert, showConfirmAlert } from '../helpers/sweetAlert';
 import { formatDate, formatTimestamp, getCurrentTimestamp, convertToDate, convertTimestampToDate, calDateDiff } from '../helpers/dateHelper';
@@ -46,12 +46,10 @@ const Bids = () => {
   // const [assetId, setAssetId] = useState(0);
   const [assetType, setAssetType] = useState('Asset');
 
-  const [btnText, setBtnText] = useState('Add');
-
-  const [saleDisplay, setSaleDisplay] = useState(false);
   const [saleDate, setSaleDate] = useState(getCurrentTimestamp());
   const [saleBid, setSaleBid] = useState(null);
   const [saleStatus, setSaleStatus] = useState(false);
+  const [highestBidId, setHighestBidId] = useState(0);
 
   const [loading, setLoading] = useState(false);
 
@@ -64,7 +62,7 @@ const Bids = () => {
     // console.log('AuctionId in useEffect : ' + auctionId);
     fetchAuctionData();
     // fetchAssetData();
-    fetchUserBidData();
+    // fetchUserBidData();
     fetchData();
   }, []);
 
@@ -76,9 +74,17 @@ const Bids = () => {
         if (response.status === 200) {
           // Sort Data
           const data = response.data;
-          data.sort((a, b) => a.bidAmount - b.bidAmount);
+          data.sort((a, b) => b.bidAmount - a.bidAmount);
           setData(data);
           setDataCopy(data);
+          // Set Highest bid for sale
+          if (data.length > 0) {
+            setSaleBid(data[0]);
+            setHighestBidId(data[0].bidId);
+          } else {
+            setSaleBid(null);
+            setHighestBidId(0);
+          }
         }
         else {
           showToast('error', errorMessage);
@@ -137,34 +143,34 @@ const Bids = () => {
       });
   };
 
-  const fetchUserBidData = () => {
-    setLoading(true);
-    axios.get(apiurl + '/bids/auction/' + auctionId + '/employee/' + employeeId, { headers: authHeader(token) })
-      .then((response) => {
-        setLoading(false);
-        if (response.status === 200) {
-          setBidId(response.data.bidId);
-          setBidAmount(response.data.bidAmount);
-          setBtnText('Update');
-        }
-        else {
-          showToast('error', errorMessage);
-          setBidAmount('');
-          setBtnText('Add');
-        }
-      })
-      .catch((error) => {
-        setLoading(false);
-        // showToast('error', errorMessage);
-        setBidAmount('');
-        setBtnText('Add');
-        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-          logout();
-        }
-      });
-  };
+  // const fetchUserBidData = () => {
+  //   setLoading(true);
+  //   axios.get(apiurl + '/bids/auction/' + auctionId + '/employee/' + employeeId, { headers: authHeader(token) })
+  //     .then((response) => {
+  //       setLoading(false);
+  //       if (response.status === 200) {
+  //         setBidId(response.data.bidId);
+  //         setBidAmount(response.data.bidAmount);
+  //         setBtnText('Update');
+  //       }
+  //       else {
+  //         showToast('error', errorMessage);
+  //         setBidAmount('');
+  //         setBtnText('Add');
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       setLoading(false);
+  //       // showToast('error', errorMessage);
+  //       setBidAmount('');
+  //       setBtnText('Add');
+  //       if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+  //         logout();
+  //       }
+  //     });
+  // };
 
-  const validateInput = () => {
+  const validateInputAndAddBid = () => {
     let result = true;
     let error = errorMessage;
     if (asset === null) {
@@ -185,134 +191,183 @@ const Bids = () => {
       error = 'Please enter valid Bid Amount. Bid Amount can only contain numbers.';
       textboxRef.current.focus();
     }
-    else if(parseInt(bidAmount) < auctionData.minimumBidAmount){
+    else if (parseInt(bidAmount) < auctionData.minimumBidAmount) {
       result = false;
-      error = 'Bid Amount cannot be less than Minimum Bid Amount.';
+      error = `Bid Amount cannot be less than Minimum Bid Amount of ${auctionData.minimumBidAmount}`;
       textboxRef.current.focus();
     }
+    // else if (data.length > 0 && bidAmount <= saleBid.bidAmount) {
+    //   result = false;
+    //   error = `Bid Amount should be greater than current highest Bid Amount of ${saleBid.bidAmount}`;
+    //   textboxRef.current.focus();
+    // }
     if (result === false) {
-      showToast('warning', error);
+      showSweetAlert('warning', 'Warning', error);
+      return result;
     }
-    return result;
-  };
-
-  const addBid = () => {
-    if (validateInput()) {
-      const requestData = {
-        auctionId: auctionData.auctionId,
-        employeeId: employeeId,
-        bidAmount: parseInt(bidAmount),
-      };
-      setLoading(true);
-      axios.post(apiurl + '/bids', requestData, { headers: authHeader(token) })
-        .then((response) => {
-          setLoading(false);
-          if (response.status === 201) {
-            showSweetAlert('success', 'Success', 'Bid added successfully.');
-            fetchUserBidData();
-            fetchData();
+    // Validate that bidAmount is greater than current highest bidAmount
+    setLoading(true);
+    axios.get(apiurl + '/bids/auction/' + auctionId, { headers: authHeader(token) })
+      .then((response) => {
+        setLoading(false);
+        if (response.status === 200) {
+          // Sort Data
+          const data = response.data;
+          data.sort((a, b) => b.bidAmount - a.bidAmount);
+          setData(data);
+          setDataCopy(data);
+          // Set Highest bid for sale
+          let highestSaleBid = null;
+          if (data.length > 0) {
+            highestSaleBid = data[0];
+            setSaleBid(data[0]);
+            setHighestBidId(data[0].bidId);
+          } else {
+            setSaleBid(null);
+            setHighestBidId(0);
           }
-          else {
-            showSweetAlert('error', 'Error', 'Failed to add Bid. Please try again...');
+          if (data.length > 0 && bidAmount <= highestSaleBid.bidAmount) {
+            result = false;
+            error = `Bid Amount should be greater than current highest Bid Amount of ${highestSaleBid.bidAmount}`;
+            textboxRef.current.focus();
           }
-        })
-        .catch((error) => {
-          setLoading(false);
-          showSweetAlert('error', 'Error', 'Failed to add Bid. Please try again...');
-          if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-            logout();
+          if (result === false) {
+            showSweetAlert('warning', 'Warning', error);
+          } else {
+            addBid();
           }
-        });
-    }
-  };
-
-  const deleteBid = (bidId, assetType) => {
-    showConfirmAlert('Delete Confirmation', `Do you really want to delete the Bid for Auction of '${assetType}' ?`)
-      .then((result) => {
-        if (result.isConfirmed) {
-          setLoading(true);
-          axios.delete(apiurl + '/bids/' + bidId, { headers: authHeader(token) })
-            .then((response) => {
-              setLoading(false);
-              if (response.status === 200) {
-                showSweetAlert('success', 'Success', 'Bid deleted successfully.');
-                fetchUserBidData();
-                fetchData();
-              }
-              else {
-                showSweetAlert('error', 'Error', 'Failed to delete Bid. Please try again...');
-              }
-            })
-            .catch((error) => {
-              setLoading(false);
-              showSweetAlert('error', 'Error', 'Failed to delete Bid. Please try again...');
-              if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-                logout();
-              }
-            });
+        }
+        else {
+          showToast('error', errorMessage);
+        }
+      })
+      .catch((error) => {
+        setLoading(false);
+        showToast('error', errorMessage);
+        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+          logout();
         }
       });
   };
 
-  const updateBid = () => {
-    if (validateInput()) {
-      setLoading(true);
-      axios.put(apiurl + '/bids/' + bidId + '/update-bid-amount/' + bidAmount, {}, { headers: authHeader(token) })
-        .then((response) => {
-          setLoading(false);
-          if (response.status === 200) {
-            showSweetAlert('success', 'Success', 'Bid updated successfully.');
-            fetchUserBidData();
-            fetchData();
-          }
-          else {
-            showSweetAlert('error', 'Error', 'Failed to update Bid. Please try again...');
-          }
-          setBtnText('Add');
-        })
-        .catch((error) => {
-          setLoading(false);
-          showSweetAlert('error', 'Error', 'Failed to update Bid. Please try again...');
-          if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-            logout();
-          }
-        });
-    }
-  };
-
-  const saleAsset = (item) => {
-    setSaleBid(item);
-    setSaleDisplay(true);
+  const addBidClick = () => {
+    validateInputAndAddBid();
   }
 
-  const cancelSale = () => {
-    setSaleBid(null);
-    setSaleDisplay(false);
-  }
-
-  const saleAssetDetails = () => {
-    setLoading(true);
+  const addBid = () => {
     const requestData = {
-      saleBidId: saleBid.bidId,
-      saleDate: saleDate
+      auctionId: auctionData.auctionId,
+      employeeId: employeeId,
+      bidAmount: parseInt(bidAmount),
     };
-    axios.put(apiurl + '/auctions/' + auctionId + '/update-sale-asset', requestData, { headers: authHeader(token) })
+    setLoading(true);
+    axios.post(apiurl + '/bids', requestData, { headers: authHeader(token) })
       .then((response) => {
         setLoading(false);
-        if (response.status === 200) {
-          showSweetAlert('success', 'Success', 'Asset Sale successfully.');
+        if (response.status === 201) {
+          showSweetAlert('success', 'Success', 'Bid added successfully.');
           // fetchUserBidData();
-          // fetchData();
-          setSaleStatus(true);
+          fetchData();
         }
         else {
-          showSweetAlert('error', 'Error', 'Failed to sale Asset. Please try again...');
+          showSweetAlert('error', 'Error', 'Failed to add Bid. Please try again...');
         }
-        // setBtnText('Add');
       })
       .catch((error) => {
         setLoading(false);
-        showSweetAlert('error', 'Error', 'Failed to sale Asset. Please try again...');
+        showSweetAlert('error', 'Error', 'Failed to add Bid. Please try again...');
+        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+          logout();
+        }
+      });
+  };
+
+  // const updateBid = () => {
+  //   if (validateInput()) {
+  //     setLoading(true);
+  //     axios.put(apiurl + '/bids/' + bidId + '/update-bid-amount/' + bidAmount, {}, { headers: authHeader(token) })
+  //       .then((response) => {
+  //         setLoading(false);
+  //         if (response.status === 200) {
+  //           showSweetAlert('success', 'Success', 'Bid updated successfully.');
+  //           fetchUserBidData();
+  //           fetchData();
+  //         }
+  //         else {
+  //           showSweetAlert('error', 'Error', 'Failed to update Bid. Please try again...');
+  //         }
+  //         setBtnText('Add');
+  //       })
+  //       .catch((error) => {
+  //         setLoading(false);
+  //         showSweetAlert('error', 'Error', 'Failed to update Bid. Please try again...');
+  //         if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+  //           logout();
+  //         }
+  //       });
+  //   }
+  // };
+
+  const saleAsset = () => {
+    setLoading(true);
+    axios.get(apiurl + '/bids/auction/' + auctionId, { headers: authHeader(token) })
+      .then((response) => {
+        setLoading(false);
+        if (response.status === 200) {
+          // Sort Data
+          const data = response.data;
+          data.sort((a, b) => b.bidAmount - a.bidAmount);
+          setData(data);
+          setDataCopy(data);
+          // Get Highest bid for sale
+          let highestSaleBid = null;
+          if (data.length > 0) {
+            highestSaleBid = data[0];
+            setSaleBid(data[0]);
+            setHighestBidId(data[0].bidId);
+          } else {
+            setSaleBid(null);
+            setHighestBidId(0);
+          }
+          // Get Sale Confirmation
+          showConfirmAlert('Sale Confirmation', `Do you really want to sold to Employee : ${highestSaleBid.employeeId} - ${highestSaleBid.firstName} ${highestSaleBid.lastName} for ${highestSaleBid.bidAmount} ?`)
+            .then((result) => {
+              if (result.isConfirmed) {
+                setLoading(true);
+                const requestData = {
+                  saleBidId: highestSaleBid.bidId,
+                  saleDate: saleDate
+                };
+                axios.put(apiurl + '/auctions/' + auctionId + '/update-sale-asset', requestData, { headers: authHeader(token) })
+                  .then((response) => {
+                    setLoading(false);
+                    if (response.status === 200) {
+                      showSweetAlert('success', 'Success', 'Asset Sale successfully.');
+                      // fetchUserBidData();
+                      // fetchData();
+                      setSaleStatus(true);
+                    }
+                    else {
+                      showSweetAlert('error', 'Error', 'Failed to sale Asset. Please try again...');
+                    }
+                  })
+                  .catch((error) => {
+                    setLoading(false);
+                    showSweetAlert('error', 'Error', 'Failed to sale Asset. Please try again...');
+                    if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+                      logout();
+                    }
+                  });
+              }
+            });
+        }
+        else {
+          showToast('error', errorMessage);
+        }
+      })
+      .catch((error) => {
+        setLoading(false);
+        showToast('error', errorMessage);
         if (error.response && (error.response.status === 401 || error.response.status === 403)) {
           logout();
         }
@@ -322,10 +377,11 @@ const Bids = () => {
   const onSearchTextChange = (e) => {
     const searchText = e.target.value.toLowerCase();
     if (searchText.length > 0) {
-      let searchData = dataCopy.filter((item) => item.employeeId == searchText ||
+      const searchData = dataCopy.filter((item) => item.employeeId == searchText ||
         item.firstName.toLowerCase().includes(searchText) ||
         item.lastName.toLowerCase().includes(searchText) ||
-        item.bidAmount == searchText
+        item.bidAmount == searchText ||
+        formatTimestamp(item.createdOn).includes(searchText)
       );
       setData(searchData);
     } else {
@@ -392,10 +448,27 @@ const Bids = () => {
           return newData;
         });
         break;
+      case 'createdOn':
+        setData((oldData) => {
+          let newData = [...oldData];
+          newData.sort((a, b) => {
+            let val1 = convertTimestampToDate(a.createdOn);
+            let val2 = convertTimestampToDate(b.createdOn);
+            if (val1 < val2) {
+              return order * -1;
+            }
+            if (val1 > val2) {
+              return order * 1;
+            }
+            return 0;
+          });
+          return newData;
+        });
+        break;
     }
   };
 
-  if(saleStatus){
+  if (saleStatus) {
     return <Redirect to="/" />;
   }
 
@@ -428,7 +501,7 @@ const Bids = () => {
             <div className="card-header">
               <div className="row">
                 <div className="col-md-4">
-                  <h3 className="card-title">Asset Id : {auctionData && auctionData.assetId}</h3>
+                  <h3 className="card-title text-bold mt-2">Asset Id : {auctionData && auctionData.assetId}</h3>
                 </div>
                 <div className="col-md-8">
                   {auctionData && <h3 className="card-title">Auction Period : &nbsp;&nbsp; {formatTimestamp(auctionData.startDate)} &nbsp;&nbsp; to &nbsp;&nbsp; {formatTimestamp(auctionData.endDate)}</h3>}
@@ -449,9 +522,9 @@ const Bids = () => {
                     }
                   </div>
                   {
-                    saleDisplay &&
+                    (role === 'Admin' && saleBid) &&
                     <>
-                      <hr/>
+                      <hr />
                       <div className="row">
                         <div className="col-md-12">
                           <h4>Sale Details</h4>
@@ -486,9 +559,19 @@ const Bids = () => {
                         </div>
                       </div>
                       <div className="row">
+                        <div className="col-md-2">
+                          <label>Sale Amount : </label>
+                        </div>
+                        <div className="col-md-10">
+                          <div>
+                            {saleBid.bidAmount}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="row">
                         <div className="col-md-10 offset-md-2 mt-2">
-                          <button type="button" className="btn btn-primary" onClick={saleAssetDetails}>Confirm Sale</button>
-                          <button type="button" className="btn btn-secondary" onClick={cancelSale}>Cancel</button>
+                          <button type="button" className="btn btn-primary" onClick={saleAsset}>Confirm Sale</button>
+                          {/* <button type="button" className="btn btn-secondary" onClick={cancelSale}>Cancel</button> */}
                         </div>
                       </div>
                     </>
@@ -496,7 +579,7 @@ const Bids = () => {
                 </div>
                 {/* Right Card */}
                 <div className="col-12 col-md-12 col-lg-4 order-1 order-md-2">
-                  <h3 className="text-primary"><i className="fas fa-laptop" /> {assetType} {asset && <span style={{fontSize: 20}}>&#40; purchased on {formatDate(asset.purchaseDate)} &#41;</span>}</h3>
+                  <h3 className="text-primary"><i className="fas fa-laptop" /> {assetType} {asset && <span style={{ fontSize: 20 }}>&#40; purchased on {formatDate(asset.purchaseDate)} &#41;</span>}</h3>
                   <br />
                   <div className="col-12 col-sm-12">
                     <div className="info-box bg-light">
@@ -511,12 +594,7 @@ const Bids = () => {
                     <input type="number" ref={textboxRef} maxLength="20" className="form-control" placeholder="Bid Amount" value={bidAmount} onChange={(e) => setBidAmount(e.target.value)} />
                   </div>
                   <div className="text-center mt-5 mb-3">
-                    <button
-                      type="button"
-                      className="btn btn-primary btn-block"
-                      onClick={btnText === 'Add' ? addBid : updateBid}>
-                      {btnText} Bid
-                    </button>
+                    <button type="button" className="btn btn-primary btn-block" onClick={addBidClick}> Add Bid</button>
                   </div>
                 </div>
               </div>
@@ -525,20 +603,16 @@ const Bids = () => {
           {/* Display Data in Table */}
           <div className="card">
             <div className="card-header">
-              <div className="card-tools">
-                <div className="input-group input-group-sm">
+              <h3 className="card-title text-bold mt-2">List of Bids (No of Bids : {data.length})</h3>
+              <div className="float-right search-width d-flex flex-md-row">
+                <div className="input-group">
                   <input
-                    type="text"
+                    type="search"
                     name="table_search"
                     maxLength="20"
-                    className="form-control float-right"
+                    className="form-control"
                     placeholder="Search"
                     onChange={onSearchTextChange} />
-                  <div className="input-group-append">
-                    <span className="input-group-text" id="basic-addon2">
-                      <i className="fas fa-search"></i>
-                    </span>
-                  </div>
                 </div>
               </div>
             </div>
@@ -551,47 +625,32 @@ const Bids = () => {
                     <th>Profile Picture</th>
                     <th title="Sort" className="sort-style" onClick={() => sort('firstName')}>First Name <i className="fa fa-sort" /></th>
                     <th title="Sort" className="sort-style" onClick={() => sort('lastName')}>Last Name <i className="fa fa-sort" /></th>
-                    <th title="Sort" className="sort-style" onClick={() => sort('bidAmount')}>Bid Amount<i className="fa fa-sort" /></th>
-                    <th>Delete <br/>My Bid</th>
-                    {
-                      role === 'Admin' &&
-                      <th>Sale</th>
-                    }
+                    <th title="Sort" className="sort-style" onClick={() => sort('bidAmount')}>Bid Amount <i className="fa fa-sort" /></th>
+                    <th title="Sort" className="sort-style" onClick={() => sort('createdOn')}>Bid Placed at <i className="fa fa-sort" /></th>
                   </tr>
                 </thead>
                 <tbody>
                   {
-                    data.length ==0 &&
+                    data.length == 0 &&
                     <td colspan={role === 'Admin' ? 8 : 7}>
                       <h3 className="text-center">No bids placed for this Auction. Be the first once to place bid.</h3>
                     </td>
                   }
                   {
                     data.length > 0 && data.map((item, index) => (
-                      <tr key={item.bidId}>
+                      <tr key={item.bidId} className={item.bidId === highestBidId ? 'bg-success' : item.employeeId === employeeId ? 'bg-primary' : ''}>
                         <td>{index + 1}</td>
                         <td>{item.employeeId}</td>
-                        <td><img src={item.profilePicture != '' ? item.profilePicture : item.gender === 'Female' ? femaleAvatar : maleAvatar} className="img-circle elevation-2" width="100" height="100" /></td>
+                        <td>
+                          <div className="d-flex justify-content-center">
+                            <img src={item.profilePicture != '' ? item.profilePicture : item.gender === 'Female' ? femaleAvatar : maleAvatar}
+                              className="img-circle elevation-2" width="30" height="30" />
+                          </div>
+                        </td>
                         <td>{item.firstName}</td>
                         <td>{item.lastName}</td>
                         <td>{item.bidAmount}</td>
-                        <td>
-                          {
-                            item.employeeId === employeeId ?
-                              <button className="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Delete my Bid" onClick={() => deleteBid(item.bidId, item.assetType)}>
-                                <i className="fa fa-trash"></i>
-                              </button> :
-                            <div>-</div>
-                          }
-                        </td>
-                        {
-                          role === 'Admin' &&
-                          <td>
-                            <button className="btn btn-primary btn-sm rounded-0 float-right" type="button" data-toggle="tooltip" data-placement="top" title="Sale Asset" onClick={() => saleAsset(item)}>
-                              <i className="fa fa-stamp"></i>
-                            </button>
-                          </td>
-                        }
+                        <td>{formatTimestamp(item.createdOn)}</td>
                       </tr>
                     ))
                   }

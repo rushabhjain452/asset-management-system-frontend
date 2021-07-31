@@ -24,7 +24,10 @@ const AssetType = () => {
   const [dataCopy, setDataCopy] = useState([]);
   const [assetType, setAssetType] = useState('');
   const [assetTypeId, setAssetTypeId] = useState(0);
+
   const [btnText, setBtnText] = useState('Add');
+  const [searchText, setSearchText] = useState('');
+  const [checked, setChecked] = useState(true);
 
   const [loading, setLoading] = useState(false);
 
@@ -56,8 +59,9 @@ const AssetType = () => {
             }
             return 0;
           });
-          setData(data);
           setDataCopy(data);
+          const filterData = data.filter((item) => item.status == checked);
+          setData(filterData);
         }
         else {
           showToast('error', errorMessage);
@@ -130,35 +134,6 @@ const AssetType = () => {
     }
   };
 
-  const deleteAssetType = (id, name) => {
-    showConfirmAlert('Delete Confirmation', `Do you really want to delete the Asset Type '${name}' ?`)
-      .then((result) => {
-        if (result.isConfirmed) {
-          setLoading(true);
-          axios.delete(apiurl + '/asset-types/' + id, { headers: authHeader(token) })
-            .then((response) => {
-              setLoading(false);
-              if (response.status === 200) {
-                showSweetAlert('success', 'Success', 'Asset Type deleted successfully.');
-                fetchData();
-              }
-              else {
-                showSweetAlert('error', 'Error', 'Failed to delete Asset Type. Please try again...');
-              }
-              setAssetType('');
-            })
-            .catch((error) => {
-              setLoading(false);
-              showSweetAlert('error', 'Error', 'Failed to delete Asset Type. Please try again...');
-              setAssetType('');
-              if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-                logout();
-              }
-            });
-        }
-      });
-  };
-
   const editAssetType = (id, name) => {
     setBtnText('Update');
     setAssetTypeId(id);
@@ -200,41 +175,61 @@ const AssetType = () => {
     setBtnText('Add');
   };
 
-  const statusChange = (e, assetTypeId) => {
+  const statusChange = (e, assetTypeId, assetType) => {
     const status = e.target.checked;
-    setLoading(true);
-    axios.put(apiurl + '/asset-types/' + assetTypeId + '/update-status/' + status, {}, { headers: authHeader(token) })
-      .then((response) => {
-        setLoading(false);
-        if (response.status === 200) {
-          // showSweetAlert('success', 'Success', 'Status of Asset Type updated successfully.');
-          showToast('success', 'Status of Asset Type updated successfully.');
-          fetchData();
-        }
-        else {
-          showSweetAlert('error', 'Error', 'Failed to update status of Asset Type. Please try again...');
-          fetchData();
-        }
-      })
-      .catch((error) => {
-        setLoading(false);
-        showSweetAlert('error', 'Error', 'Failed to update status of Asset Type. Please try again...');
-        fetchData();
-        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-          logout();
+    showConfirmAlert('Status Update', `Do you really want to ${status ? 'activate' : 'deactivate'} Asset Type '${assetType}' ?`)
+      .then((result) => {
+        if (result.isConfirmed) {
+          setLoading(true);
+          axios.put(apiurl + '/asset-types/' + assetTypeId + '/update-status/' + status, {}, { headers: authHeader(token) })
+            .then((response) => {
+              setLoading(false);
+              if (response.status === 200) {
+                // showSweetAlert('success', 'Success', 'Status of Asset Type updated successfully.');
+                showToast('success', 'Status of Asset Type updated successfully.');
+                fetchData();
+              }
+              else {
+                showSweetAlert('error', 'Error', 'Failed to update status of Asset Type. Please try again...');
+                fetchData();
+              }
+            })
+            .catch((error) => {
+              setLoading(false);
+              showSweetAlert('error', 'Error', 'Failed to update status of Asset Type. Please try again...');
+              fetchData();
+              if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+                logout();
+              }
+            });
         }
       });
   };
 
-  const onSearchTextChange = (e) => {
-    const searchText = e.target.value.toLowerCase();
+  const search = (text, checked) => {
+    const searchText = text.toLowerCase();
     if (searchText.length > 0) {
-      let searchData = dataCopy.filter((item) => item.assetType.toLowerCase().includes(searchText));
+      const searchData = dataCopy.filter((item) => item.status === checked &&
+        item.assetType.toLowerCase().includes(searchText)
+      );
       setData(searchData);
     } else {
-      setData(dataCopy);
+      const searchData = dataCopy.filter((item) => item.status == checked);
+      setData(searchData);
     }
+  }
+
+  const onSearchTextChange = (e) => {
+    const text = e.target.value;
+    setSearchText(text);
+    search(text, checked);
   };
+
+  const handleStatusCheck = (e) => {
+    const checked = e.target.checked;
+    setChecked(checked);
+    search(searchText, checked);
+  }
 
   const sort = (column) => {
     let order = sortOrder;
@@ -319,21 +314,20 @@ const AssetType = () => {
           <div className="col-12">
             <div className="card">
               <div className="card-header">
-                <h3 className="card-title">List of Asset Types</h3>
-                <div className="card-tools">
-                  <div className="input-group input-group-sm">
+                <h3 className="card-title text-bold mt-2">List of Asset Types (No of Asset Types : {data.length})</h3>
+                <div className="float-right search-width d-flex flex-md-row">
+                  <div className="form-check mr-4 mt-2">
+                    <input type="checkbox" className="form-check-input" id="status-checked" value="Status" checked={checked} onChange={handleStatusCheck} />
+                    <label className="form-check-label" htmlFor="status-checked">Active</label>
+                  </div>
+                  <div className="input-group">
                     <input
-                      type="text"
+                      type="search"
                       name="table_search"
                       maxLength="20"
-                      className="form-control float-right"
+                      className="form-control"
                       placeholder="Search"
                       onChange={onSearchTextChange} />
-                    <div className="input-group-append">
-                      <span className="input-group-text" id="basic-addon2">
-                        <i className="fas fa-search"></i>
-                      </span>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -345,7 +339,6 @@ const AssetType = () => {
                       <th title="Sort" className="sort-style" onClick={() => sort('assetType')}>Asset Type Name <i className="fa fa-sort" /></th>
                       <th title="Sort" className="sort-style" onClick={() => sort('status')}>Status <i className="fa fa-sort" /></th>
                       <th>Edit</th>
-                      <th>Delete</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -360,8 +353,8 @@ const AssetType = () => {
                                 type="checkbox"
                                 className="custom-control-input"
                                 id={'status-' + item.assetTypeId}
-                                onChange={(e) => statusChange(e, item.assetTypeId)}
-                                defaultChecked={item.status} />
+                                onChange={(e) => statusChange(e, item.assetTypeId, item.assetType)}
+                                checked={item.status} />
                               <label className="custom-control-label" htmlFor={'status-' + item.assetTypeId}></label>
                             </div>
                           </td>
@@ -370,16 +363,20 @@ const AssetType = () => {
                               <i className="fa fa-edit"></i>
                             </button>
                           </td>
-                          <td>
-                            <button className="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Delete" onClick={() => deleteAssetType(item.assetTypeId, item.assetType)}>
-                              <i className="fa fa-trash"></i>
-                            </button>
-                          </td>
                         </tr>
                       ))
                     }
                   </tbody>
                 </table>
+                {
+                  data.length > 0 &&
+                  <div className="d-flex justify-content-center mt-4">
+                    <button type="button" className="btn btn-primary btn-lg" onClick={() => window.print()}>
+                      <i className="fas fa-print"></i>
+                      <span> Print</span>
+                    </button>
+                  </div>
+                }
               </div>
             </div>
           </div>

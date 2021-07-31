@@ -30,7 +30,7 @@ const Menu = () => {
         <NavLink to="/profile/update" className="d-block" activeClassName="active">
           <div className="user-panel mt-3 pb-3 mb-3 d-flex">
             <div className="image">
-              <img src={profilePicture != '' ? profilePicture : gender === 'Female' ? femaleAvatar : maleAvatar} className="img-circle elevation-2" width="100" height="100" />
+              <img src={profilePicture != '' ? profilePicture : gender === 'Female' ? femaleAvatar : maleAvatar} className="img-circle elevation-2" />
             </div>
             <div className="info">
               {username}

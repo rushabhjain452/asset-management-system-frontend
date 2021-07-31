@@ -75,7 +75,7 @@ const ActiveAuctions = () => {
   const onSearchTextChange = (e) => {
     const searchText = e.target.value.toLowerCase();
     if (searchText.length > 0) {
-      let searchData = dataCopy.filter((item) => item.assetId == searchText ||
+      const searchData = dataCopy.filter((item) => item.assetId == searchText ||
         item.assetType.toLowerCase().includes(searchText) ||
         formatDate(item.purchaseDate) === searchText ||
         item.minimumBidAmount == searchText ||
@@ -187,7 +187,7 @@ const ActiveAuctions = () => {
   return (
     <div className="wrapper">
       <Header />
-      { role === 'Admin' ? <Menu /> : <UserMenu /> }
+      { role === 'Admin' ? <Menu /> : <UserMenu />}
       <Loader loading={loading} />
       <div className="content-wrapper">
         {/* Content Header (Page header) */}
@@ -211,20 +211,16 @@ const ActiveAuctions = () => {
           {/* Default box */}
           <div className="card">
             <div className="card-header">
-              <div className="card-tools">
-                <div className="input-group input-group-sm">
+              <h3 className="card-title text-bold mt-2">List of Active Auctions (No of Active Auctions : {data.length})</h3>
+              <div className="float-right search-width d-flex flex-md-row">
+                <div className="input-group">
                   <input
-                    type="text"
+                    type="search"
                     name="table_search"
                     maxLength="20"
-                    className="form-control float-right"
+                    className="form-control"
                     placeholder="Search"
                     onChange={onSearchTextChange} />
-                  <div className="input-group-append">
-                    <span className="input-group-text" id="basic-addon2">
-                      <i className="fas fa-search"></i>
-                    </span>
-                  </div>
                 </div>
               </div>
             </div>
@@ -236,10 +232,10 @@ const ActiveAuctions = () => {
                     <th title="Sort" className="sort-style" onClick={() => sort('assetId')}>Asset Id <i className="fa fa-sort" /></th>
                     <th title="Sort" className="sort-style" onClick={() => sort('assetType')}>Asset Type <i className="fa fa-sort" /></th>
                     <th title="Sort" className="sort-style" onClick={() => sort('purchaseDate')}>Purchase Date <i className="fa fa-sort" /></th>
-                    <th title="Sort" className="sort-style" onClick={() => sort('minimumBidAmount')}>Minimum <br/>Bid Amount <i className="fa fa-sort" /></th>
-                    <th title="Sort" className="sort-style" onClick={() => sort('startDate')}>Auction <br/>Start Date <i className="fa fa-sort" /></th>
-                    <th title="Sort" className="sort-style" onClick={() => sort('endDate')}>Auction <br/>End Date <i className="fa fa-sort" /></th>
-                    <th>Place /<br/>View Bids</th>
+                    <th title="Sort" className="sort-style" onClick={() => sort('minimumBidAmount')}>Minimum <br />Bid Amount <i className="fa fa-sort" /></th>
+                    <th title="Sort" className="sort-style" onClick={() => sort('startDate')}>Auction <br />Start Date <i className="fa fa-sort" /></th>
+                    <th title="Sort" className="sort-style" onClick={() => sort('endDate')}>Auction <br />End Date <i className="fa fa-sort" /></th>
+                    <th>Place /<br />View Bids</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -249,12 +245,12 @@ const ActiveAuctions = () => {
                         <td>{index + 1}</td>
                         <td>{item.assetId}</td>
                         <td>{item.assetType}</td>
-                        <td>{formatDate(item.purchaseDate)} <br/> ({calDateDiff(convertToDate(item.purchaseDate), new Date())})</td>
+                        <td>{formatDate(item.purchaseDate)} <br /> ({calDateDiff(convertToDate(item.purchaseDate), new Date())})</td>
                         <td>{item.minimumBidAmount}</td>
                         <td>{formatTimestamp(item.startDate)}</td>
                         <td>{formatTimestamp(item.endDate)}</td>
                         <th>
-                          <NavLink exact to={'bids/' + item.auctionId} className="btn btn-primary btn-sm rounded-0">
+                          <NavLink exact to={'/bids/' + item.auctionId} className="btn btn-primary btn-sm rounded-0">
                             <i className="fa fa-arrow-circle-right" title="Go to Bids Page"></i>
                           </NavLink>
                         </th>
@@ -263,6 +259,15 @@ const ActiveAuctions = () => {
                   }
                 </tbody>
               </table>
+              {
+                data.length > 0 &&
+                <div className="d-flex justify-content-center mt-3 mb-3">
+                  <button type="button" className="btn btn-primary btn-lg" onClick={() => window.print()}>
+                    <i className="fas fa-print"></i>
+                    <span> Print</span>
+                  </button>
+                </div>
+              }
             </div>
             {/* /.card-body */}
           </div>

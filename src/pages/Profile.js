@@ -30,20 +30,66 @@ const Profile = () => {
   const location = useLocation();
 
   const [data, setData] = useState({});
+  const [totalAssignedAssets, setTotalAssignedAssets] = useState(0);
+  const [totalPurchasedAssets, setTotalPurchasedAssets] = useState(0);
 
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     fetchData();
+    fetchTotalAssignedAssets();
+    fetchTotalPurchasedAssets();
   }, []);
 
   const fetchData = () => {
     setLoading(true);
     axios.get(apiurl + '/employees/' + employeeId, { headers: authHeader(token) })
       .then((response) => {
-        setLoading(false);
+        // setLoading(false);
         if (response.status === 200) {
           setData(response.data);
+        }
+        else {
+          showToast('error', errorMessage);
+        }
+      })
+      .catch((error) => {
+        // setLoading(false);
+        showToast('error', errorMessage);
+        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+          logout();
+        }
+      });
+  };
+
+  const fetchTotalAssignedAssets = () => {
+    // props.setLoading(true);
+    axios.get(apiurl + '/assign-assets/total-assigned-assets/' + employeeId, { headers: authHeader(token) })
+      .then((response) => {
+        // props.setLoading(false);
+        if (response.status === 200) {
+          setTotalAssignedAssets(response.data.data);
+        }
+        else {
+          showToast('error', errorMessage);
+        }
+      })
+      .catch((error) => {
+        // props.setLoading(false);
+        showToast('error', errorMessage);
+        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+          logout();
+        }
+      });
+  }
+
+  const fetchTotalPurchasedAssets = () => {
+    // setLoading(true);
+    axios.get(apiurl + '/auctions/sale-auction/employee/' + employeeId, { headers: authHeader(token) })
+      .then((response) => {
+        setLoading(false);
+        if (response.status === 200) {
+          setTotalPurchasedAssets(response.data.length);
         }
         else {
           showToast('error', errorMessage);
@@ -56,7 +102,7 @@ const Profile = () => {
           logout();
         }
       });
-  };
+  }
 
   return (
     <div>
@@ -93,10 +139,10 @@ const Profile = () => {
                     <h3 className="profile-username text-center">{data.firstName + ' ' + data.lastName}</h3>
                     <ul className="list-group list-group-unbordered mb-3">
                       <li className="list-group-item">
-                        <b>Total Assigned Asset</b> <a className="float-right">1,322</a>
+                        <b>Total Assigned Assets</b> <a className="float-right">{totalAssignedAssets}</a>
                       </li>
                       <li className="list-group-item">
-                        <b>Total Asset Win </b> <a className="float-right">543</a>
+                        <b>Total Purchased Assets</b> <a className="float-right">{totalPurchasedAssets}</a>
                       </li>
                     </ul>
                   </div>
@@ -106,7 +152,7 @@ const Profile = () => {
                 {/* About Me Box */}
                 <div className="card card-primary">
                   <div className="card-header">
-                    <h3 className="card-title">About Me</h3>
+                    <h3 className="card-title text-bold mt-2">About Me</h3>
                   </div>
                   {/* /.card-header */}
                   <div className="card-body">

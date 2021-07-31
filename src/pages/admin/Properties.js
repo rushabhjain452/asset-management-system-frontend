@@ -25,7 +25,10 @@ const Properties = () => {
   const [property, setProperty] = useState('');
   const [mandatory, setMandatory] = useState(false);
   const [propertyId, setPropertyId] = useState(0);
+
   const [btnText, setBtnText] = useState('Add');
+  const [searchText, setSearchText] = useState('');
+  const [checked, setChecked] = useState(true);
 
   const [loading, setLoading] = useState(false);
 
@@ -57,8 +60,9 @@ const Properties = () => {
             }
             return 0;
           });
-          setData(data);
           setDataCopy(data);
+          const filterData = data.filter((item) => item.status == checked);
+          setData(filterData);
         }
         else {
           showToast('error', errorMessage);
@@ -133,36 +137,6 @@ const Properties = () => {
     }
   };
 
-  const deleteProperty = (id, name) => {
-    showConfirmAlert('Delete Confirmation', `Do you really want to delete the property '${name}' ?`)
-      .then((result) => {
-        if (result.isConfirmed) {
-          setLoading(true);
-          axios.delete(apiurl + '/properties/' + id, { headers: authHeader(token) })
-            .then((response) => {
-              setLoading(false);
-              if (response.status === 200) {
-                showSweetAlert('success', 'Success', 'Property deleted successfully.');
-                fetchData();
-              }
-              else {
-                showSweetAlert('error', 'Error', 'Failed to delete Property. Please try again...');
-              }
-              setProperty('');
-              setMandatory(false);
-            })
-            .catch((error) => {
-              setLoading(false);
-              showSweetAlert('error', 'Error', 'Failed to delete Property. Please try again...');
-              setProperty('');
-              if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-                logout();
-              }
-            });
-        }
-      });
-  };
-
   const editProperty = (id, name, mandatory) => {
     setBtnText('Update');
     setPropertyId(id);
@@ -208,44 +182,72 @@ const Properties = () => {
     setBtnText('Add');
   };
 
-  const statusChange = (e, assetTypeId) => {
+  const statusChange = (e, propertyId, propertyName) => {
     const status = e.target.checked;
-    setLoading(true);
-    axios.put(apiurl + '/properties/' + assetTypeId + '/update-status/' + status, {}, { headers: authHeader(token) })
-      .then((response) => {
-        setLoading(false);
-        if (response.status === 200) {
-          showToast('success', 'Status of Property updated successfully.');
-          fetchData();
-        }
-        else {
-          showSweetAlert('error', 'Error', 'Failed to update status of Property. Please try again...');
-          fetchData();
-        }
-      })
-      .catch((error) => {
-        setLoading(false);
-        showSweetAlert('error', 'Error', 'Failed to update status of Property. Please try again...');
-        fetchData();
-        if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-          logout();
+    showConfirmAlert('Status Update', `Do you really want to ${status ? 'activate' : 'deactivate'} Property '${propertyName}' ?`)
+      .then((result) => {
+        if (result.isConfirmed) {
+          setLoading(true);
+          axios.put(apiurl + '/properties/' + propertyId + '/update-status/' + status, {}, { headers: authHeader(token) })
+            .then((response) => {
+              setLoading(false);
+              if (response.status === 200) {
+                showToast('success', 'Status of Property updated successfully.');
+                fetchData();
+              }
+              else {
+                showSweetAlert('error', 'Error', 'Failed to update status of Property. Please try again...');
+                fetchData();
+              }
+            })
+            .catch((error) => {
+              setLoading(false);
+              showSweetAlert('error', 'Error', 'Failed to update status of Property. Please try again...');
+              fetchData();
+              if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+                logout();
+              }
+            });
         }
       });
   };
 
-  const onSearchTextChange = (e) => {
-    const searchText = e.target.value.toLowerCase();
+  const search = (text, checked) => {
+    let searchText = text.toLowerCase();
+    if(searchText === 'yes'){
+      searchText = 'true';
+    }else if(searchText === 'no'){
+      searchText = 'false';
+    }
+    console.log(searchText);
+    console.log(dataCopy);
     if (searchText.length > 0) {
-      let searchData = dataCopy.filter((item) => item.propertyName.toLowerCase().includes(searchText));
+      const searchData = dataCopy.filter((item) => item.status === checked &&
+        (item.propertyName.toLowerCase().includes(searchText) ||
+        item.mandatory.toString() == searchText)
+      );
       setData(searchData);
     } else {
-      setData(dataCopy);
+      const searchData = dataCopy.filter((item) => item.status == checked);
+      setData(searchData);
     }
+  }
+
+  const onSearchTextChange = (e) => {
+    const text = e.target.value;
+    setSearchText(text);
+    search(text, checked);
   };
+
+  const handleStatusCheck = (e) => {
+    const checked = e.target.checked;
+    setChecked(checked);
+    search(searchText, checked);
+  }
 
   const sort = (column) => {
     let order = sortOrder;
-    if(sortColumn === column){
+    if (sortColumn === column) {
       order = order * -1;
       setSortOrder(order);
     } else {
@@ -341,21 +343,20 @@ const Properties = () => {
           <div className="col-12">
             <div className="card">
               <div className="card-header">
-                <h3 className="card-title">List of Properties</h3>
-                <div className="card-tools">
-                  <div className="input-group input-group-sm">
+                <h3 className="card-title text-bold mt-2">List of Properties (No of properties : {data.length})</h3>
+                <div className="float-right search-width d-flex flex-md-row">
+                  <div className="form-check mr-4 mt-2">
+                    <input type="checkbox" className="form-check-input" id="status-checked" value="Status" checked={checked} onChange={handleStatusCheck} />
+                    <label className="form-check-label" htmlFor="status-checked">Active</label>
+                  </div>
+                  <div className="input-group">
                     <input
-                      type="text"
+                      type="search"
                       name="table_search"
                       maxLength="20"
-                      className="form-control float-right"
+                      className="form-control"
                       placeholder="Search"
                       onChange={onSearchTextChange} />
-                    <div className="input-group-append">
-                      <span className="input-group-text" id="basic-addon2">
-                        <i className="fas fa-search"></i>
-                      </span>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -368,7 +369,6 @@ const Properties = () => {
                       <th title="Sort" className="sort-style" onClick={() => sort('mandatory')}>Mandatory? <i className="fa fa-sort" /></th>
                       <th title="Sort" className="sort-style" onClick={() => sort('status')}>Status <i className="fa fa-sort" /></th>
                       <th>Edit</th>
-                      <th>Delete</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -384,8 +384,8 @@ const Properties = () => {
                                 type="checkbox"
                                 className="custom-control-input"
                                 id={'status-' + item.propertyId}
-                                onChange={(e) => statusChange(e, item.propertyId)}
-                                defaultChecked={item.status} />
+                                onChange={(e) => statusChange(e, item.propertyId, item.propertyName)}
+                                checked={item.status} />
                               <label className="custom-control-label" htmlFor={'status-' + item.propertyId}></label>
                             </div>
                           </td>
@@ -394,16 +394,20 @@ const Properties = () => {
                               <i className="fa fa-edit"></i>
                             </button>
                           </td>
-                          <td>
-                            <button className="btn btn-danger btn-sm rounded-0" type="button" data-toggle="tooltip" data-placement="top" title="Delete" onClick={() => deleteProperty(item.propertyId, item.propertyName)}>
-                              <i className="fa fa-trash"></i>
-                            </button>
-                          </td>
                         </tr>
                       ))
                     }
                   </tbody>
                 </table>
+                {
+                  data.length > 0 &&
+                  <div className="d-flex justify-content-center mt-4">
+                    <button type="button" className="btn btn-primary btn-lg" onClick={() => window.print()}>
+                      <i className="fas fa-print"></i>
+                      <span> Print</span>
+                    </button>
+                  </div>
+                }
               </div>
             </div>
           </div>
