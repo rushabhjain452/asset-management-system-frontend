@@ -17,8 +17,11 @@ const Login = () => {
   // const [email, setEmail] = useState("piyush@bbd.co.za");
   // const [password, setPassword] = useState("Piyush@12345");
 
-  const [email, setEmail] = useState("kamal123@bbd.co.za");
-  const [password, setPassword] = useState("WelcomeKS@10102");
+  // const [email, setEmail] = useState("kamal123@bbd.co.za");
+  // const [password, setPassword] = useState("WelcomeKS@10102");
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const [loading, setLoading] = useState(false);
 
@@ -54,6 +57,7 @@ const Login = () => {
   const handleLogin = () => {
     if (validateInput()) {
       const apiurl = process.env.REACT_APP_URL;
+      console.log('API_URL : ' + apiurl);
       const requestData = {
         emailId: email,
         password: password

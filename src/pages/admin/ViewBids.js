@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { NavLink, Redirect, useParams } from 'react-router-dom';
 import Footer from '../Footer';
 import Header from '../Header';

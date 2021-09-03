@@ -157,7 +157,8 @@ const App = () => {
   return (
     <AuthContext.Provider value={{ state: authState, dispatch: dispatch, login: login, logout: logout, setEmployeeId: setEmployeeId, updateContextState: updateContextState }}>
       <ErrorBoundary>
-        <Router>
+        {/* <Router> */}
+        <Router basename="/asset-management-system">
           <LastLocationProvider>
             <Switch>
               <>

@@ -1,31 +1,14 @@
-import React, { useState, useContext } from 'react';
-import { Redirect, Link } from 'react-router-dom';
+import React, { useContext } from 'react';
+import { Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { logout } from '../services/authService';
 
 const Header = () => {
 
   const { logout } = useContext(AuthContext);
 
-  // const [logout, setLogout] = useState(false);
-
-  // const handleLogout = () => {
-  //   // logout();
-  //   sessionStorage.removeItem('employeeId');
-  //   sessionStorage.removeItem('name');
-  //   sessionStorage.removeItem('emailId');
-  //   sessionStorage.removeItem('role');
-  //   sessionStorage.removeItem('token');
-  //   setLogout(true);
-  // };
-
   const handleLogout = () => {
     logout();
   }
-
-  // if(logout) {
-  //   return <Redirect to="/login" />;
-  // }
 
   return (
     <nav className="main-header navbar navbar-expand navbar-white navbar-light">
@@ -34,7 +17,6 @@ const Header = () => {
           <a className="nav-link" data-widget="pushmenu" href="#" role="button"><i className="fas fa-bars"></i></a>
         </li>
         <li className="nav-item d-none d-sm-inline-block">
-          {/* <a href="index.html" className="nav-link">Home</a> */}
           <Link to="/admin/dashboard" className="nav-link">Home</Link>
         </li>
       </ul>
