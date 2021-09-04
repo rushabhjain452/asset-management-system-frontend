@@ -5,7 +5,7 @@
 //       password,
 //     })
 //     .then((response) => {
-//       let result = response.data.result;
+//       const result = response.data.result;
 //       if (result.success) {
 //         sessionStorage.setItem("user", JSON.stringify({ username: result.username, token: result.token }));
 //       }

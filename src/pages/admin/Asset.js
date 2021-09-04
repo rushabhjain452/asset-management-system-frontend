@@ -68,7 +68,7 @@ const Asset = () => {
   useEffect(() => {
     // console.log('useEffect : ');
     // console.log(lastLocation);
-    // if(lastLocation.pathname.startsWith('/admin/auction/')){
+    // if(lastLocation && lastLocation.pathname.startsWith('/admin/auction/')){
     //   setChecked(true);
     //   search('', true);
     // }
@@ -97,7 +97,7 @@ const Asset = () => {
           setDataCopy(response.data);
           // Check if user is coming from 'Auction'
           let filterData;
-          if (lastLocation.pathname.startsWith('/admin/auction/')) {
+          if (lastLocation && lastLocation.pathname.startsWith('/admin/auction/')) {
             setChecked(true);
             filterData = data.filter((item) => item.discarded == true);
           }else{
@@ -127,8 +127,8 @@ const Asset = () => {
           // Sort Data
           const data = response.data;
           data.sort((a, b) => {
-            let val1 = a.assetType.toLowerCase();
-            let val2 = b.assetType.toLowerCase();
+            const val1 = a.assetType.toLowerCase();
+            const val2 = b.assetType.toLowerCase();
             if (val1 < val2) {
               return -1;
             }
@@ -137,7 +137,7 @@ const Asset = () => {
             }
             return 0;
           });
-          let newData = data.map((item) => ({ value: item.assetTypeId, label: item.assetType }));
+          const newData = data.map((item) => ({ value: item.assetTypeId, label: item.assetType }));
           setAssetTypes(newData);
         }
         else {
@@ -211,13 +211,13 @@ const Asset = () => {
   const setTextboxValue = (value, propertyId) => {
     // console.log(value);
     // console.log(propertyId);
-    // let obj = properties.find((item) => item.propertyId === propertyId);
+    // const obj = properties.find((item) => item.propertyId === propertyId);
     // obj.value = value;
     // console.log(obj);
     // console.log(properties);
     setProperties(oldProperties => {
       const newProperties = [...oldProperties];
-      let obj = newProperties.find((item) => item.propertyId === propertyId);
+      const obj = newProperties.find((item) => item.propertyId === propertyId);
       obj.value = value;
       return newProperties;
     });
@@ -284,6 +284,7 @@ const Asset = () => {
           setLoading(false);
           if (response.status === 201) {
             showSweetAlert('success', 'Success', 'Asset added successfully.');
+            setChecked(false);
             fetchData();
           }
           else {
@@ -336,15 +337,15 @@ const Asset = () => {
     setAssetId(assetId);
     // console.log(assetId);
     // console.log(properties);
-    let findAsset = data.find((item) => item.assetId === assetId);
+    const findAsset = data.find((item) => item.assetId === assetId);
     // console.log(findAsset);
     const findItem = assetTypes.find((item) => item.value === findAsset.assetTypeId);
     setAssetType(findItem);
     setPurchaseDate(findAsset.purchaseDate);
     setProperties(findAsset.assetPropertiesList);
-    // let propertyIds = obj.propertyList.map((item) => item.propertyId);
+    // const propertyIds = obj.propertyList.map((item) => item.propertyId);
     // setProperties(prevProperties => {
-    //   let newProperties = [...prevProperties];
+    //   const newProperties = [...prevProperties];
     //   newProperties.forEach((item) => {
     //     if(propertyIds.includes(item.propertyId))
     //       item.checked = true;
@@ -360,7 +361,7 @@ const Asset = () => {
     setBtnText('Add');
     setAssetTypesDisabled(false);
     setAssetId(assetId);
-    let findAsset = data.find((item) => item.assetId === assetId);
+    const findAsset = data.find((item) => item.assetId === assetId);
     const findItem = assetTypes.find((item) => item.value === findAsset.assetTypeId);
     setAssetType(findItem);
     // setPurchaseDate(findAsset.purchaseDate);
@@ -388,6 +389,7 @@ const Asset = () => {
           setLoading(false);
           if (response.status === 200) {
             showSweetAlert('success', 'Success', 'Asset updated successfully.');
+            setChecked(false);
             fetchData();
           }
           else {
@@ -432,16 +434,19 @@ const Asset = () => {
               setLoading(false);
               if (response.status === 200) {
                 showToast('success', 'Discarded of Asset updated successfully.');
+                setChecked(false);
                 fetchData();
               }
               else {
                 showSweetAlert('error', 'Error', 'Failed to update Asset of Property. Please try again...');
+                setChecked(false);
                 fetchData();
               }
             })
             .catch((error) => {
               setLoading(false);
               showSweetAlert('error', 'Error', 'Failed to update Asset of Property. Please try again...');
+              setChecked(false);
               fetchData();
               if (error.response && (error.response.status === 401 || error.response.status === 403)) {
                 logout();
@@ -494,17 +499,17 @@ const Asset = () => {
     switch (column) {
       case 'assetId':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => (a.assetId - b.assetId) * order);
           return newData;
         });
         break;
       case 'assetType':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => {
-            let val1 = a.assetType.toLowerCase();
-            let val2 = b.assetType.toLowerCase();
+            const val1 = a.assetType.toLowerCase();
+            const val2 = b.assetType.toLowerCase();
             if (val1 < val2) {
               return order * -1;
             }
@@ -518,10 +523,10 @@ const Asset = () => {
         break;
       case 'purchaseDate':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => {
-            let val1 = convertToDate(a.purchaseDate);
-            let val2 = convertToDate(b.purchaseDate);
+            const val1 = convertToDate(a.purchaseDate);
+            const val2 = convertToDate(b.purchaseDate);
             if (val1 < val2) {
               return order * -1;
             }
@@ -535,7 +540,7 @@ const Asset = () => {
         break;
       case 'discarded':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => (a.discarded - b.discarded) * order);
           return newData;
         });

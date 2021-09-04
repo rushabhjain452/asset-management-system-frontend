@@ -50,8 +50,8 @@ const Properties = () => {
           // Sort Data
           const data = response.data;
           data.sort((a, b) => {
-            let val1 = a.propertyName.toLowerCase();
-            let val2 = b.propertyName.toLowerCase();
+            const val1 = a.propertyName.toLowerCase();
+            const val2 = b.propertyName.toLowerCase();
             if (val1 < val2) {
               return -1;
             }
@@ -258,10 +258,10 @@ const Properties = () => {
     switch (column) {
       case 'propertyName':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => {
-            let val1 = a.propertyName.toLowerCase();
-            let val2 = b.propertyName.toLowerCase();
+            const val1 = a.propertyName.toLowerCase();
+            const val2 = b.propertyName.toLowerCase();
             if (val1 < val2) {
               return order * -1;
             }
@@ -275,14 +275,14 @@ const Properties = () => {
         break;
       case 'mandatory':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => (a.mandatory - b.mandatory) * order);
           return newData;
         });
         break;
       case 'status':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => (a.status - b.status) * order);
           return newData;
         });

@@ -109,7 +109,7 @@ const AssignAsset = () => {
   };
 
   const fetchEmployees = (assetData) => {
-    console.log(assetData);
+    // console.log(assetData);
     setLoading(true);
     axios.get(apiurl + '/employees/status/true', { headers: authHeader(token) })
       .then((response) => {
@@ -118,7 +118,7 @@ const AssignAsset = () => {
           // Sort Data
           const data = response.data;
           data.sort((a, b) => a.employeeId - b.employeeId);
-          let newData = data.map((item) => ({ value: item.employeeId, label: item.employeeId + ' - ' + item.firstName + ' ' + item.lastName }));
+          const newData = data.map((item) => ({ value: item.employeeId, label: item.employeeId + ' - ' + item.firstName + ' ' + item.lastName }));
           setEmployees(newData);
           setEmployee(null);
           // Check state if user coming from employee page
@@ -270,7 +270,7 @@ const AssignAsset = () => {
     setReturnDateDisplay(false);
     setAssignAssetId(assignAssetId);
     setAssetId(assetId);
-    let findAsset = data.find((item) => item.assignAssetId === assignAssetId);
+    const findAsset = data.find((item) => item.assignAssetId === assignAssetId);
     setAsset(findAsset);
     // Set Employee
     const findEmployee = employees.find((item) => item.value === findAsset.employeeId);
@@ -316,7 +316,7 @@ const AssignAsset = () => {
     setAssignDateDisabled(false);
     setReturnDateDisplay(false);
     setAssetId(assetId);
-    let findAsset = data.find((item) => item.assetId === assetId);
+    const findAsset = data.find((item) => item.assetId === assetId);
     // const findItem = assetTypes.find((item) => item.value === findAsset.assetTypeId);
     // console.log(findAsset);
     setAsset(findAsset);
@@ -362,7 +362,7 @@ const AssignAsset = () => {
     setAssignDateDisabled(true);
     setReturnDateDisplay(true);
     setAssetId(assetId);
-    let findAsset = data.find((item) => item.assetId === assetId);
+    const findAsset = data.find((item) => item.assetId === assetId);
     setAsset(findAsset);
     // Set Employee
     const findEmployee = employees.find((item) => item.value === findAsset.employeeId);
@@ -471,17 +471,17 @@ const AssignAsset = () => {
     switch (column) {
       case 'assetId':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => (a.assetId - b.assetId) * order);
           return newData;
         });
         break;
       case 'assetType':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => {
-            let val1 = a.assetType.toLowerCase();
-            let val2 = b.assetType.toLowerCase();
+            const val1 = a.assetType.toLowerCase();
+            const val2 = b.assetType.toLowerCase();
             if (val1 < val2) {
               return order * -1;
             }
@@ -495,10 +495,10 @@ const AssignAsset = () => {
         break;
       case 'purchaseDate':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => {
-            let val1 = convertToDate(a.purchaseDate);
-            let val2 = convertToDate(b.purchaseDate);
+            const val1 = convertToDate(a.purchaseDate);
+            const val2 = convertToDate(b.purchaseDate);
             if (val1 < val2) {
               return order * -1;
             }

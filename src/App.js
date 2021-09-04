@@ -124,7 +124,7 @@ const App = () => {
   };
 
   const updateContextState = () => {
-    let token = sessionStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     if (token) {
       const username = sessionStorage.getItem('username');
       const role = sessionStorage.getItem('role');

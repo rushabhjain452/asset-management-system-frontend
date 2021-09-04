@@ -45,8 +45,8 @@ const Role = () => {
           // Sort Data
           const data = response.data;
           data.sort((a, b) => {
-            let val1 = a.name.toLowerCase();
-            let val2 = b.name.toLowerCase();
+            const val1 = a.name.toLowerCase();
+            const val2 = b.name.toLowerCase();
             if (val1 < val2) {
               return -1;
             }

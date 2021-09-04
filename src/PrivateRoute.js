@@ -4,7 +4,7 @@ import { AuthContext } from './context/AuthContext';
 
 const PrivateRoute = ({ component: Component, ...rest }) => {
 
-  const { state, updateContextState } = useContext(AuthContext);
+  const { state } = useContext(AuthContext);
 
   let token = state.token;
   if(!token){

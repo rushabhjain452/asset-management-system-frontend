@@ -48,8 +48,8 @@ const ViewReturnedAsset = () => {
           // Sort Data
           const data = response.data;
           data.sort((a, b) => {
-            let val1 = convertToDate(a.assignDate);
-            let val2 = convertToDate(b.assignDate);
+            const val1 = convertToDate(a.assignDate);
+            const val2 = convertToDate(b.assignDate);
             if (val1 < val2) {
               return -1;
             }
@@ -102,17 +102,17 @@ const ViewReturnedAsset = () => {
     switch (column) {
       case 'assetId':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => (a.assetId - b.assetId) * order);
           return newData;
         });
         break;
       case 'assetType':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => {
-            let val1 = a.assetType.toLowerCase();
-            let val2 = b.assetType.toLowerCase();
+            const val1 = a.assetType.toLowerCase();
+            const val2 = b.assetType.toLowerCase();
             if (val1 < val2) {
               return order * -1;
             }
@@ -126,10 +126,10 @@ const ViewReturnedAsset = () => {
         break;
       case 'assignDate':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => {
-            let val1 = convertToDate(a.assignDate);
-            let val2 = convertToDate(b.assignDate);
+            const val1 = convertToDate(a.assignDate);
+            const val2 = convertToDate(b.assignDate);
             if (val1 < val2) {
               return order * -1;
             }
@@ -143,10 +143,10 @@ const ViewReturnedAsset = () => {
         break;
       case 'returnDate':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => {
-            let val1 = convertToDate(a.returnDate);
-            let val2 = convertToDate(b.returnDate);
+            const val1 = convertToDate(a.returnDate);
+            const val2 = convertToDate(b.returnDate);
             if (val1 < val2) {
               return order * -1;
             }

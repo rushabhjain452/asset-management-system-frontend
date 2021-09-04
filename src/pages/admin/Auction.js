@@ -148,7 +148,7 @@ const Auction = () => {
   //         // Sort Data
   //         const data = response.data;
   //         data.sort((a, b) => a.employeeId - b.employeeId);
-  //         let newData = data.map((item) => ({ value: item.employeeId, label: item.employeeId + ' - ' + item.firstName + ' ' + item.lastName }));
+  //         const newData = data.map((item) => ({ value: item.employeeId, label: item.employeeId + ' - ' + item.firstName + ' ' + item.lastName }));
   //         setEmployees(newData);
   //       }
   //       else {
@@ -304,7 +304,7 @@ const Auction = () => {
     setStartDateDisabled(false);
     setEndDateDisabled(false);
     // Find Auction by Id and set Values
-    let findAuction = data.find((item) => item.auctionId === auctionId);
+    const findAuction = data.find((item) => item.auctionId === auctionId);
     // console.log(findAuction);
     setMinBidAmount(findAuction.minimumBidAmount);
     setStartDate(findAuction.startDate.substring(0, 16));
@@ -445,17 +445,17 @@ const Auction = () => {
     switch (column) {
       case 'assetId':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => (a.assetId - b.assetId) * order);
           return newData;
         });
         break;
       case 'assetType':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => {
-            let val1 = a.assetType.toLowerCase();
-            let val2 = b.assetType.toLowerCase();
+            const val1 = a.assetType.toLowerCase();
+            const val2 = b.assetType.toLowerCase();
             if (val1 < val2) {
               return order * -1;
             }
@@ -469,10 +469,10 @@ const Auction = () => {
         break;
       case 'purchaseDate':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => {
-            let val1 = convertToDate(a.purchaseDate);
-            let val2 = convertToDate(b.purchaseDate);
+            const val1 = convertToDate(a.purchaseDate);
+            const val2 = convertToDate(b.purchaseDate);
             if (val1 < val2) {
               return order * -1;
             }
@@ -486,17 +486,17 @@ const Auction = () => {
         break;
       case 'minimumBidAmount':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => (a.minimumBidAmount - b.minimumBidAmount) * order);
           return newData;
         });
         break;
       case 'startDate':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => {
-            let val1 = convertTimestampToDate(a.startDate);
-            let val2 = convertTimestampToDate(b.startDate);
+            const val1 = convertTimestampToDate(a.startDate);
+            const val2 = convertTimestampToDate(b.startDate);
             if (val1 < val2) {
               return order * -1;
             }
@@ -510,10 +510,10 @@ const Auction = () => {
         break;
       case 'endDate':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => {
-            let val1 = convertTimestampToDate(a.endDate);
-            let val2 = convertTimestampToDate(b.endDate);
+            const val1 = convertTimestampToDate(a.endDate);
+            const val2 = convertTimestampToDate(b.endDate);
             if (val1 < val2) {
               return order * -1;
             }
@@ -527,10 +527,10 @@ const Auction = () => {
         break;
       case 'saleDate':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => {
-            let val1 = convertTimestampToDate(a.saleDate);
-            let val2 = convertTimestampToDate(b.saleDate);
+            const val1 = convertTimestampToDate(a.saleDate);
+            const val2 = convertTimestampToDate(b.saleDate);
             if (val1 < val2) {
               return order * -1;
             }
@@ -544,7 +544,7 @@ const Auction = () => {
         break;
       case 'status':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => (a.status - b.status) * order);
           return newData;
         });

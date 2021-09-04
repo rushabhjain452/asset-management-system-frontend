@@ -9,7 +9,6 @@ const UserMenu = () => {
   let username = state.username;
   let profilePicture = state.profilePicture;
   let gender = state.gender;
-
   if (!username) {
     username = sessionStorage.getItem('username');
     gender = sessionStorage.getItem('gender');

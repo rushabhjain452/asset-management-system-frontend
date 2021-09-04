@@ -301,7 +301,7 @@ const Employee = () => {
   const editEmployee = (id) => {
     const filterData = data.filter((item) => item.employeeId === id);
     if (filterData.length > 0) {
-      let obj = filterData[0];
+      const obj = filterData[0];
       setBtnText('Update');
       setEmployeeId(obj.employeeId);
       setFirstName(obj.firstName);
@@ -459,17 +459,17 @@ const Employee = () => {
     switch (column) {
       case 'employeeId':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => (a.employeeId - b.employeeId) * order);
           return newData;
         });
         break;
       case 'firstName':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => {
-            let val1 = a.firstName.toLowerCase();
-            let val2 = b.firstName.toLowerCase();
+            const val1 = a.firstName.toLowerCase();
+            const val2 = b.firstName.toLowerCase();
             if (val1 < val2) {
               return order * -1;
             }
@@ -483,10 +483,10 @@ const Employee = () => {
         break;
       case 'lastName':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => {
-            let val1 = a.lastName.toLowerCase();
-            let val2 = b.lastName.toLowerCase();
+            const val1 = a.lastName.toLowerCase();
+            const val2 = b.lastName.toLowerCase();
             if (val1 < val2) {
               return order * -1;
             }
@@ -500,10 +500,10 @@ const Employee = () => {
         break;
       case 'gender':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => {
-            let val1 = a.genderName.toLowerCase();
-            let val2 = b.genderName.toLowerCase();
+            const val1 = a.genderName.toLowerCase();
+            const val2 = b.genderName.toLowerCase();
             if (val1 < val2) {
               return order * -1;
             }
@@ -517,10 +517,10 @@ const Employee = () => {
         break;
       case 'emailId':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => {
-            let val1 = a.emailId.toLowerCase();
-            let val2 = b.emailId.toLowerCase();
+            const val1 = a.emailId.toLowerCase();
+            const val2 = b.emailId.toLowerCase();
             if (val1 < val2) {
               return order * -1;
             }
@@ -534,10 +534,10 @@ const Employee = () => {
         break;
       case 'mobileNumber':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => {
-            let val1 = a.mobileNumber.toLowerCase();
-            let val2 = b.mobileNumber.toLowerCase();
+            const val1 = a.mobileNumber.toLowerCase();
+            const val2 = b.mobileNumber.toLowerCase();
             if (val1 < val2) {
               return order * -1;
             }
@@ -551,10 +551,10 @@ const Employee = () => {
         break;
       case 'role':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => {
-            let val1 = a.roleName.toLowerCase();
-            let val2 = b.roleName.toLowerCase();
+            const val1 = a.roleName.toLowerCase();
+            const val2 = b.roleName.toLowerCase();
             if (val1 < val2) {
               return order * -1;
             }
@@ -568,7 +568,7 @@ const Employee = () => {
         break;
       case 'status':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => (a.status - b.status) * order);
           return newData;
         });
@@ -774,7 +774,7 @@ const Employee = () => {
                     <th title="Sort" className="sort-style" onClick={() => sort('role')}>Role <i className="fa fa-sort" /></th>
                     <th title="Sort" className="sort-style" onClick={() => sort('status')}>Status <i className="fa fa-sort" /></th>
                     <th>Edit</th>
-                    {checked && <th>Assign<br />Asset</th>}
+                    {checked && <th colspan="2">Assign Asset</th>}
                   </tr>
                 </thead>
                 <tbody>
@@ -818,7 +818,12 @@ const Employee = () => {
                               }} >
                               <i className="fa fa-eye" title="View Assigned Assets"></i>
                             </NavLink>
-                            <NavLink className="btn btn-primary btn-sm rounded-0 float-right"
+                          </td>
+                        }
+                        {
+                          item.status &&
+                          <td>
+                            <NavLink className="btn btn-primary btn-sm rounded-0"
                               exact to={{
                                 pathname: "/admin/assign-return-asset",
                                 state: {

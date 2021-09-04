@@ -193,17 +193,17 @@ const ViewBids = () => {
     switch (column) {
       case 'employeeId':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => (a.employeeId - b.employeeId) * order);
           return newData;
         });
         break;
       case 'firstName':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => {
-            let val1 = a.firstName.toLowerCase();
-            let val2 = b.firstName.toLowerCase();
+            const val1 = a.firstName.toLowerCase();
+            const val2 = b.firstName.toLowerCase();
             if (val1 < val2) {
               return order * -1;
             }
@@ -217,10 +217,10 @@ const ViewBids = () => {
         break;
       case 'lastName':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => {
-            let val1 = a.lastName.toLowerCase();
-            let val2 = b.lastName.toLowerCase();
+            const val1 = a.lastName.toLowerCase();
+            const val2 = b.lastName.toLowerCase();
             if (val1 < val2) {
               return order * -1;
             }
@@ -234,17 +234,17 @@ const ViewBids = () => {
         break;
       case 'bidAmount':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => (a.bidAmount - b.bidAmount) * order);
           return newData;
         });
         break;
       case 'createdOn':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => {
-            let val1 = convertTimestampToDate(a.createdOn);
-            let val2 = convertTimestampToDate(b.createdOn);
+            const val1 = convertTimestampToDate(a.createdOn);
+            const val2 = convertTimestampToDate(b.createdOn);
             if (val1 < val2) {
               return order * -1;
             }

@@ -132,7 +132,7 @@ export const convertTimestampToDate = (str) => {
 
 export const calDateDiff = (startDate, endDate) => {
   try {
-    let oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+    const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
     let diffDays = (endDate.getTime() - startDate.getTime()) / oneDay;
     diffDays = diffDays + 1;
     // console.log(diffDays);
@@ -140,11 +140,11 @@ export const calDateDiff = (startDate, endDate) => {
       return '0 years 0 months 0 days';
     }
     // Convert days to years and months
-    let years = parseInt(diffDays / 365);
+    const years = parseInt(diffDays / 365);
     diffDays = diffDays % 365;
-    let months = parseInt(diffDays / 30);
+    const months = parseInt(diffDays / 30);
     diffDays = diffDays % 30;
-    let days = Math.round(diffDays);
+    const days = Math.round(diffDays);
     if(years == 0 && months == 0)  
       return days + ' days';
     if(years == 0)

@@ -83,8 +83,8 @@ const AssetProperties = () => {
           // Sort Data
           const data = response.data;
           data.sort((a, b) => {
-            let val1 = a.assetType.toLowerCase();
-            let val2 = b.assetType.toLowerCase();
+            const val1 = a.assetType.toLowerCase();
+            const val2 = b.assetType.toLowerCase();
             if (val1 < val2) {
               return -1;
             }
@@ -93,7 +93,7 @@ const AssetProperties = () => {
             }
             return 0;
           });
-          let newData = data.map((item) => ({ value: item.assetTypeId, label: item.assetType }));
+          const newData = data.map((item) => ({ value: item.assetTypeId, label: item.assetType }));
           setAssetTypes(newData);
         }
         else {
@@ -118,8 +118,8 @@ const AssetProperties = () => {
           // Sort Data
           const data = response.data;
           data.sort((a, b) => {
-            let val1 = a.propertyName.toLowerCase();
-            let val2 = b.propertyName.toLowerCase();
+            const val1 = a.propertyName.toLowerCase();
+            const val2 = b.propertyName.toLowerCase();
             if (val1 < val2) {
               return -1;
             }
@@ -250,10 +250,10 @@ const AssetProperties = () => {
     // findItem : {value: 1, label: "Laptop"}
     const findItem = assetTypes.find((item) => item.value === id);
     setAssetType(findItem);
-    let obj = data.find((item) => item.assetTypeId === id);
-    let propertyIds = obj.propertyList.map((item) => item.propertyId);
+    const obj = data.find((item) => item.assetTypeId === id);
+    const propertyIds = obj.propertyList.map((item) => item.propertyId);
     setProperties(prevProperties => {
-      let newProperties = [...prevProperties];
+      const newProperties = [...prevProperties];
       newProperties.forEach((item) => {
         if (propertyIds.includes(item.propertyId))
           item.checked = true;
@@ -266,7 +266,7 @@ const AssetProperties = () => {
   };
 
   const updateAssetTypeProperties = () => {
-    let propertyIds = [];
+    const propertyIds = [];
     properties.forEach((item) => item.checked ? propertyIds.push({ propertyId: item.propertyId }) : '');
     if (validateInput(propertyIds)) {
       setLoading(true);
@@ -334,10 +334,10 @@ const AssetProperties = () => {
     switch (column) {
       case 'assetType':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => {
-            let val1 = a.assetType.toLowerCase();
-            let val2 = b.assetType.toLowerCase();
+            const val1 = a.assetType.toLowerCase();
+            const val2 = b.assetType.toLowerCase();
             if (val1 < val2) {
               return order * -1;
             }

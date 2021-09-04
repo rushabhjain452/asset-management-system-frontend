@@ -89,17 +89,17 @@ const AssignAssetHistory = () => {
     switch (column) {
       case 'employeeId':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => (a.employeeId - b.employeeId) * order);
           return newData;
         });
         break;
       case 'name':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => {
-            let val1 = a.firstName.toLowerCase() + ' ' + a.lastName.toLowerCase();
-            let val2 = b.firstName.toLowerCase() + ' ' + b.lastName.toLowerCase();
+            const val1 = a.firstName.toLowerCase() + ' ' + a.lastName.toLowerCase();
+            const val2 = b.firstName.toLowerCase() + ' ' + b.lastName.toLowerCase();
             if (val1 < val2) {
               return order * -1;
             }
@@ -113,10 +113,10 @@ const AssignAssetHistory = () => {
         break;
       case 'assignDate':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => {
-            let val1 = convertToDate(a.assignDate);
-            let val2 = convertToDate(b.assignDate);
+            const val1 = convertToDate(a.assignDate);
+            const val2 = convertToDate(b.assignDate);
             if (val1 < val2) {
               return order * -1;
             }
@@ -130,10 +130,10 @@ const AssignAssetHistory = () => {
         break;
       case 'returnDate':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => {
-            let val1 = convertToDate(a.returnDate);
-            let val2 = convertToDate(b.returnDate);
+            const val1 = convertToDate(a.returnDate);
+            const val2 = convertToDate(b.returnDate);
             if (val1 < val2) {
               return order * -1;
             }

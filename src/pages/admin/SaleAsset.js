@@ -45,8 +45,8 @@ const SaleAsset = () => {
           // Sort Data
           const data = response.data;
           data.sort((a, b) => {
-            let val1 = convertTimestampToDate(a.saleDate);
-            let val2 = convertTimestampToDate(b.saleDate);
+            const val1 = convertTimestampToDate(a.saleDate);
+            const val2 = convertTimestampToDate(b.saleDate);
             if (val1 < val2) {
               return -1;
             }
@@ -102,17 +102,17 @@ const SaleAsset = () => {
     switch (column) {
       case 'assetId':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => (a.assetId - b.assetId) * order);
           return newData;
         });
         break;
       case 'assetType':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => {
-            let val1 = a.assetType.toLowerCase();
-            let val2 = b.assetType.toLowerCase();
+            const val1 = a.assetType.toLowerCase();
+            const val2 = b.assetType.toLowerCase();
             if (val1 < val2) {
               return order * -1;
             }
@@ -126,10 +126,10 @@ const SaleAsset = () => {
         break;
       case 'saleDate':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => {
-            let val1 = convertTimestampToDate(a.saleDate);
-            let val2 = convertTimestampToDate(b.saleDate);
+            const val1 = convertTimestampToDate(a.saleDate);
+            const val2 = convertTimestampToDate(b.saleDate);
             if (val1 < val2) {
               return order * -1;
             }
@@ -143,31 +143,31 @@ const SaleAsset = () => {
         break;
       case 'minimumBidAmount':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => (a.minimumBidAmount - b.minimumBidAmount) * order);
           return newData;
         });
         break;
       case 'bidAmount':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => (a.bidAmount - b.bidAmount) * order);
           return newData;
         });
         break;
       case 'employeeId':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => (a.employeeId - b.employeeId) * order);
           return newData;
         });
         break;
       case 'name':
         setData((oldData) => {
-          let newData = [...oldData];
+          const newData = [...oldData];
           newData.sort((a, b) => {
-            let val1 = (a.firstName + ' ' + a.lastName).toLowerCase();
-            let val2 = (b.firstName + ' ' + b.lastName).toLowerCase();
+            const val1 = (a.firstName + ' ' + a.lastName).toLowerCase();
+            const val2 = (b.firstName + ' ' + b.lastName).toLowerCase();
             if (val1 < val2) {
               return order * -1;
             }
